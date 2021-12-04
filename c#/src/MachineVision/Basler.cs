@@ -21,13 +21,7 @@ namespace ATnZ
             // - 4버전 -
             //C:\Program Files\Basler\pylon 4\pylon .NET Preview\lib\x64\Basler.Pylon.dll
 
-            // - 5버전 -
-            //C:\Program Files\Basler\pylon 5\Development\Assemblies\Basler.Pylon\x64\Basler.Pylon.dll
-
-            //using Basler.Pylon;
-            //using System.Drawing.Imaging;
-            //using System.Drawing;
-            //using Cognex.VisionPro;
+            
 
             //C:\Program Files\Cognex\VisionPro\ReferencedAssemblies\
 
