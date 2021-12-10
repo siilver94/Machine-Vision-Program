@@ -13,7 +13,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 
-namespace ATnZ
+namespace MyProgram
 {
 
     public class TCPServer_K
