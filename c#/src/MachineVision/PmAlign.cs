@@ -24,7 +24,7 @@ using Ken2.DataManagement;
 using System.Threading;
 using System.Diagnostics;
 
-namespace ATnZ
+namespace VisionProgram
 {
     public partial class Form1 : Form
     {
