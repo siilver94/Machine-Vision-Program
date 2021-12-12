@@ -9,7 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace ATnZ
+namespace VisionProgram
 {
         /// <summary>
         /// ImageSignal 이벤트로 사진 받기
