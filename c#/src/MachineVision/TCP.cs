@@ -13,7 +13,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 
-namespace MyProgram
+namespace VisionProgram
 {
 
     public class TCPServer_K
