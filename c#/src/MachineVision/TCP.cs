@@ -12,7 +12,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-
 namespace VisionProgram
 {
 
@@ -20,15 +19,12 @@ namespace VisionProgram
     {
         string IP = "";
         int port = 0;
-
-
-
+        
         public TcpListener mServer;
         public TcpClient mClient;
         public NetworkStream _stream;
 
         public bool Connected = false;
-
 
         private delegate void dele();//delegate
 
@@ -116,7 +112,6 @@ namespace VisionProgram
                 {
 
                 }
-
 
             }
 
@@ -382,8 +377,6 @@ namespace VisionProgram
 
         }
         #endregion
-
-
         public void SendString(string str)
         {
             byte[] buff = DataChange_K.StringToByteArr(str);
