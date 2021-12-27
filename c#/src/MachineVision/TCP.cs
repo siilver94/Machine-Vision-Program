@@ -1117,11 +1117,8 @@ namespace VisionProgram
         {//using System.Diagnostics;
 
             System.Diagnostics.ProcessStartInfo procStartInfo = new System.Diagnostics.ProcessStartInfo("cmd", "/c " + command);
-
-
             procStartInfo.RedirectStandardOutput = true;
             procStartInfo.UseShellExecute = false;
-
 
             procStartInfo.CreateNoWindow = UnVisible; // Do not create the black window.
 
@@ -1154,18 +1151,14 @@ namespace VisionProgram
             }
         }
 
-
         public static string SimplePing(string IP)
         {
             string result = "";
             Ping pingSender = new Ping();
             PingReply reply = pingSender.Send(IP);
 
-
             if (reply.Status == IPStatus.Success) //핑이 제대로 들어가고 있을 경우
             {
-
-
 
                 result += "-- OK --" + Environment.NewLine + Environment.NewLine;
                 result += "Address: " + reply.Address.ToString() + Environment.NewLine;
@@ -1185,7 +1178,6 @@ namespace VisionProgram
 
             return result;
         }
-
 
     }
 }
