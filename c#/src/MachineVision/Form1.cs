@@ -56,9 +56,6 @@ namespace VisionProgram
             cam1 = new PylonBasler("192.168.100.2");
             cam1.ImageSignal += Cam1_ImageSignal;
 
-            
-
-
             dgvInit("dataGridView1");
 
             sql = new Mysql_K("127.0.0.1", "atnz", "testtable", "a", "qwerasdf");  //  ip , 데이터베이스 이름, 테이블이름, id, 비번
@@ -123,12 +120,8 @@ namespace VisionProgram
 
                     richTextBox1.AppendText("이미지 저장 time -> " + sw.ElapsedMilliseconds.ToString() + " m/s" + Environment.NewLine + Environment.NewLine);
 
-                    //C: \Users\Hyeon\Desktop\new
                 }));
 
-               // image = (Bitmap)Data;
-
-                //triger1(image);
             }
         }
         private void triger1(Image image)     //트리거
@@ -170,9 +163,6 @@ namespace VisionProgram
                 Dt2.Text = Math.Round(rr[1], 4).ToString();  //Y
                 Dt3.Text = Math.Round(value, 4).ToString();  //Angle
                 Dt4.Text = Math.Round(rr[3]*100, 4).ToString();  //Result
-
-
-
 
                 //textBox9
                 if (Convert.ToDouble(textBox9.Text) <= rr[3] * 100 && Convert.ToDouble(textBox10.Text) >= rr[3] * 100)
