@@ -666,11 +666,7 @@ namespace VisionProgram
             try
             {
                 string SendData = Parsing.DeleteSpace(str);
-
-                //int SendDataLength = textBox2.TextLength;//4
-
                 char[] CharArray = SendData.ToCharArray();// 0 0 0 0
-
                 string[] NewSendData = new string[CharArray.Length / 2];// 2
 
                 for (int i = 0; i < NewSendData.Length; i++)
@@ -728,20 +724,10 @@ namespace VisionProgram
                             _stream = mClient.GetStream();
                             Server_Connected = true;
 
-
-
                             CommStart();//연결되었으니 통신스레드 시작함.
                         }
                         else
                         {
-
-                            //System.Net.IPAddress ip = System.Net.IPAddress.Parse( ClientIP );
-                            //IPEndPoint ipLocalEndPoint = new IPEndPoint( ip , ClientPort );
-                            //mClient = new TcpClient( ipLocalEndPoint );
-
-                            //mClient.Client.SetSocketOption( SocketOptionLevel.Socket , SocketOptionName.DontLinger , false );
-                            //mClient.Client.SetSocketOption( SocketOptionLevel.Socket , SocketOptionName.Linger , lingeroption );
-                            //mClient.Client.SetSocketOption( SocketOptionLevel.Socket , SocketOptionName.KeepAlive , 0 );
 
                             mClient.ReceiveTimeout = ReceiveTimeOut;
                             mClient.Connect(ServerIP, ServerPort);
@@ -752,7 +738,6 @@ namespace VisionProgram
                             CommStart();//연결되었으니 통신스레드 시작함.
 
                         }
-
 
                         TalkingComm("Connected", 0, 0);
                         Connected = true;
@@ -766,7 +751,6 @@ namespace VisionProgram
 
                 }
             }
-
 
         }
         //스레드함수
@@ -786,8 +770,7 @@ namespace VisionProgram
         }
         #endregion
 
-
-
+            
         #region -----# Comm #-----
 
         private Thread Comm;//스레드
@@ -902,18 +885,7 @@ namespace VisionProgram
             {
                 if (objMO["MACAddress"] != null && objMO["MACAddress"].Equals(mac))
                 {
-                    //MessageBox.Show("a");
-
-                    //ManagementBaseObject setIP;
-                    //ManagementBaseObject newIP =
-                    //objMO.GetMethodParameters("EnableStatic");
-                    //result = objMO.Properties["DHCPEnabled"];
                     result = objMO["DHCPEnabled"].ToString();
-                    //MessageBox.Show(a.ToString());
-                    //newIP["SubnetMask"] = new string[] { subnet_mask };
-                    //setIP = objMO.InvokeMethod("EnableStatic", newIP, null);
-
-
                 }
             }
 
@@ -923,7 +895,6 @@ namespace VisionProgram
             }
             else
                 return false;
-
         }
 
 
@@ -937,13 +908,7 @@ namespace VisionProgram
                 if (objMO["MACAddress"] != null && objMO["MACAddress"].Equals(mac) && objMO["IPAddress"] != null)
                 {
 
-                    //ManagementBaseObject setIP;
-                    //ManagementBaseObject newIP =
-                    //objMO.GetMethodParameters("EnableStatic");
-
                     result = ((string[])(objMO["IPAddress"]))[0];
-
-
 
                 }
             }
@@ -962,12 +927,8 @@ namespace VisionProgram
                 if (Interface.NetworkInterfaceType == NetworkInterfaceType.Loopback) continue;
                 string add = Interface.GetPhysicalAddress().ToString();
                 string _mac = add.Substring(0, 2) + ":" + add.Substring(2, 2) + ":" + add.Substring(4, 2) + ":" + add.Substring(6, 2) + ":" + add.Substring(8, 2) + ":" + add.Substring(10, 2);
-                //string SubnetMask = "";
-                //string Gateway = "";
-
 
                 if (mac.Equals(_mac))
-                //if (true)
                 {
 
                     IPInterfaceProperties adapterProperties = Interface.GetIPProperties();
@@ -994,11 +955,7 @@ namespace VisionProgram
             }
 
             return result;
-
-
-
         }
-
 
 
         public static string GetSubnetmask(string mac)
@@ -1012,12 +969,8 @@ namespace VisionProgram
                 if (Interface.NetworkInterfaceType == NetworkInterfaceType.Loopback) continue;
                 string add = Interface.GetPhysicalAddress().ToString();
                 string _mac = add.Substring(0, 2) + ":" + add.Substring(2, 2) + ":" + add.Substring(4, 2) + ":" + add.Substring(6, 2) + ":" + add.Substring(8, 2) + ":" + add.Substring(10, 2);
-                //string SubnetMask = "";
-                //string Gateway = "";
-
 
                 if (mac.Equals(_mac))
-                //if (true)
                 {
 
                     IPInterfaceProperties adapterProperties = Interface.GetIPProperties();
@@ -1025,7 +978,6 @@ namespace VisionProgram
                     UnicastIPAddressInformationCollection uipis = adapterProperties.UnicastAddresses; //IP와 SubnetMask에 대한 정보를 가짐
                     GatewayIPAddressInformationCollection gates = adapterProperties.GatewayAddresses; //Gateway 정보를 가짐
                     IPAddressCollection dnsServers = adapterProperties.DnsAddresses; //DNS Server 정보를 가짐
-
 
                     if (uipis.Count > 0)
                     {
@@ -1043,8 +995,6 @@ namespace VisionProgram
             }
 
             return result;
-
-
 
         }
 
@@ -1102,8 +1052,6 @@ namespace VisionProgram
                     ndns["DNSServerSearchOrder"] = null;
                     var setDns = mo.InvokeMethod("SetDNSServerSearchOrder", ndns, null);
                     var enableDhcp = mo.InvokeMethod("EnableDHCP", null);
-                    //mo.InvokeMethod("ReleaseDHCPLease", null);
-                    //mo.InvokeMethod("RenewDHCPLease", null);
                 }
             }
         }
