@@ -45,7 +45,6 @@ namespace VisionProgram
         CogToolGroup Cogtg;
         Image image;
 
-
         //ffffffffffffff
         private void Form1_Load(object sender, EventArgs e)
         {
