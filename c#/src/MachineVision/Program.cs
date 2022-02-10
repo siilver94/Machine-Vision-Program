@@ -25,7 +25,6 @@ namespace VisionProgram
         [STAThread]
         static void Main()
         {
-
             string ProcessName = "Form1";   //  실행되는 폼 이름
             bool bNew;
             Mutex mutex = new Mutex(true, ProcessName, out bNew);
