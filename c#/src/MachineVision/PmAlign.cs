@@ -37,14 +37,11 @@ namespace VisionProgram
         string msg = "";
 
         NetworkStream stream;
-
         Ken2.UIControl.dgvManager dgvmanager;
-
         Mysql_K sql;
 
         CogToolGroup Cogtg;
         Image image;
-
 
         //ffffffffffffff
         private void Form1_Load(object sender, EventArgs e)
