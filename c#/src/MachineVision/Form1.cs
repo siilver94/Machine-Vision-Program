@@ -188,7 +188,6 @@ namespace VisionProgram
                         pictureBox_Cam1.Image.Save(@"D:\SaveFloder\image\ok\" + "\\" + time + ".bmp", System.Drawing.Imaging.ImageFormat.Bmp);
                     }
 
-
                 }
                 else
                 {
@@ -265,9 +264,7 @@ namespace VisionProgram
                     }
                     break;
             }
-        }
-
-       
+        }       
         
         private void simpleButton1_Click(object sender, EventArgs e)   //카메라 촬영
         {
