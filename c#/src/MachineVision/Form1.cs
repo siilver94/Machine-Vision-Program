@@ -15,7 +15,7 @@ using System.Threading;
 using System.Windows.Forms;
 
 
-namespace MainProgram
+namespace Vision_Seojin
 {
     public partial class Form1 : Form
     {
@@ -42,11 +42,11 @@ namespace MainProgram
 
         int[] min = new int[20];    //  최소값 배열
         int[] max = new int[20];    //  최대값 배열
-        int checksetting = 17;    //  검사 데이터 및 min max 배열 수량
+        int checksetting = 1;    //  검사 데이터 및 min max 배열 수량
 
         int[] min2 = new int[20];    //  최소값 배열
         int[] max2 = new int[20];    //  최대값 배열
-        int checksetting2 = 17;    //  검사 데이터 및 min max 배열 수량
+        int checksetting2 = 1;    //  검사 데이터 및 min max 배열 수량
 
         int totalcnt = 0;
         int okcnt = 0;
@@ -65,6 +65,10 @@ namespace MainProgram
         bool LiveFlag = false;
         bool LiveFlag2 = false;
 
+        String ModelNum1 = "";
+        String ModelNum2 = "";
+
+        float dbData = 0;
         //bool LiveFlag = false;
 
         string Mainpath = "Vision";
@@ -197,7 +201,7 @@ namespace MainProgram
             cam2.ImageSignal += Cam2_ImageSignal;
             cam2.CommSignal += Cam2_CommSignal;
 
-            sql = new Mysql_K("127.0.0.1", "Seojin_001", "table1", "a", "qwerasdf");
+            sql = new Mysql_K("127.0.0.1", "donghae_001", "table1", "a", "qwerasdf");
 
             StartmainThread(0);
 
@@ -254,7 +258,7 @@ namespace MainProgram
                     dgvStatus1.Rows[1].Cells[0].Style.BackColor = Color.Lime;
                     dgvStatus2.Rows[1].Cells[0].Style.BackColor = Color.Lime;
                     Log_K.WriteLog(log_lst, "Log", "plc1 연결 성공");
-                    
+
                 }));
             }
 
@@ -272,241 +276,38 @@ namespace MainProgram
             if (name.Equals("Trigger1"))
             {
                 CamPoint1 = Convert.ToInt32(data);
+                
                 this.Invoke(new dele(() =>
                 {
                     Log_K.WriteLog(log_lst, Mainpath, "자동 검사1 -> " + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff"));
+                    
                 }));
                 try
                 {
                     cam1.OneShot();
+                    
                 }
                 catch (Exception)
                 {
                     Log_K.WriteLog(log_lst, Mainpath, "카메라1 트리거 에러");
                 }
-            }
-
-            if (name.Equals("Data"))
-            {
-               
-                    string[] AllData = (string[])data;
-                    string[] indata = new string[600];
-                    string[] address = new string[300];
-
-                    try
-                    {
-                        
-                        for (int i = 0; i < 600; i++)
-                        {
-                            indata[i] = AllData[32 + i];
-                        }
-
-                        
-                        for (int j = 0; j < 300; j++)   //  address [] 배열에 스타트 번지부터 값 300개 넣기
-                        {
-                            address[j] = indata[start] + indata[end];
-                            start += 2;
-                            end += 2;
-                        }
-                    }
-                    catch (Exception)
-                    {
-                        this.Invoke(new dele(() =>
-                        {
-                            Log_K.WriteLog(log_lst, Mainpath, "plc 전체 데이터가져오기 에러");
-                        }));
-                    }
-
-                    start = 1;
-                    end = 0;
-
-                    try
-                    {
-                        this.Invoke(new dele(() =>
-                        {
-                            
-                            for (int i = 0; i < 300; i++)
-                            {
-                                dgvC1.Rows[i].Cells[1].Value = address[i]; //  C0 16진수
-
-                                int val10 = Convert.ToInt32(address[i], 16);   //  C0 10진수
-                                dgvC1.Rows[i].Cells[2].Value = val10;
-                            }
-                        }));
-
-                    }
-                    catch (Exception)
-                    {
-                        this.Invoke(new dele(() =>
-                        {
-                            Log_K.WriteLog(log_lst, Mainpath, "PLC_C1 데이터 넣기 에러");
-                        }));
-                    }
-
                 
-            }
-
-            if (name.Equals("Trigger1"))   //  트리거 On
-            {
-                Delay(100);
-
-                this.Invoke(new dele(() =>
-                {
-                    Log_K.WriteLog(log_lst, Mainpath, "[Cam1] Triger1" + Environment.NewLine);
-                   
-                }));
-
-                cam1.OneShot();
-
-                
-                Delay(1000);
-              
-                plc1.MasterK_Write_W("3230303132", "0100"); //  검사 완료
-                
-                
-
             }
             
-            if (name.Equals("Trigger2"))   //  트리거 On
+            if (name.Equals("Trigger2"))
             {
-               
-
+                CamPoint2 = Convert.ToInt32(data);
                 this.Invoke(new dele(() =>
                 {
-                    Log_K.WriteLog(log_lst, Mainpath, "[Cam2] Triger2" + Environment.NewLine);
-                    
+                    Log_K.WriteLog(log_lst, Mainpath, "자동 검사2 -> " + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff"));
                 }));
-
-                cam2.OneShot();
-
-                
-
-                start = 0;
-                end = 1;
-
-                string[] AllData = (string[])data;          
-                string[] indata = new string[600];
-                string[] address = new string[300];
-
                 try
                 {
-                    
-                    for (int i = 0; i < 600; i++)
-                    {
-                        indata[i] = AllData[32 + i];
-                    }
-
-                    
-                    for (int j = 0; j < 300; j++)   //  address [] 배열에 스타트 번지부터 값 300개 넣기
-                    {
-                        address[j] = indata[start] + indata[end];
-                        start += 2;
-                        end += 2;
-                    }
+                    cam2.OneShot();
                 }
                 catch (Exception)
                 {
-                    Log_K.WriteLog(log_lst, Mainpath, "Trigger2 에러");
-                }
-
-                string bcrr = "";
-
-                for (int i = 16; i < 21; i++)    //  바코드 길이 문자가져오기
-                {
-                    Console.WriteLine(ConvertHexToString(address[i]));
-                    bcrr += ConvertHexToString(address[i]);
-                }
-
-                start2 = 1;
-                end2 = 0;
-
-              
-                string[] address2 = new string[300];
-
-                try
-                {
-                    
-                    for (int i = 0; i < 600; i++)
-                    {
-                        indata[i] = AllData[32 + i];
-                    }
-
-
-                    for (int j = 0; j < 300; j++)   //  address [] 배열에 스타트 번지부터 값 200개 넣기
-                    {
-                        address2[j] = indata[start2] + indata[end2];
-                        start2 += 2;
-                        end2 += 2;
-                    }
-                }
-                catch (Exception)
-                {
-                    Log_K.WriteLog(log_lst, Mainpath, "Trigger2 data input 에러");
-                }
-
-               
-                int[] IntData = new int[300];   //  10진수 가져오기 IntData 안에 10진수 데이터 있음
-               
-                for (int i = 0; i < 300; i++)
-                {
-                    IntData[i] = Convert.ToInt32(address2[i], 16);
-                }
-
-                
-                string[] plcdata = new string[300];
-               
-                for (int i = 0; i < 300; i++)
-                {
-                    if (IntData[i] <= 32768)
-                    {
-                        plcdata[i] = IntData[i].ToString();
-                    }
-                    else
-                    {
-                        int temp = IntData[i] - 65536;
-                        plcdata[i] = temp.ToString();
-                    }
-                }
-
-               
-
-                try
-                {
-                    int rows = sql.ExecuteQuery_Select_Count("SELECT COUNT(*) FROM table1 WHERE `Barcode`='" + bcrr + "' ;"); //  db 에서 바코드 찾음
-                    
-                    string model = ModelNamelbl1.Text;
-
-                        string cmd = SQLCMD.MakeUpdateCmdSentence_where_equals(sql.table, "Barcode", bcrr, "",
-
-                            "Model", model,
-                            "Datetime", Dtime.Now(Dtime.StringType.ForDatum),
-                            "Barcode", bcrr,
-                            "CamNum", "2"
-                           
-                            );
-
-                        sql.ExecuteNonQuery(cmd);
-
-                        Log_K.WriteLog(log_lst, Mainpath, "Triger2 DB에 바코드 있음 > 업데이트 / " + bcrr);
-              
-                }
-                catch (Exception)
-                {
-                    Log_K.WriteLog(log_lst, Mainpath, "Triger2 DB 저장 Error");
-                    Console.WriteLine("Triger2 DB 저장 Error ");
-                }
-
-       
-                Delay(1000);
-              
-                plc1.MasterK_Write_W("3230303135", "0100"); //  카메라2 완료 
-                Log_K.WriteLog(log_lst, Mainpath, "Triger2 DB에 업데이트 완료");
-
-
-                if (check_DBDelete.Checked)
-                {
-                    string cmdd = "DELETE FROM table1 WHERE `Barcode` = '" + bcrr + "';";
-                    sql.ExecuteNonQuery(cmdd);
+                    Log_K.WriteLog(log_lst, Mainpath, "카메라2 트리거 에러");
                 }
             }
 
@@ -517,455 +318,13 @@ namespace MainProgram
                     int[] AllData = (int[])data;
                     int modelnum = AllData[0];
 
-                        modelOpen1(modelnum);
-                        CurrentModelNum1 = modelnum;
-
-                }            
-
-            }
-
-            if (name.Equals("Save1"))   //Save1 (20030) _ 캡 조립검사 1번 장비 데이터 저장 + 세척유무
-            {
-                Delay(100);
-
-                Log_K.WriteLog(log_lst, Mainpath, "save1 신호");
-
-                start = 0;
-                end = 1;
-
-                string[] AllData = (string[])data;
-                string[] indata = new string[600];
-                string[] address = new string[300];
-
-                try
-                {
-                    
-                    for (int i = 0; i < 600; i++)
-                    {
-                        indata[i] = AllData[32 + i];
-                    }
-
-                   
-                    for (int j = 0; j < 300; j++)   //  address [] 배열에 스타트 번지부터 값 200개 넣기
-                    {
-                        address[j] = indata[start] + indata[end];
-                        start += 2;
-                        end += 2;
-                    }
-                }
-                catch (Exception)
-                {
-                    Log_K.WriteLog(log_lst, Mainpath, "plc Save1 에러");
-                }
-
-                string bcrr = "";
-
-                for (int i = 32; i < 38; i++)    //  바코드 길이 문자가져오기
-                {
-                    Console.WriteLine(ConvertHexToString(address[i]));
-                    bcrr += ConvertHexToString(address[i]);
-                }
-
-                start2 = 1;
-                end2 = 0;
-
-                
-                string[] address2 = new string[300];
-
-                try
-                {
-                    
-                    for (int i = 0; i < 600; i++)
-                    {
-                        indata[i] = AllData[32 + i];
-                    }
-
-                    for (int j = 0; j < 300; j++)   //  address [] 배열에 스타트 번지부터 값 200개 넣기
-                    {
-                        address2[j] = indata[start2] + indata[end2];
-                        start2 += 2;
-                        end2 += 2;
-                    }
-                }
-                catch (Exception)
-                {
-                    Log_K.WriteLog(log_lst, Mainpath, "plc Save1 에러");
-                }
-
-                
-                int[] IntData = new int[300];   //  10진수 가져오기 IntData 안에 10진수 데이터 있음
-                
-                for (int i = 0; i < 300; i++)
-                {
-                    IntData[i] = Convert.ToInt32(address2[i], 16);
-                }
-
-                
-                string[] plcdata = new string[300];
-               
-                for (int i = 0; i < 300; i++)
-                {
-                    if (IntData[i] <= 32768)
-                    {
-                        plcdata[i] = (IntData[i] * 0.1).ToString();
-                    }
-                    else
-                    {
-                        int temp = IntData[i] - 65536;
-                        plcdata[i] = (temp * 0.1).ToString();
-                    }
-                }
-
-                try
-                {
-                    int Decision = IntData[38]; //  캡 결과
-
-                    string dbResult = "";
-
-                    if (Decision == 1)
-                        dbResult = "OK";
-                    else
-                        dbResult = "NG";
-
-                    int Decision2 = IntData[42];    //  세척 결과
-
-                    string dbResult2 = "OK";
-
-                    Delay(100);
-
-                    int rows = sql.ExecuteQuery_Select_Count("SELECT COUNT(*) FROM table1 WHERE `Barcode`='" + bcrr + "' ;"); //  db 에서 바코드 찾음
-
-                    string model = ModelNamelbl1.Text;
-
-                        string cmd = SQLCMD.MakeUpdateCmdSentence_where_equals(sql.table, "Barcode", bcrr, "",
-
-                        "Model", model,
-                        "Datetime", Dtime.Now(Dtime.StringType.ForDatum),
-                        "Barcode", bcrr,
-                        "Wash", "OK",
-                        "CapNum", "1",
-                        "CapResult", dbResult,
-                        "Cap1", plcdata[39],
-                        "Cap2", plcdata[40],
-                        "Cap3", plcdata[41]
-                         );
-
-                        sql.ExecuteNonQuery(cmd);
-
-                        
-                        Log_K.WriteLog(log_lst, Mainpath, "save1 DB에 #1 Cap조립 데이터 > 업데이트 / " + bcrr + " / " + dbResult2 + " / " + dbResult + " / " + plcdata[39] + " / " + plcdata[40] + " / " + plcdata[41]);
-
-                    
-                    Delay(100);
-                    
-                        plc1.MasterK_Write_W("3230303331", "0100"); //  Save1 _ 저장 완료 (20031) 
-                    Log_K.WriteLog(log_lst, Mainpath, "save1 저장완료");
-                    
-                }
-
-                catch (Exception)
-                {
-                    Log_K.WriteLog(log_lst, Mainpath, "save1 DB 저장 #1 Cap조립 Error1");
-                    Console.WriteLine("DB 저장 Error ");
+                    modelOpen1(modelnum);
+                    CurrentModelNum1 = modelnum;
                 }
             }
 
-            if (name.Equals("Save2"))   //  Save2 (20050) _ 캡 조립검사 2번 장비 데이터 저장 + 세척유무
+            if (name.Equals("Data"))
             {
-                Delay(100);
-
-                Log_K.WriteLog(log_lst, Mainpath, "save2 신호");
-
-                start = 0;
-                end = 1;
-
-                string[] AllData = (string[])data;
-                string[] indata = new string[600];
-                string[] address = new string[300];
-
-                try
-                {
-                    
-                    for (int i = 0; i < 600; i++)
-                    {
-                        indata[i] = AllData[32 + i];
-                    }
-                 
-                    for (int j = 0; j < 300; j++)   //  address [] 배열에 스타트 번지부터 값 200개 넣기
-                    {
-                        address[j] = indata[start] + indata[end];
-                        start += 2;
-                        end += 2;
-                    }
-                }
-                catch (Exception)
-                {
-                    Log_K.WriteLog(log_lst, Mainpath, "plc Save2 에러");
-                }
-
-                string bcrr = "";
-
-                for (int i = 52; i < 58; i++)    //  바코드 길이 문자가져오기
-                {
-                    Console.WriteLine(ConvertHexToString(address[i]));
-                    bcrr += ConvertHexToString(address[i]);
-                }
-
-                start2 = 1;
-                end2 = 0;
-             
-                string[] address2 = new string[300];
-
-                try
-                {
-                    
-                    for (int i = 0; i < 600; i++)
-                    {
-                        indata[i] = AllData[32 + i];
-                    }
-
-                    for (int j = 0; j < 300; j++)   //  address [] 배열에 스타트 번지부터 값 200개 넣기
-                    {
-                        address2[j] = indata[start2] + indata[end2];
-                        start2 += 2;
-                        end2 += 2;
-                    }
-                }
-                catch (Exception)
-                {
-                    Log_K.WriteLog(log_lst, Mainpath, "plc Save2 에러");
-                }
-
-               
-                int[] IntData = new int[300];   //  10진수 가져오기 IntData 안에 10진수 데이터 있음
-                
-                for (int i = 0; i < 300; i++)
-                {
-                    IntData[i] = Convert.ToInt32(address2[i], 16);
-                }
-
-                string[] plcdata = new string[300];
-
-                for (int i = 0; i < 300; i++)
-                {
-                    if (IntData[i] <= 32768)
-                    {
-                        plcdata[i] = (IntData[i] * 0.1).ToString();
-                    }
-                    else
-                    {
-                        int temp = IntData[i] - 65536;
-
-                        plcdata[i] = (temp * 0.1).ToString();
-                    }
-                }
-
-                try
-                {
-                    int Decision = IntData[58];
-
-                    string dbResult = "";
-
-                    if (Decision == 1)
-                        dbResult = "OK";
-                    else
-                        dbResult = "NG";
-                    
-                    int Decision2 = IntData[62];
-
-                    string dbResult2 = "";
-
-                    if (Decision2 == 1)
-                        dbResult2 = "OK";
-                    else
-                        dbResult2 = "NG";
-
-
-                    Delay(100);
-
-                    int rows = sql.ExecuteQuery_Select_Count("SELECT COUNT(*) FROM table1 WHERE `Barcode`='" + bcrr + "' ;"); //  db 에서 바코드 찾음
-
-                    string model = ModelNamelbl1.Text;
-
-                        string cmd = SQLCMD.MakeUpdateCmdSentence_where_equals(sql.table, "Barcode", bcrr, "",
-
-                        "Model", model,
-                        "Datetime", Dtime.Now(Dtime.StringType.ForDatum),
-                        "Barcode", bcrr,
-                        "Wash", "OK",
-                        "CapNum", "2",
-                        "CapResult", dbResult,
-                        "Cap1", plcdata[59],
-                        "Cap2", plcdata[60],
-                        "Cap3", plcdata[61]
-
-                            );
-
-                        sql.ExecuteNonQuery(cmd);
-
-                        Log_K.WriteLog(log_lst, Mainpath, "save2 DB에 #2 Cap조립 데이터 > 업데이트 / " + bcrr + " / " + dbResult2 + " / " + dbResult + " / " + plcdata[59] + " / " + plcdata[60] + " / " + plcdata[61]);
-
-                         Delay(100);
-
-                         plc1.MasterK_Write_W("3230303531", "0100"); //  Save2 _ 저장 완료 (20051) 
-
-                }
-
-                catch (Exception)
-                {
-                    Log_K.WriteLog(log_lst, Mainpath, "save2 DB 저장 #2 Cap조립 Error2");
-                    Console.WriteLine("DB 저장 Error2 ");
-                }
-            }
-
-            if (name.Equals("Save3"))   //  Save3 (20070) _ LVDT 검사 1번 장비 데이터 저장
-            {
-                Delay(100);
-
-                Log_K.WriteLog(log_lst, Mainpath, "save3 신호");
-
-                start = 0;
-                end = 1;
-
-                string[] AllData = (string[])data;
-                string[] indata = new string[600];
-                string[] address = new string[300];
-
-                try
-                {
-                    
-                    for (int i = 0; i < 600; i++)
-                    {
-                        indata[i] = AllData[32 + i];
-                    }
-
-                    for (int j = 0; j < 300; j++)   //  address [] 배열에 스타트 번지부터 값 200개 넣기
-                    {
-                        address[j] = indata[start] + indata[end];
-                        start += 2;
-                        end += 2;
-                    }
-                }
-                catch (Exception)
-                {
-                    Log_K.WriteLog(log_lst, Mainpath, "plc Save3 에러");
-                }
-
-                string bcrr = "";
-
-                for (int i = 72; i < 78; i++)    //  바코드 길이 문자가져오기
-                {
-                    Console.WriteLine(ConvertHexToString(address[i]));
-                    bcrr += ConvertHexToString(address[i]);
-                }
-
-                start2 = 1;
-                end2 = 0;
-
-                string[] address2 = new string[300];
-
-                try
-                {
-                    for (int i = 0; i < 600; i++)
-                    {
-                        indata[i] = AllData[32 + i];
-                    }
-
-                    for (int j = 0; j < 300; j++)   //  address [] 배열에 스타트 번지부터 값 200개 넣기
-                    {
-                        address2[j] = indata[start2] + indata[end2];
-                        start2 += 2;
-                        end2 += 2;
-                    }
-                }
-                catch (Exception)
-                {
-                    Log_K.WriteLog(log_lst, Mainpath, "plc Save3 에러");
-                }
-
-                int[] IntData = new int[300];   //  10진수 가져오기 IntData 안에 10진수 데이터 있음
-
-                for (int i = 0; i < 300; i++)
-                {
-                    IntData[i] = Convert.ToInt32(address2[i], 16);
-                }
-
-                string[] plcdata = new string[300];
-
-                for (int i = 0; i < 300; i++)
-                {
-                    if (IntData[i] <= 32768)
-                    {
-                        plcdata[i] = (IntData[i] * 0.01).ToString();
-                    }
-                    else
-                    {
-                        int temp = IntData[i] - 65536;
-
-                        plcdata[i] = (temp * 0.01).ToString();
-                    }
-                }
-
-                try
-                {
-                    int Decision = IntData[78];
-
-                    string dbResult = "";
-
-                    if (Decision == 1)
-                        dbResult = "OK";
-                    else
-                        dbResult = "NG";
-
-                    Delay(100);
-
-                    int rows = sql.ExecuteQuery_Select_Count("SELECT COUNT(*) FROM table1 WHERE `Barcode`='" + bcrr + "' ;"); //  db 에서 바코드 찾음
-
-                    string model = ModelNamelbl1.Text;
-
-                        string cmd = SQLCMD.MakeUpdateCmdSentence_where_equals(sql.table, "Barcode", bcrr, "",
-
-                        "Model", model,
-                        "Datetime", Dtime.Now(Dtime.StringType.ForDatum),
-                        "Barcode", bcrr,
-                        "LVDTResult", dbResult,
-                        "LVDT1", plcdata[79],
-                        "LVDT2", plcdata[80],
-                        "LVDT3", plcdata[81],
-                        "LVDT4", plcdata[82],
-                        "LVDT5", plcdata[83],
-                        "LVDT6", plcdata[84],
-                        "LVDT7", plcdata[85],
-                        "LVDT8", plcdata[86],
-                        "LVDT9", plcdata[87]
-
-                            );
-
-                        sql.ExecuteNonQuery(cmd);
-
-                        Log_K.WriteLog(log_lst, Mainpath, "save3 DB에 LVDT 데이터 > 업데이트" + bcrr + " / " + dbResult + " / " + plcdata[79] + " / " + plcdata[80] + " / " + plcdata[81] + " / " + plcdata[82] + " / " + plcdata[83] + " / " + plcdata[84] + " / " + plcdata[85] + " / " + plcdata[86] + " / " + plcdata[87]);
-
-                        Delay(100);
-
-                        plc1.MasterK_Write_W("3230303731", "0100"); //  Save3 _ 저장 완료 (20071) 
-
-                }
-
-                catch (Exception)
-                {
-                    Log_K.WriteLog(log_lst, Mainpath, "save3 DB 저장 Error3");
-                    Console.WriteLine("DB 저장 Error3 ");
-                }
-            }
-
-            if (name.Equals("Save4"))   //  Save4 (20100) _ 가스리크검사 1번 장비 데이터 저장
-            {
-                Delay(100);
-
-                Log_K.WriteLog(log_lst, Mainpath, "save4 신호");
-
-                start = 0;
-                end = 1;
 
                 string[] AllData = (string[])data;
                 string[] indata = new string[600];
@@ -978,7 +337,8 @@ namespace MainProgram
                         indata[i] = AllData[32 + i];
                     }
 
-                    for (int j = 0; j < 300; j++)   //  address [] 배열에 스타트 번지부터 값 200개 넣기
+
+                    for (int j = 0; j < 300; j++)   //  address [] 배열에 스타트 번지부터 값 300개 넣기
                     {
                         address[j] = indata[start] + indata[end];
                         start += 2;
@@ -987,1720 +347,45 @@ namespace MainProgram
                 }
                 catch (Exception)
                 {
-                    Log_K.WriteLog(log_lst, Mainpath, "plc Save4 에러");
+                    this.Invoke(new dele(() =>
+                    {
+                        Log_K.WriteLog(log_lst, Mainpath, "plc 전체 데이터가져오기 에러");
+                    }));
                 }
 
-                string bcrr = "";
-
-                for (int i = 102; i < 108; i++)    //  바코드 길이 문자가져오기
-                {
-                    Console.WriteLine(ConvertHexToString(address[i]));
-                    bcrr += ConvertHexToString(address[i]);
-                }
-
-                start2 = 1;
-                end2 = 0;
-
-                string[] address2 = new string[300];
+                start = 1;
+                end = 0;
 
                 try
                 {
-                    for (int i = 0; i < 600; i++)
+                    this.Invoke(new dele(() =>
                     {
-                        indata[i] = AllData[32 + i];
-                    }
 
-                    for (int j = 0; j < 300; j++)   //  address [] 배열에 스타트 번지부터 값 200개 넣기
-                    {
-                        address2[j] = indata[start2] + indata[end2];
-                        start2 += 2;
-                        end2 += 2;
-                    }
+                        for (int i = 0; i < 300; i++)
+                        {
+                            dgvC1.Rows[i].Cells[1].Value = address[i]; //  C0 16진수
+
+                                int val10 = Convert.ToInt32(address[i], 16);   //  C0 10진수
+                                dgvC1.Rows[i].Cells[2].Value = val10;
+                        }
+                    }));
+
                 }
                 catch (Exception)
                 {
-                    Log_K.WriteLog(log_lst, Mainpath, "plc Save4 에러");
-                }
-
-                int[] IntData = new int[300];   //  10진수 가져오기 IntData 안에 10진수 데이터 있음
-                for (int i = 0; i < 300; i++)
-                {
-                    IntData[i] = Convert.ToInt32(address2[i], 16);
-                }
-
-                string[] plcdata = new string[300];
-
-                for (int i = 0; i < 300; i++)
-                {
-                    if (IntData[i] <= 32768)
+                    this.Invoke(new dele(() =>
                     {
-                        plcdata[i] = (IntData[i] * 0.01).ToString();
-                    }
-                    else
-                    {
-                        int temp = IntData[i] - 65536;
-
-                        plcdata[i] = (temp * 0.01).ToString();
-                    }
+                        Log_K.WriteLog(log_lst, Mainpath, "PLC_C1 데이터 넣기 에러");
+                    }));
                 }
 
-                try
-                {
-                    int Decision = IntData[108];
-
-                    string dbResult = "";
-
-                    if (Decision == 1)
-                        dbResult = "OK";
-                    else
-                        dbResult = "NG";
-
-                    Delay(100);
-
-                    int rows = sql.ExecuteQuery_Select_Count("SELECT COUNT(*) FROM table1 WHERE `Barcode`='" + bcrr + "' ;"); //  db 에서 바코드 찾음
-
-                    string model = ModelNamelbl1.Text;
-                        string cmd = SQLCMD.MakeUpdateCmdSentence_where_equals(sql.table, "Barcode", bcrr, "",
-
-                        "Model", model,
-                        "Datetime", Dtime.Now(Dtime.StringType.ForDatum),
-                        "Barcode", bcrr,
-                        "GasLeakNum", "1",
-                        "GasLeakResult", dbResult,
-                        "GasLeak1", plcdata[109]
-
-                            );
-
-                        sql.ExecuteNonQuery(cmd);
-
-                        Log_K.WriteLog(log_lst, Mainpath, "save4 DB에 Gasleak 1 데이터 > 업데이트" + bcrr + " / " + dbResult + " / " + plcdata[109]);
-
-                        Delay(100);
-
-                        plc1.MasterK_Write_W("3230313031", "0100"); //  Save4 _ 저장 완료 (20101) 
-
-                }
-
-                catch (Exception)
-                {
-                    Log_K.WriteLog(log_lst, Mainpath, "save4 DB 저장 Error4");
-                    Console.WriteLine("DB 저장 Error4 ");
-                }
             }
-
-            if (name.Equals("Save5"))   //  Save5 (20120) _ 워터리크검사 1번 장비 데이터 저장
-            {
-                Delay(100);
-
-                Log_K.WriteLog(log_lst, Mainpath, "save5 신호");
-
-                start = 0;
-                end = 1;
-
-                string[] AllData = (string[])data;
-                string[] indata = new string[600];
-                string[] address = new string[300];
-
-                try
-                {
-                    for (int i = 0; i < 600; i++)
-                    {
-                        indata[i] = AllData[32 + i];
-                    }
-
-                    for (int j = 0; j < 300; j++)   //  address [] 배열에 스타트 번지부터 값 200개 넣기
-                    {
-                        address[j] = indata[start] + indata[end];
-                        start += 2;
-                        end += 2;
-                    }
-                }
-                catch (Exception)
-                {
-                    Log_K.WriteLog(log_lst, Mainpath, "plc Save5 에러");
-                }
-
-                string bcrr = "";
-
-                for (int i = 122; i < 128; i++)    //  바코드 길이 문자가져오기
-                {
-                    Console.WriteLine(ConvertHexToString(address[i]));
-                    bcrr += ConvertHexToString(address[i]);
-                }
-
-                start2 = 1;
-                end2 = 0;
-
-                string[] address2 = new string[300];
-
-                try
-                {
-                    for (int i = 0; i < 600; i++)
-                    {
-                        indata[i] = AllData[32 + i];
-                    }
-
-                    for (int j = 0; j < 300; j++)   //  address [] 배열에 스타트 번지부터 값 200개 넣기
-                    {
-                        address2[j] = indata[start2] + indata[end2];
-                        start2 += 2;
-                        end2 += 2;
-                    }
-                }
-                catch (Exception)
-                {
-                    Log_K.WriteLog(log_lst, Mainpath, "plc Save5 에러");
-                }
-
-                int[] IntData = new int[300];   //  10진수 가져오기 IntData 안에 10진수 데이터 있음
-                for (int i = 0; i < 300; i++)
-                {
-                    IntData[i] = Convert.ToInt32(address2[i], 16);
-                }
-
-                string[] plcdata = new string[300];
-
-                for (int i = 0; i < 300; i++)
-                {
-                    if (IntData[i] <= 32768)
-                    {
-                        plcdata[i] = (IntData[i] * 0.01).ToString();
-                    }
-                    else
-                    {
-                        int temp = IntData[i] - 65536;
-
-                        plcdata[i] = (temp * 0.01).ToString();
-                    }
-                }
-
-                try
-                {
-                    int Decision = IntData[128];
-
-                    string dbResult = "";
-
-                    if (Decision == 1)
-                        dbResult = "OK";
-                    else
-                        dbResult = "NG";
-
-                    Delay(100);
-
-                    int rows = sql.ExecuteQuery_Select_Count("SELECT COUNT(*) FROM table1 WHERE `Barcode`='" + bcrr + "' ;"); //  db 에서 바코드 찾음
-
-                    string model = ModelNamelbl1.Text;
-                        string cmd = SQLCMD.MakeUpdateCmdSentence_where_equals(sql.table, "Barcode", bcrr, "",
-
-                        "Model", model,
-                        "Datetime", Dtime.Now(Dtime.StringType.ForDatum),
-                        "Barcode", bcrr,
-                        "WaterLeakNum", "1",
-                        "WaterLeakResult", dbResult,
-                        "WaterLeak1", plcdata[129]
-
-                            );
-
-                        sql.ExecuteNonQuery(cmd);
-
-                        Log_K.WriteLog(log_lst, Mainpath, "save5 DB에 Waterleak 1 데이터 > 업데이트" + bcrr + " / " + dbResult + " / " + plcdata[129]);
-
-                    Delay(100);
-
-                        plc1.MasterK_Write_W("3230313231", "0100"); //  Save5 _ 저장 완료 (20121) 
-
-                }
-
-                catch (Exception)
-                {
-                    Log_K.WriteLog(log_lst, Mainpath, "save5 DB 저장 Error5");
-                    Console.WriteLine("DB 저장 Error5 ");
-                }
-            }
-
-            if (name.Equals("Save6"))   //  Save6 (20140) _ 가스리크검사 2번 장비 데이터 저장
-            {
-                Delay(100);
-
-                Log_K.WriteLog(log_lst, Mainpath, "save6 신호");
-
-                start = 0;
-                end = 1;
-
-                string[] AllData = (string[])data;
-                string[] indata = new string[600];
-                string[] address = new string[300];
-
-                try
-                {
-                    for (int i = 0; i < 600; i++)
-                    {
-                        indata[i] = AllData[32 + i];
-                    }
-
-                    for (int j = 0; j < 300; j++)   //  address [] 배열에 스타트 번지부터 값 200개 넣기
-                    {
-                        address[j] = indata[start] + indata[end];
-                        start += 2;
-                        end += 2;
-                    }
-                }
-                catch (Exception)
-                {
-                    Log_K.WriteLog(log_lst, Mainpath, "plc Save6 에러");
-                }
-
-                string bcrr = "";
-
-                for (int i = 142; i < 148; i++)    //  바코드 길이 문자가져오기
-                {
-                    Console.WriteLine(ConvertHexToString(address[i]));
-                    bcrr += ConvertHexToString(address[i]);
-                }
-
-                start2 = 1;
-                end2 = 0;
-
-                string[] address2 = new string[300];
-
-                try
-                {
-                    for (int i = 0; i < 600; i++)
-                    {
-                        indata[i] = AllData[32 + i];
-                    }
-
-                    for (int j = 0; j < 300; j++)   //  address [] 배열에 스타트 번지부터 값 200개 넣기
-                    {
-                        address2[j] = indata[start2] + indata[end2];
-                        start2 += 2;
-                        end2 += 2;
-                    }
-                }
-                catch (Exception)
-                {
-                    Log_K.WriteLog(log_lst, Mainpath, "plc Save6 에러");
-                }
-
-                int[] IntData = new int[300];   //  10진수 가져오기 IntData 안에 10진수 데이터 있음
-                for (int i = 0; i < 300; i++)
-                {
-                    IntData[i] = Convert.ToInt32(address2[i], 16);
-                }
-
-                string[] plcdata = new string[300];
-
-                for (int i = 0; i < 300; i++)
-                {
-                    if (IntData[i] <= 32768)
-                    {
-                        plcdata[i] = (IntData[i] * 0.01).ToString();
-                    }
-                    else
-                    {
-                        int temp = IntData[i] - 65536;
-
-                        plcdata[i] = (temp * 0.01).ToString();
-                    }
-                }
-
-                try
-                {
-
-                    int Decision = IntData[148];
-
-                    string dbResult = "";
-
-                    if (Decision == 1)
-                        dbResult = "OK";
-                    else
-                        dbResult = "NG";
-
-                    Delay(100);
-
-                    int rows = sql.ExecuteQuery_Select_Count("SELECT COUNT(*) FROM table1 WHERE `Barcode`='" + bcrr + "' ;"); //  db 에서 바코드 찾음
-
-                    string model = ModelNamelbl1.Text;
-
-                        string cmd = SQLCMD.MakeUpdateCmdSentence_where_equals(sql.table, "Barcode", bcrr, "",
-
-                        "Model", model,
-                        "Datetime", Dtime.Now(Dtime.StringType.ForDatum),
-                        "Barcode", bcrr,
-                        "GasLeakNum", "2",
-                        "GasLeakResult", dbResult,
-                        "GasLeak1", plcdata[149]
-
-                            );
-
-                        sql.ExecuteNonQuery(cmd);
-
-                        Log_K.WriteLog(log_lst, Mainpath, "save6 DB에 Gasleak 2 데이터 > 업데이트" + bcrr + " / " + dbResult + " / " + plcdata[149]);
-
-                    Delay(100);
-
-                        plc1.MasterK_Write_W("3230313431", "0100"); //  Save6 _ 저장 완료 (20141) 
-                }
-
-                catch (Exception)
-                {
-                    Log_K.WriteLog(log_lst, Mainpath, "save6 DB 저장 Error6");
-                    Console.WriteLine("DB 저장 Error6 ");
-                }
-            }
-
-            if (name.Equals("Save7"))   //  Save7 (20160) _ 워터리크검사 2번 장비 데이터 저장
-            {
-                Delay(100);
-
-                Log_K.WriteLog(log_lst, Mainpath, "save7 신호");
-
-                start = 0;
-                end = 1;
-
-                string[] AllData = (string[])data;
-                string[] indata = new string[600];
-                string[] address = new string[300];
-
-                try
-                {
-                    for (int i = 0; i < 600; i++)
-                    {
-                        indata[i] = AllData[32 + i];
-                    }
-
-                    for (int j = 0; j < 300; j++)   //  address [] 배열에 스타트 번지부터 값 200개 넣기
-                    {
-                        address[j] = indata[start] + indata[end];
-                        start += 2;
-                        end += 2;
-                    }
-                }
-                catch (Exception)
-                {
-                    Log_K.WriteLog(log_lst, Mainpath, "plc Save7 에러");
-                }
-
-                string bcrr = "";
-
-                for (int i = 162; i < 168; i++)    //  바코드 길이 문자가져오기
-                {
-                    Console.WriteLine(ConvertHexToString(address[i]));
-                    bcrr += ConvertHexToString(address[i]);
-                }
-
-                start2 = 1;
-                end2 = 0;
-
-                string[] address2 = new string[300];
-
-                try
-                {
-                    for (int i = 0; i < 600; i++)
-                    {
-                        indata[i] = AllData[32 + i];
-                    }
-
-                    for (int j = 0; j < 300; j++)   //  address [] 배열에 스타트 번지부터 값 200개 넣기
-                    {
-                        address2[j] = indata[start2] + indata[end2];
-                        start2 += 2;
-                        end2 += 2;
-                    }
-                }
-                catch (Exception)
-                {
-                    Log_K.WriteLog(log_lst, Mainpath, "plc Save7 에러");
-                }
-
-                int[] IntData = new int[300];   //  10진수 가져오기 IntData 안에 10진수 데이터 있음
-                for (int i = 0; i < 300; i++)
-                {
-                    IntData[i] = Convert.ToInt32(address2[i], 16);
-                }
-
-                string[] plcdata = new string[300];
-
-                for (int i = 0; i < 300; i++)
-                {
-                    if (IntData[i] <= 32768)
-                    {
-                        plcdata[i] = (IntData[i] * 0.01 ).ToString();
-                    }
-                    else
-                    {
-                        int temp = IntData[i] - 65536;
-                        plcdata[i] = (temp * 0.01).ToString();
-                    }
-                }
-
-                try
-                {
-                    int Decision = IntData[168];
-
-                    string dbResult = "";
-
-                    if (Decision == 1)
-                        dbResult = "OK";
-                    else
-                        dbResult = "NG";
-
-                    Delay(100);
-
-                    int rows = sql.ExecuteQuery_Select_Count("SELECT COUNT(*) FROM table1 WHERE `Barcode`='" + bcrr + "' ;"); //  db 에서 바코드 찾음
-
-                    string model = ModelNamelbl1.Text;
-                        string cmd = SQLCMD.MakeUpdateCmdSentence_where_equals(sql.table, "Barcode", bcrr, "",
-
-                        "Model", model,
-                        "Datetime", Dtime.Now(Dtime.StringType.ForDatum),
-                        "Barcode", bcrr,
-                        "WaterLeakNum", "2",
-                        "WaterLeakResult", dbResult,
-                        "WaterLeak1", plcdata[169]
-
-                            );
-
-                        sql.ExecuteNonQuery(cmd);
-
-                        Log_K.WriteLog(log_lst, Mainpath, "save7 DB에 Waterleak 2 데이터 > 업데이트" + bcrr + " / " + dbResult + " / " + plcdata[169]);
-
-                        Delay(100);
-
-                        plc1.MasterK_Write_W("3230313631", "0100"); //  Save7 _ 저장 완료 (20161) 
-
-                }
-
-                catch (Exception)
-                {
-                    Log_K.WriteLog(log_lst, Mainpath, "save7 DB 저장 Error7");
-                    Console.WriteLine("DB 저장 Error7 ");
-                }
-            }
-
-
-            if (name.Equals("Save8"))   //  Save8 (20160) _ 워터리크검사 2번 장비 데이터 저장
-            {
-                Delay(100);
-
-                Log_K.WriteLog(log_lst, Mainpath, "save8 신호");
-
-                start = 0;
-                end = 1;
-
-                string[] AllData = (string[])data;
-                string[] indata = new string[600];
-                string[] address = new string[300];
-
-                try
-                {
-                    for (int i = 0; i < 600; i++)
-                    {
-                        indata[i] = AllData[32 + i];
-                    }
-
-                    for (int j = 0; j < 300; j++)   //  address [] 배열에 스타트 번지부터 값 200개 넣기
-                    {
-                        address[j] = indata[start] + indata[end];
-                        start += 2;
-                        end += 2;
-                    }
-                }
-                catch (Exception)
-                {
-                    Log_K.WriteLog(log_lst, Mainpath, "plc Save8 에러");
-                }
-
-                string bcrr = "";
-
-                for (int i = 182; i < 188; i++)    //  바코드 길이 문자가져오기
-                {
-                    Console.WriteLine(ConvertHexToString(address[i]));
-                    bcrr += ConvertHexToString(address[i]);
-                }
-
-                start2 = 1;
-                end2 = 0;
-
-                string[] address2 = new string[300];
-
-                try
-                {
-                    for (int i = 0; i < 600; i++)
-                    {
-                        indata[i] = AllData[32 + i];
-                    }
-
-                    for (int j = 0; j < 300; j++)   //  address [] 배열에 스타트 번지부터 값 200개 넣기
-                    {
-                        address2[j] = indata[start2] + indata[end2];
-                        start2 += 2;
-                        end2 += 2;
-                    }
-                }
-                catch (Exception)
-                {
-                    Log_K.WriteLog(log_lst, Mainpath, "plc Save8 에러");
-                }
-
-                int[] IntData = new int[300];   //  10진수 가져오기 IntData 안에 10진수 데이터 있음
-                for (int i = 0; i < 300; i++)
-                {
-                    IntData[i] = Convert.ToInt32(address2[i], 16);
-                }
-
-                string[] plcdata = new string[300];
-
-                for (int i = 0; i < 300; i++)
-                {
-                    if (IntData[i] <= 32768)
-                    {
-                        plcdata[i] = (IntData[i] * 0.01).ToString();
-                    }
-                    else
-                    {
-                        int temp = IntData[i] - 65536;
-
-                        plcdata[i] = (temp * 0.01).ToString();
-                    }
-                }
-
-                try
-                {
-                    Delay(100);
-
-                    int rows = sql.ExecuteQuery_Select_Count("SELECT COUNT(*) FROM table1 WHERE `Barcode`='" + bcrr + "' ;"); //  db 에서 바코드 찾음
-
-                    string model = ModelNamelbl1.Text;
-
-                    if (rows == 0)//없을때
-                    //if (rows == 0 || bcrr != "\0\0\0\0\0\0\0\0\0\0")//없을때
-                    {
-                        string cmd = Ken2.Database.SQLiteCMD_K.MakeInsertCmdSentence(sql.table,   //  무조건 DB에 올림 A로
-
-                        "Model", model,
-                        "Datetime", Dtime.Now(Dtime.StringType.ForDatum),
-                        "Barcode", bcrr
-                         );
-
-                        sql.ExecuteNonQuery(cmd);
-
-                        Log_K.WriteLog(log_lst, Mainpath, "Save8 DB에 데이터 없음8 > 인서트" + " / " + bcrr);
-                    }
-
-                    else//데이터 있다.
-                    {
-                        string cmd = SQLCMD.MakeUpdateCmdSentence_where_equals(sql.table, "Barcode", bcrr, "",
-
-                        "Model", model,
-                        "Datetime", Dtime.Now(Dtime.StringType.ForDatum),
-                        "Barcode", bcrr
-                            );
-
-                        sql.ExecuteNonQuery(cmd);
-
-                        Log_K.WriteLog(log_lst, Mainpath, "Save8 DB에 데이터 있음8 > 업데이트 / "+ bcrr);
-
-                    }
-                    Delay(100);
-                    plc1.MasterK_Write_W("3230313831", "0100"); //  Save8 _ 저장 완료 (20181) 
-
-                }
-
-                catch (Exception)
-                {
-                    Log_K.WriteLog(log_lst, Mainpath, "Save8 DB 저장 Error8");
-                    Console.WriteLine("DB 저장 Error8 ");
-                }
-            }
+           
             
-            if (name.Equals("Check1"))   //  check1 (20200) _ 캡 조립검사 1번 제품 판정 확인 요청
-            {
-                Delay(100);
-                this.Invoke(new dele(() =>
-                {
-                    Log_K.WriteLog(log_lst, Mainpath, "check1 신호");
-                }));
-
-                    start = 0;
-                    end = 1;
-
-                    string[] AllData = (string[])data;                   
-                    string[] indata = new string[600];
-                    string[] address = new string[300];
-
-                    try
-                    {
-                        for (int i = 0; i < 600; i++)
-                        {
-                            indata[i] = AllData[32 + i];
-                        }
-
-                        for (int j = 0; j < 300; j++)   //  address [] 배열에 스타트 번지부터 값 200개 넣기
-                        {
-                            address[j] = indata[start] + indata[end];
-                            start += 2;
-                            end += 2;
-                        }
-                    }
-
-                    catch (Exception)
-                    {
-                        this.Invoke(new dele(() =>
-                        {
-                            Log_K.WriteLog(log_lst, Mainpath, "plc Check1 에러");
-                        }));
-                    }
-
-                    string bcrr = "";
-
-                    for (int i = 203; i < 209; i++)    //  바코드 길이 문자가져오기
-                    {
-                        Console.WriteLine(ConvertHexToString(address[i]));
-                        bcrr += ConvertHexToString(address[i]);
-                    }
-
-                    //dgvH1.Columns.Clear();
-
-                    Delay(100);
-
-                    try
-                    {
-                        int rows = sql.ExecuteQuery_Select_Count("SELECT COUNT(*) FROM table1 WHERE `Barcode`='" + bcrr + "' ;"); //  db 에서 바코드 찾음
-                        
-                        if (rows == 0)//없을때
-                        {
-                            this.Invoke(new dele(() =>
-                            {
-                                Log_K.WriteLog(log_lst, Mainpath, "#1 캡 조립 바코드 없음 / " + bcrr);
-                            }));
-                            Delay(50);
-                            plc1.MasterK_Write_W("3230323031", "0300"); //  Check1 _ 판정 NG = 2 (20201)  
-
-                            dgvInit("dgvH1");
-
-                        }
-
-                        else//데이터 있다.
-                        {
-                            string cmd = SQLiteCMD_K.Select_Equal("table1", "Barcode", bcrr,
-                                
-                            "CapResult"
-
-                            );
-
-                            //sql.Select(dgvH1, cmd, false);
-
-                            this.Invoke(new dele(() =>
-                            {
-                                Log_K.WriteLog(log_lst, Mainpath, "#1 캡 조립 바코드 있음 / " + bcrr);
-                            }));
-
-                            dgvInit("dgvH1");
-
-                            Delay(500);
-
-                            //string result1 = dgvH1.Rows[0].Cells[0].Value.ToString();
-                            //if (result1 == "OK")
-                            //{
-                            //    Delay(50);
-
-                            //        plc1.MasterK_Write_W("3230323031", "0100"); //  Check1 _ 판정 OK = 1 (20201)  
-
-                            //}
-                            //else if(result1 == "NG")
-                            //{
-                            //    Delay(50);
-                            //    plc1.MasterK_Write_W("3230323031", "0200"); //  Check1 _ 판정 NG = 2 (20201)  
-
-                            //}
-                            //else
-                            //{
-                            //    result1 = "판정없음";
-                            //}
-                            //this.Invoke(new dele(() =>
-                            //{
-                            //    Log_K.WriteLog(log_lst, Mainpath, "#1 캡 조립 바코드 판정 : " + bcrr + " / " + result1);
-                            //}));
-
-                        }
-
-                        Delay(500);
-
-                            plc1.MasterK_Write_W("3230323032", "0100"); //  Check1 _ 완료 (20202) 
-
-                        this.Invoke(new dele(() =>
-                        {
-                            Log_K.WriteLog(log_lst, Mainpath, "#1 캡 조립 바코드 check :  완료 / " + bcrr);
-                        }));
-
-                    }
-                    catch (Exception)
-                    {
-                        this.Invoke(new dele(() =>
-                        {
-                            Log_K.WriteLog(log_lst, Mainpath, "#1 캡 조립 판정데이터 Error");
-                        }));
-                        Console.WriteLine("DB 저장 Error ");
-                    }
-
-            }
-
-
-            if (name.Equals("Check2"))   //  check2 (20210) _ 캡 조립검사 2번 제품 판정 확인 요청
-            {
-                Delay(100);
-                this.Invoke(new dele(() =>
-                {
-                    Log_K.WriteLog(log_lst, Mainpath, "check2 신호");
-                }));
-
-                    start = 0;
-                    end = 1;
-
-                    string[] AllData = (string[])data;
-
-                    string[] indata = new string[600];
-
-                    string[] address = new string[300];
-
-                    try
-                    {
-                        for (int i = 0; i < 600; i++)
-                        {
-                            indata[i] = AllData[32 + i];
-                        }
-
-                        for (int j = 0; j < 300; j++)   //  address [] 배열에 스타트 번지부터 값 200개 넣기
-                        {
-                            address[j] = indata[start] + indata[end];
-                            start += 2;
-                            end += 2;
-                        }
-                    }
-
-                    catch (Exception)
-                    {
-                        this.Invoke(new dele(() =>
-                        {
-                            Log_K.WriteLog(log_lst, Mainpath, "plc Check2 에러");
-                        }));
-                    }
-
-                    string bcrr = "";
-
-                    for (int i = 213; i < 219; i++)    //  바코드 길이 문자가져오기
-                    {
-                        Console.WriteLine(ConvertHexToString(address[i]));
-                        bcrr += ConvertHexToString(address[i]);
-                    }
-
-                    //dgvH2.Columns.Clear();
-
-                    Delay(100);
-
-                    try
-                    {
-                        int rows = sql.ExecuteQuery_Select_Count("SELECT COUNT(*) FROM table1 WHERE `Barcode`='" + bcrr + "' ;"); //  db 에서 바코드 찾음
-
-                        if (rows == 0)//없을때
-                        {
-                            this.Invoke(new dele(() =>
-                            {
-                                Log_K.WriteLog(log_lst, Mainpath, "#2 캡 조립 바코드 없음 / " + bcrr);
-                            }));
-                            Delay(50);
-
-                                plc1.MasterK_Write_W("3230323131", "0300"); //  Check2 _ 판정 NG = 2 (20211)  
-
-                            dgvInit("dgvH2");
-
-                        }
-
-                        else//데이터 있다.
-                        {
-                            string cmd = SQLiteCMD_K.Select_Equal("table1", "Barcode", bcrr,
-
-                            "CapResult"
-
-                            );
-
-                            //sql.Select(dgvH2, cmd, false);
-
-                            this.Invoke(new dele(() =>
-                            {
-                                Log_K.WriteLog(log_lst, Mainpath, "#2 캡 조립 바코드 있음 / " + bcrr);
-                            }));
-
-                            dgvInit("dgvH2");
-
-                            Delay(500);
-
-                            //string result1 = dgvH2.Rows[0].Cells[0].Value.ToString();
-                            //if (result1 == "OK")
-                            //{
-                            //    Delay(50);
-
-                            //        plc1.MasterK_Write_W("3230323131", "0100"); //  Check2 _ 판정 OK = 1 (20211)  
-
-                            //}
-                            //else if (result1 == "NG")
-                            //{
-                            //    Delay(50);
-
-                            //        plc1.MasterK_Write_W("3230323131", "0200"); //  Check2 _ 판정 NG = 2 (20211)  
-
-                            //}
-                            //else
-                            //{
-                            //    Delay(50);
-
-                            //    result1 = "판정없음";
-
-                            //}
-                            //this.Invoke(new dele(() =>
-                            //{
-                            //    Log_K.WriteLog(log_lst, Mainpath, "#2 캡 조립 바코드 판정 : " + bcrr + " / " + result1);
-                            //}));
-
-                        }
-
-                        Delay(500);
-
-                            plc1.MasterK_Write_W("3230323132", "0100"); //  Check2 _ 완료 (20212) 
-                        this.Invoke(new dele(() =>
-                        {
-                            Log_K.WriteLog(log_lst, Mainpath, "#2 캡 조립 바코드 check :  완료 / " + bcrr);
-                        }));
-
-                    }
-                    catch (Exception)
-                    {
-                        this.Invoke(new dele(() =>
-                        {
-                            Log_K.WriteLog(log_lst, Mainpath, "#2 캡 조립 판정데이터 Error");
-                        }));
-                        Console.WriteLine("DB 저장 Error ");
-                    }
-            }
-
-            if (name.Equals("Check3"))   //  check3 (20220) _ LVDT 검사 제품 판정 확인 요청
-            {
-                Delay(100);
-                this.Invoke(new dele(() =>
-                {
-                    Log_K.WriteLog(log_lst, Mainpath, "check3 신호");
-                }));
-
-                    start = 0;
-                    end = 1;
-
-                    string[] AllData = (string[])data;
-
-                    string[] indata = new string[600];
-
-                    string[] address = new string[300];
-
-                    try
-                    {
-
-                        for (int i = 0; i < 600; i++)
-                        {
-                            indata[i] = AllData[32 + i];
-                        }
-
-                        for (int j = 0; j < 300; j++)   //  address [] 배열에 스타트 번지부터 값 200개 넣기
-                        {
-                            address[j] = indata[start] + indata[end];
-                            start += 2;
-                            end += 2;
-                        }
-                    }
-
-                    catch (Exception)
-                    {
-                        this.Invoke(new dele(() =>
-                        {
-                            Log_K.WriteLog(log_lst, Mainpath, "plc Check3 에러");
-                        }));
-                    }
-
-                    string bcrr = "";
-
-                    for (int i = 223; i < 229; i++)    //  바코드 길이 문자가져오기
-                    {
-                        Console.WriteLine(ConvertHexToString(address[i]));
-                        bcrr += ConvertHexToString(address[i]);
-                    }
-
-                    //dgvH3.Columns.Clear();
-
-                    Delay(100);
-
-                    try
-                    {
-                        int rows = sql.ExecuteQuery_Select_Count("SELECT COUNT(*) FROM table1 WHERE `Barcode`='" + bcrr + "' ;"); //  db 에서 바코드 찾음
-
-                        if (rows == 0)//없을때
-                        {
-                            this.Invoke(new dele(() =>
-                            {
-                                Log_K.WriteLog(log_lst, Mainpath, "# LVDT 바코드 없음 / " + bcrr);
-                            }));
-                            Delay(50);
-
-                                plc1.MasterK_Write_W("3230323231", "0300"); //  Check3 _ 판정 (20221)  
-                            dgvInit("dgvH3");
-                        }
-
-                        else//데이터 있다.
-                        {
-                            string cmd = SQLiteCMD_K.Select_Equal("table1", "Barcode", bcrr,
-
-                            "LVDTResult"
-
-                            );
-
-                            //sql.Select(dgvH3, cmd, false);
-
-                            this.Invoke(new dele(() =>
-                            {
-                                Log_K.WriteLog(log_lst, Mainpath, "# LVDT 바코드 있음 / " + bcrr);
-                            }));
-
-                            dgvInit("dgvH3");
-
-                            Delay(500);
-
-                            //string result1 = dgvH3.Rows[0].Cells[0].Value.ToString();
-                            //if (result1 == "OK")
-                            //{
-                            //    Delay(50);
-
-                            //        plc1.MasterK_Write_W("3230323231", "0100"); //  Check3 _ 판정 OK = 1 (20221)  
-
-                            //}
-                                
-                            //else if(result1 == "NG")
-                            //{
-                            //    Delay(50);
-
-                            //        plc1.MasterK_Write_W("3230323231", "0200"); //  Check3 _ 판정 NG = 2 (20221)  
-                                
-                            //}
-                            //else
-                            //{
-                            //    result1 = "판정없음";
-                            //}
-                            //this.Invoke(new dele(() =>
-                            //{
-                            //    Log_K.WriteLog(log_lst, Mainpath, "# LVDT 조립 바코드 check : " + bcrr + " / " + result1);
-                            //}));
-                        }
-                        Delay(500);
-
-                            plc1.MasterK_Write_W("3230323232", "0100"); //  Check3 _ 완료 (20222) 
-                        this.Invoke(new dele(() =>
-                        {
-                            Log_K.WriteLog(log_lst, Mainpath, "# LVDT 조립 바코드 check :  완료 / " + bcrr);
-                        }));
-
-                    }
-                    catch (Exception)
-                    {
-                        this.Invoke(new dele(() =>
-                        {
-                            Log_K.WriteLog(log_lst, Mainpath, "# LVDT 판정데이터 Error");
-                        }));
-                        Console.WriteLine("DB 저장 Error ");
-                    }
-            }
-
-
-            if (name.Equals("Check4"))   //  check4 (20230) _ #1 GasLeak 검사 제품 판정 확인 요청
-            {
-                Delay(100);
-                this.Invoke(new dele(() =>
-                {
-                    Log_K.WriteLog(log_lst, Mainpath, "check4 신호");
-                }));
-
-                    start = 0;
-                    end = 1;
-
-                    string[] AllData = (string[])data;
-                    string[] indata = new string[600];
-                    string[] address = new string[300];
-
-                    try
-                    {
-                        for (int i = 0; i < 600; i++)
-                        {
-                            indata[i] = AllData[32 + i];
-                        }
-
-                        for (int j = 0; j < 300; j++)   //  address [] 배열에 스타트 번지부터 값 200개 넣기
-                        {
-                            address[j] = indata[start] + indata[end];
-                            start += 2;
-                            end += 2;
-                        }
-                    }
-
-                    catch (Exception)
-                    {
-                        this.Invoke(new dele(() =>
-                        {
-                            Log_K.WriteLog(log_lst, Mainpath, "plc Check4 에러");
-                        }));
-                    }
-
-                    string bcrr = "";
-
-                    for (int i = 233; i < 239; i++)    //  바코드 길이 문자가져오기
-                    {
-                        Console.WriteLine(ConvertHexToString(address[i]));
-                        bcrr += ConvertHexToString(address[i]);
-                    }
-
-                    //dgvH4.Columns.Clear();
-
-                    Delay(100);
-
-                    try
-                    {
-                        int rows = sql.ExecuteQuery_Select_Count("SELECT COUNT(*) FROM table1 WHERE `Barcode`='" + bcrr + "' ;"); //  db 에서 바코드 찾음
-
-                        if (rows == 0)//없을때
-                        {
-                            this.Invoke(new dele(() =>
-                            {
-                                Log_K.WriteLog(log_lst, Mainpath, "#1 GasLeak 바코드 없음 / " + bcrr);
-                            }));
-                            Delay(50);
-
-                                plc1.MasterK_Write_W("3230323331", "0300"); //  Check4 _ 판정 (20231)  
-                            dgvInit("dgvH4");
-                        }
-
-                        else//데이터 있다.
-                        {
-                            string cmd = SQLiteCMD_K.Select_Equal("table1", "Barcode", bcrr,
-
-                            "GasLeakResult"
-
-                            );
-
-                           // sql.Select(dgvH4, cmd, false);
-
-                            this.Invoke(new dele(() =>
-                            {
-                                Log_K.WriteLog(log_lst, Mainpath, "#1 GasLeak 바코드 있음 / " + bcrr);
-                            }));
-
-                            dgvInit("dgvH4");
-
-                            Delay(500);
-
-                            //string result1 = dgvH4.Rows[0].Cells[0].Value.ToString();
-                            //if (result1 == "OK")
-                            //{
-                            //    Delay(50);
-
-                            //        plc1.MasterK_Write_W("3230323331", "0100"); //  Check4 _ 판정 OK = 1 (20231)  
-
-                            //}
-                                
-                            //else if(result1 == "NG")
-                            //{
-                            //    Delay(50);
-
-                            //        plc1.MasterK_Write_W("3230323331", "0200"); //  Check4 _ 판정 NG = 2 (20231)  
-
-                            //}
-                            //else
-                            //{
-                            //    result1 = "판정없음";
-                            //}
-                            //this.Invoke(new dele(() =>
-                            //{
-                            //    Log_K.WriteLog(log_lst, Mainpath, "#1 GasLeak 바코드 check : " + bcrr + " / " + result1);
-                            //}));
-                        }
-                        Delay(500);
-
-                            plc1.MasterK_Write_W("3230323332", "0100"); //  Check4 _ 완료 (20232) 
-                        this.Invoke(new dele(() =>
-                        {
-                            Log_K.WriteLog(log_lst, Mainpath, "#1 GasLeak 바코드 check :  완료 / " + bcrr);
-                        }));
-                    }
-                    catch (Exception)
-                    {
-                        this.Invoke(new dele(() =>
-                        {
-                            Log_K.WriteLog(log_lst, Mainpath, "#1 GasLeak 판정데이터 Error");
-                        }));
-                        Console.WriteLine("DB 저장 Error ");
-                    }
-            }
-
-
-            if (name.Equals("Check5"))   //  check5 (20240) _ #1 WaterLeak 검사 제품 판정 확인 요청
-            {
-                Delay(100);
-                this.Invoke(new dele(() =>
-                {
-                    Log_K.WriteLog(log_lst, Mainpath, "check5 신호");
-                }));
-
-                    start = 0;
-                    end = 1;
-
-                    string[] AllData = (string[])data;
-                    string[] indata = new string[600];
-                    string[] address = new string[300];
-
-                    try
-                    {
-                        for (int i = 0; i < 600; i++)
-                        {
-                            indata[i] = AllData[32 + i];
-                        }
-
-                        for (int j = 0; j < 300; j++)   //  address [] 배열에 스타트 번지부터 값 200개 넣기
-                        {
-                            address[j] = indata[start] + indata[end];
-                            start += 2;
-                            end += 2;
-                        }
-                    }
-
-                    catch (Exception)
-                    {
-                        this.Invoke(new dele(() =>
-                        {
-                            Log_K.WriteLog(log_lst, Mainpath, "plc Check5 에러");
-                        }));
-                    }
-
-                    string bcrr = "";
-
-                    for (int i = 243; i < 249; i++)    //  바코드 길이 문자가져오기
-                    {
-                        Console.WriteLine(ConvertHexToString(address[i]));
-                        bcrr += ConvertHexToString(address[i]);
-                    }
-
-                    //dgvH5.Columns.Clear();
-
-                    Delay(100);
-
-                    try
-                    {
-                        int rows = sql.ExecuteQuery_Select_Count("SELECT COUNT(*) FROM table1 WHERE `Barcode`='" + bcrr + "' ;"); //  db 에서 바코드 찾음
-
-                        if (rows == 0)//없을때
-                        {
-                            this.Invoke(new dele(() =>
-                            {
-                                Log_K.WriteLog(log_lst, Mainpath, "#1 WaterLeak 바코드 없음 / " + bcrr);
-                            }));
-                            Delay(50);
-
-                                plc1.MasterK_Write_W("3230323431", "0300"); //  Check5 _ 판정 (20241)  
-
-                            dgvInit("dgvH5");
-                        }
-
-                        else//데이터 있다.
-                        {
-                            string cmd = SQLiteCMD_K.Select_Equal("table1", "Barcode", bcrr,
-
-                            "WaterLeakResult"
-
-                            );
-
-                            //sql.Select(dgvH5, cmd, false);
-
-                            this.Invoke(new dele(() =>
-                            {
-                                Log_K.WriteLog(log_lst, Mainpath, "#1 WaterLeak 바코드 있음 / " + bcrr);
-                            }));
-
-                            dgvInit("dgvH5");
-
-                            Delay(500);
-
-                            //string result1 = dgvH5.Rows[0].Cells[0].Value.ToString();
-                            //if (result1 == "OK")
-                            //{
-                            //    Delay(50);
-
-                            //        plc1.MasterK_Write_W("3230323431", "0100"); //  Check5 _ 판정 OK = 1 (20241)  
-                                
-                            //}
-                            //else if(result1 == "NG")
-                            //{
-                            //    Delay(50);
-                            //    plc1.MasterK_Write_W("3230323431", "0200"); //  Check5 _ 판정 NG = 2 (20241)  
-
-                            //}
-                            //else
-                            //{
-                            //    result1 = "판정없음";
-                            //}
-                            //this.Invoke(new dele(() =>
-                            //{
-                            //    Log_K.WriteLog(log_lst, Mainpath, "#1 WaterLeak 바코드 check : " + bcrr + " / " + result1);
-                            //}));
-                        }
-                        Delay(500);
-
-                            plc1.MasterK_Write_W("3230323432", "0100"); //  Check5 _ 완료 (20242) 
-                        this.Invoke(new dele(() =>
-                        {
-                            Log_K.WriteLog(log_lst, Mainpath, "#1 WaterLeak 바코드 check :  완료 / " + bcrr);
-                        }));
-                    }
-                    catch (Exception)
-                    {
-                        this.Invoke(new dele(() =>
-                        {
-                            Log_K.WriteLog(log_lst, Mainpath, "#1 WaterLeak 판정데이터 Error");
-                        }));
-                        Console.WriteLine("DB 저장 Error ");
-                    }
-
-            }
-
-
-            if (name.Equals("Check6"))   //  check6 (20250) _ #2 GasLeak 검사 제품 판정 확인 요청
-            {
-                Delay(100);
-                this.Invoke(new dele(() =>
-                {
-                    Log_K.WriteLog(log_lst, Mainpath, "check6 신호");
-                }));
-
-                    start = 0;
-                    end = 1;
-
-                    string[] AllData = (string[])data;
-
-                    string[] indata = new string[600];
-
-                    string[] address = new string[300];
-
-                    try
-                    {
-
-                        for (int i = 0; i < 600; i++)
-                        {
-                            indata[i] = AllData[32 + i];
-                        }
-
-                        for (int j = 0; j < 300; j++)   //  address [] 배열에 스타트 번지부터 값 200개 넣기
-                        {
-                            address[j] = indata[start] + indata[end];
-                            start += 2;
-                            end += 2;
-                        }
-                    }
-
-                    catch (Exception)
-                    {
-                        this.Invoke(new dele(() =>
-                        {
-                            Log_K.WriteLog(log_lst, Mainpath, "plc Check6 에러");
-                        }));
-                    }
-
-                    string bcrr = "";
-
-                    for (int i = 253; i < 259; i++)    //  바코드 길이 문자가져오기
-                    {
-                        Console.WriteLine(ConvertHexToString(address[i]));
-                        bcrr += ConvertHexToString(address[i]);
-                    }
-
-                    //dgvH6.Columns.Clear();
-
-                    Delay(500); //  100>500   1021  change
-
-                    try
-                    {
-                        int rows = sql.ExecuteQuery_Select_Count("SELECT COUNT(*) FROM table1 WHERE `Barcode`='" + bcrr + "' ;"); //  db 에서 바코드 찾음
-
-                        if (rows == 0)//없을때
-                        {
-                            this.Invoke(new dele(() =>
-                            {
-                                Log_K.WriteLog(log_lst, Mainpath, "#2 GasLeak 바코드 없음 / " + bcrr);
-                            }));
-                            Delay(50);
-                            plc1.MasterK_Write_W("3230323531", "0300"); //  Check6 _ 판정 (20251)  
-                            dgvInit("dgvH6");
-                        }
-
-                        else//데이터 있다.
-                        {
-                            string cmd = SQLiteCMD_K.Select_Equal("table1", "Barcode", bcrr,
-
-                            "GasLeakResult"
-
-                            );
-
-                            //sql.Select(dgvH6, cmd, false);
-
-                            this.Invoke(new dele(() =>
-                            {
-                                Log_K.WriteLog(log_lst, Mainpath, "#2 GasLeak 바코드 있음 / " + bcrr);
-                            }));
-
-                            dgvInit("dgvH6");
-
-                            Delay(500);
-
-                           // string result1 = dgvH6.Rows[0].Cells[0].Value.ToString();
-                            //if (result1 == "OK")
-                            //{
-                            //    Delay(50);
-                            //    plc1.MasterK_Write_W("3230323531", "0100"); //  Check6 _ 판정 OK = 1 (20251)      
-                            //}
-                            //else if (result1 == "NG")
-                            //{
-                            //    Delay(50);
-                            //    plc1.MasterK_Write_W("3230323531", "0200"); //  Check6 _ 판정 NG = 2 (20251)  
-
-                            //}
-                            //else
-                            //{
-                            //    result1 = "판정없음";
-                            //}
-                            //this.Invoke(new dele(() =>
-                            //{
-                            //    Log_K.WriteLog(log_lst, Mainpath, "#2 GasLeak 바코드 check : " + bcrr + " / " + result1);
-                            //}));
-                        }
-                        Delay(500);
-                        plc1.MasterK_Write_W("3230323532", "0100"); //  Check6 _ 완료 (20252) 
-                        this.Invoke(new dele(() =>
-                        {
-                            Log_K.WriteLog(log_lst, Mainpath, "#2 GasLeak 바코드 check :  완료 / " + bcrr);
-                        }));
-                    }
-                    catch (Exception)
-                    {
-                        this.Invoke(new dele(() =>
-                        {
-                            Log_K.WriteLog(log_lst, Mainpath, "#2 GasLeak 판정데이터 Error");
-                        }));
-                        Console.WriteLine("DB 저장 Error ");
-                    }
-            }
-
-
-            if (name.Equals("Check7"))   //  check7 (20260) _ #2 WaterLeak 검사 제품 판정 확인 요청
-            {
-                Delay(100);
-                this.Invoke(new dele(() =>
-                {
-                    Log_K.WriteLog(log_lst, Mainpath, "check7 신호");
-                }));
-
-                    start = 0;
-                    end = 1;
-
-                    string[] AllData = (string[])data;
-                    string[] indata = new string[600];
-                    string[] address = new string[300];
-
-                    try
-                    {
-                        for (int i = 0; i < 600; i++)
-                        {
-                            indata[i] = AllData[32 + i];
-                        }
-
-                        for (int j = 0; j < 300; j++)   //  address [] 배열에 스타트 번지부터 값 200개 넣기
-                        {
-                            address[j] = indata[start] + indata[end];
-                            start += 2;
-                            end += 2;
-                        }
-                    }
-
-                    catch (Exception)
-                    {
-                        this.Invoke(new dele(() =>
-                        {
-                            Log_K.WriteLog(log_lst, Mainpath, "plc Check7 에러");
-                        }));
-                    }
-
-                    string bcrr = "";
-
-                    for (int i = 263; i < 269; i++)    //  바코드 길이 문자가져오기
-                    {
-                        Console.WriteLine(ConvertHexToString(address[i]));
-                        bcrr += ConvertHexToString(address[i]);
-                    }
-
-                   // dgvH7.Columns.Clear();
-
-                    Delay(100);
-
-                    try
-                    {
-                        int rows = sql.ExecuteQuery_Select_Count("SELECT COUNT(*) FROM table1 WHERE `Barcode`='" + bcrr + "' ;"); //  db 에서 바코드 찾음
-
-                        if (rows == 0)//없을때
-                        {
-                            this.Invoke(new dele(() =>
-                            {
-                                Log_K.WriteLog(log_lst, Mainpath, "#2 WaterLeak 바코드 없음 / " + bcrr);
-                            }));
-                            Delay(50);
-                            plc1.MasterK_Write_W("3230323631", "0300"); //  Check7 _ 판정 (20261)  
-                            dgvInit("dgvH7");
-                        }
-
-                        else//데이터 있다.
-                        {
-                            string cmd = SQLiteCMD_K.Select_Equal("table1", "Barcode", bcrr,
-
-                            "WaterLeakResult"
-
-                            );
-
-                            //sql.Select(dgvH7, cmd, false);
-
-                            this.Invoke(new dele(() =>
-                            {
-                                Log_K.WriteLog(log_lst, Mainpath, "#2 WaterLeak 바코드 있음 / " + bcrr);
-                            }));
-
-                            dgvInit("dgvH7");
-
-                            Delay(500);
-
-                            //string result1 = dgvH7.Rows[0].Cells[0].Value.ToString();
-                            //if (result1 == "OK")
-                            //{
-                            //    Delay(50);
-                            //    plc1.MasterK_Write_W("3230323631", "0100"); //  Check7 _ 판정 OK = 1 (20261)   
-
-                            //}
-                            //else if (result1 == "NG")
-                            //{
-                            //    Delay(50);
-                            //    plc1.MasterK_Write_W("3230323631", "0200"); //  Check7 _ 판정 NG = 2 (20261)  
-
-                            //}
-                            //else
-                            //{
-                            //    result1 = "판정없음";
-                            //}
-                            //this.Invoke(new dele(() =>
-                            //{
-                            //    Log_K.WriteLog(log_lst, Mainpath, "#2 WaterLeak 바코드 check : " + bcrr + " / " + result1);
-                            //}));
-                        }
-                        Delay(500);
-
-                            plc1.MasterK_Write_W("3230323632", "0100"); //  Check7 _ 완료 (20262) 
-
-                        this.Invoke(new dele(() =>
-                        {
-                            Log_K.WriteLog(log_lst, Mainpath, "#2 WaterLeak 바코드 check :  완료 / " + bcrr);
-                        }));
-
-                    }
-                    catch (Exception)
-                    {
-                        this.Invoke(new dele(() =>
-                        {
-                            Log_K.WriteLog(log_lst, Mainpath, "#2 WaterLeak 판정데이터 Error");
-                        }));
-                        Console.WriteLine("DB 저장 Error ");
-                    }
-
-            }
-
-
-            if (name.Equals("Check8"))   //  check8 (20270) _ #2 Vision 검사 제품 판정 확인 요청
-            {
-                Delay(100);
-                this.Invoke(new dele(() =>
-                {
-                    Log_K.WriteLog(log_lst, Mainpath, "check8 신호");
-                }));
-
-                this.Invoke(new dele(() =>
-                {
-
-                    start = 0;
-                    end = 1;
-
-                    string[] AllData = (string[])data;
-                    string[] indata = new string[600];
-                    string[] address = new string[300];
-
-                    try
-                    {
-                        for (int i = 0; i < 600; i++)
-                        {
-                            indata[i] = AllData[32 + i];
-                        }
-
-                        for (int j = 0; j < 300; j++)   //  address [] 배열에 스타트 번지부터 값 200개 넣기
-                        {
-                            address[j] = indata[start] + indata[end];
-                            start += 2;
-                            end += 2;
-                        }
-                    }
-
-                    catch (Exception)
-                    {
-                        this.Invoke(new dele(() =>
-                        {
-                            Log_K.WriteLog(log_lst, Mainpath, "plc Check8 에러");
-                        }));
-                    }
-
-                    string bcrr = "";
-
-                    for (int i = 273; i < 279; i++)    //  바코드 길이 문자가져오기
-                    {
-                        Console.WriteLine(ConvertHexToString(address[i]));
-                        bcrr += ConvertHexToString(address[i]);
-                    }
-
-                    //dgvH8.Columns.Clear();
-                    Delay(100);
-
-                    try
-                    {
-                        int rows = sql.ExecuteQuery_Select_Count("SELECT COUNT(*) FROM table1 WHERE `Barcode`='" + bcrr + "' ;"); //  db 에서 바코드 찾음
-
-                        if (rows == 0)//없을때
-                        {
-                            this.Invoke(new dele(() =>
-                            {
-                                Log_K.WriteLog(log_lst, Mainpath, "#2 Vision 바코드 없음 / " + bcrr);
-                            }));
-
-                                plc1.MasterK_Write_W("3230323731", "0300"); //  Check8 _ 판정 (20271)  
-
-                            dgvInit("dgvH8");
-                        }
-
-                        else//데이터 있다.
-                        {
-                            string cmd = SQLiteCMD_K.Select_Equal("table1", "Barcode", bcrr,
-
-                            "CamResult2"
-
-                            );
-
-                            //sql.Select(dgvH8, cmd, false);
-
-                            this.Invoke(new dele(() =>
-                            {
-                                Log_K.WriteLog(log_lst, Mainpath, "#2 Vision 바코드 있음 / " + bcrr);
-                            }));
-
-                            dgvInit("dgvH8");
-
-                            //Delay(200);
-
-                           // string result1 = dgvH8.Rows[0].Cells[0].Value.ToString();
-                            //if (result1 == "OK")
-                            //{
-                            //        plc1.MasterK_Write_W("3230323731", "0100"); //  Check8 _ 판정 OK = 1 (20271) 
-                                
-                            //}
-                            //else if (result1 == "NG")
-                            //{
-
-                            //       plc1.MasterK_Write_W("3230323731", "0200"); //  Check8 _ 판정 NG = 2 (20271)  
-
-                            //}
-                            //else
-                            //{
-                            //    result1 = "판정없음";
-                            //}
-                            //this.Invoke(new dele(() =>
-                            //{
-                            //    Log_K.WriteLog(log_lst, Mainpath, "#2 Vision 바코드 check : " + bcrr + " / " + result1);
-                            //}));
-                        }
-                        Delay(500);
-
-                        plc1.MasterK_Write_W("3230323732", "0100"); //  Check8 _ 완료 (20272) 
-
-                        this.Invoke(new dele(() =>
-                        {
-                            Log_K.WriteLog(log_lst, Mainpath, "#2 Vision 바코드 check : 완료 / " + bcrr);
-                        }));
-                    }
-                    catch (Exception)
-                    {
-                        this.Invoke(new dele(() =>
-                        {
-                            Log_K.WriteLog(log_lst, Mainpath, "#2 Vision 판정데이터 Error");
-                        }));
-                        Console.WriteLine("DB 저장 Error ");
-                    }
-                }));
-            }
-
-            if (name.Equals("DBReset"))   //  DB Reset
-            {
-                //DBReset();
-                this.Invoke(new dele(() =>
-                {
-                    Log_K.WriteLog(log_lst, Mainpath, "DB Data Reset -> " + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff"));
-                }));
-            }
         }
 
-        //ccccccccccccccccccccc
-        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            SaveTxt();
 
-            StopmainThread(0);
-
-            try
-            {
-                if (cam1 != null)
-                    cam1.Dispose();
-                if (plc1 != null)
-                {
-                    plc1.CommStop();
-                    plc1.Disconnect();
-                    plc1.Dispose();
-                }
-
-                Thread.Sleep(1000);
-
-                try
-                {
-                    Process.GetCurrentProcess().Kill();
-                }
-                catch (Exception)
-                {
-                    //Log_K.WriteLog(log_err, Mainpath, "Form Closing 에러");
-                }
-            }
-            catch (Exception)
-            {
-                //Log_K.WriteLog(log_err, Mainpath, "Form Closing 에러2");
-            }
-        }
+      
 
         #region Cameraaaaaaaa
         private void cam1_ImageSignal(PylonBasler.CurrentStatus Command, object Data, int ArrayNum)
@@ -2831,12 +516,12 @@ namespace MainProgram
                 cam2.SetExp(Convert.ToInt32(dgvCam2.Rows[0].Cells[0].Value));
                 //cam1.SetExp(Convert.ToInt32(Txt_Address.Text));   //  밝기 저장
                 //Log_K.WriteLog(log_err, Mainpath, "카메라1연결");
-                Console.WriteLine("카메라1연결");
+                Console.WriteLine("카메라2연결");
             }
             else
             {
                 //Log_K.WriteLog(log_err, Mainpath, "카메라1해제");
-                Console.WriteLine("카메라1해제");
+                Console.WriteLine("카메라2해제");
             }
         }
 
@@ -2897,36 +582,7 @@ namespace MainProgram
                             dgvStatus2.Rows[2].Cells[0].Style.BackColor = Color.Lime;
                         else
                             dgvStatus2.Rows[2].Cells[0].Style.BackColor = Color.Crimson;
-                        //if (plc1.Server_Connected)
-                        //{
-                        //    dgvStatus1.Rows[1].Cells[0].Style.BackColor = Color.Lime;
-                        //    dgvStatus2.Rows[1].Cells[0].Style.BackColor = Color.Lime;
-                        //}
-                        //else
-                        //{
-                        //    dgvStatus1.Rows[1].Cells[0].Style.BackColor = Color.Crimson;
-                        //    dgvStatus2.Rows[1].Cells[0].Style.BackColor = Color.Crimson;
-                        //}
 
-                            //if (cam1.Connected)
-                            //    dgvStatus1.Rows[2].Cells[0].Style.BackColor = Color.Lime;
-                            //else
-                            //    dgvStatus1.Rows[2].Cells[0].Style.BackColor = Color.Crimson;
-
-                            //if (cam2.Connected)
-                            //    dgvStatus2.Rows[2].Cells[0].Style.BackColor = Color.Lime;
-                            //else
-                            //    dgvStatus2.Rows[2].Cells[0].Style.BackColor = Color.Crimson;
-
-                            //if (plc1.Connected)
-                            //    dgvStatus1.Rows[1].Cells[0].Style.BackColor = Color.Lime;
-                            //else
-                            //    dgvStatus1.Rows[1].Cells[0].Style.BackColor = Color.Crimson;
-
-                            //if (cam1.Connected)
-                            //    dgvStatus1.Rows[2].Cells[0].Style.BackColor = Color.Lime;
-                            //else
-                            //    dgvStatus1.Rows[2].Cells[0].Style.BackColor = Color.Crimson;
 
                     }
                     catch (Exception)
@@ -2978,95 +634,26 @@ namespace MainProgram
 
                         //---------------↓ 생성 ↓---------------┐
                         string[] ColumnsName = new string[] {
-                            //"Inspection", "Value", "Check"
-                            //"A", "A", "A", "A","A", "A", "A", "A","A", "A", "A", "A", "A", "A", "A", "A", "A", "A"
                             "A", "A"
                         };
                         //int rows = 2;//초기 생성 Row수
-                        int rows = 18;//초기 생성 Row수
+                        int rows = 1;//초기 생성 Row수
 
                         GridMaster.Init3(dgv, true, height, rows, ColumnsName);
-                        //---------------↑ 생성 ↑---------------┘
-
-                        //---------------↓ 사용자 데이터 추가 부분 ↓---------------┐
-                        //GridMaster.LoadCSV_OnlyData( dgv , System.Windows.Forms.Application.StartupPath + "\\AAAA.csv" );//셀데이터로드
-                        //GridMaster.LoadCSV( dgvD0 , @"C:\Users\kclip3\Desktop\CR0.csv" );//셀데이터로드
-
-                        //dgv.Rows[0].Cells[0].Value = "Inspection";
-                        //dgv.Rows[1].Cells[0].Value = "Value";
-
-                        //dgv.Rows[0].Cells[1].Value = "Area 1";
-                        //dgv.Rows[0].Cells[2].Value = "Area 2";
-                        //dgv.Rows[0].Cells[3].Value = "Area 3";
-                        //dgv.Rows[0].Cells[4].Value = "Area 4";
-                        //dgv.Rows[0].Cells[5].Value = "Area 5";
-                        //dgv.Rows[0].Cells[6].Value = "Area 6";
-                        //dgv.Rows[0].Cells[7].Value = "Area 7";
-                        //dgv.Rows[0].Cells[8].Value = "Area 8";
-                        //dgv.Rows[0].Cells[9].Value = "Area 9";
-                        //dgv.Rows[0].Cells[10].Value = "Area 10";
-                        //dgv.Rows[0].Cells[11].Value = "Area 11";
-                        //dgv.Rows[0].Cells[12].Value = "Area 12";
-                        //dgv.Rows[0].Cells[13].Value = "Area 13";
-                        //dgv.Rows[0].Cells[14].Value = "Area 14";
-                        //dgv.Rows[0].Cells[15].Value = "Area 15";
-                        //dgv.Rows[0].Cells[16].Value = "Area 16";
-                        //dgv.Rows[0].Cells[17].Value = "Pattern";
+  
 
                         dgv.Rows[0].Cells[0].Value = "돌출 값";
-                        dgv.Rows[0].Cells[1].Value = "값";
+                        dgv.Rows[0].Cells[1].Value = "";
 
                         dgv.Rows[0].Cells[0].Style.Font = new Font("Tahoma", 19, FontStyle.Bold);
                         dgv.Rows[0].Cells[1].Style.Font = new Font("Tahoma", 19, FontStyle.Bold);
 
 
-
-                        dgv.Rows[1].Cells[0].Value = "Area 1";
-                        dgv.Rows[2].Cells[0].Value = "Area 2";
-                        dgv.Rows[3].Cells[0].Value = "Area 3";
-                        dgv.Rows[4].Cells[0].Value = "Area 4";
-                        dgv.Rows[5].Cells[0].Value = "Area 5";
-                        dgv.Rows[6].Cells[0].Value = "Area 6";
-                        dgv.Rows[7].Cells[0].Value = "Area 7";
-                        dgv.Rows[8].Cells[0].Value = "Area 8";
-                        dgv.Rows[9].Cells[0].Value = "Area 9";
-                        dgv.Rows[10].Cells[0].Value = "Area 10";
-                        dgv.Rows[11].Cells[0].Value = "Area 11";
-                        dgv.Rows[12].Cells[0].Value = "Area 12";
-                        dgv.Rows[13].Cells[0].Value = "Area 13";
-                        dgv.Rows[14].Cells[0].Value = "Area 14";
-                        dgv.Rows[15].Cells[0].Value = "Area 15";
-                        dgv.Rows[16].Cells[0].Value = "Area 16";
-                        dgv.Rows[17].Cells[0].Value = "Pattern";
-
-                        //---------------↑ 사용자 데이터 추가 부분 ↑---------------┘
-
-                        //---------------↓ 정렬 ↓---------------┐
                         GridMaster.CenterAlign(dgv);
-                        //GridMaster.LeftAlign( dgv );
-                        //GridMaster.Align( dgv , 0 , DataGridViewContentAlignment.MiddleLeft );//단일 Column 정렬
-                        //---------------↑ 정렬 ↑---------------┘
-
-                        //---------------↓ 설정 ↓---------------┐
                         dgv.ReadOnly = true;//읽기전용
-                        //dgv.Columns[0].ReadOnly = true;//읽기전용
-                        //dgv.ColumnHeadersDefaultCellStyle.Font = new Font("Tahoma", 25, FontStyle.Bold);
-                        
                         GridMaster.DisableSortColumn(dgv);//오름차순 내림차순 정렬 막기
-
-                        //dgv.AllowUserToResizeColumns = false;//컬럼폭 수정불가
                         dgv.ColumnHeadersVisible = false;//컬럼헤더 가리기                        
-                        //dgv.Columns[ 1 ].DefaultCellStyle.Format = "yyyy-MM-dd HH:mm:ss";//표시형식
 
-                        //dgv.DefaultCellStyle.WrapMode = DataGridViewTriState.True;//스페이스 시 줄바꿈
-                        //dgv.DefaultCellStyle.BackColor = Color.Black;//색반전
-                        //dgv.DefaultCellStyle.ForeColor = Color.White;//색반전
-                        //dgv.DefaultCellStyle.Font = new Font("Tahoma", 18, FontStyle.Bold);
-                        //dgv.DefaultCellStyle.SelectionBackColor = Color.Transparent;
-                        //dgv.DefaultCellStyle.SelectionForeColor = Color.Black;
-                        //dgv.BackgroundColor = Color.Black;
-
-                        //---------------↑ 설정 ↑---------------┘
                     }
                     catch (Exception)
                     {
@@ -3085,96 +672,27 @@ namespace MainProgram
                         int fontheader = int.Parse(DataRW.Load_Simple(DGV_name + "FH", "12"));//데이터가져옴
                         int fontcell = int.Parse(DataRW.Load_Simple(DGV_name + "FC", "12"));//데이터가져옴
                         GridMaster.FontSize2(dgv, fontheader, fontcell);//적용
-                        //GridMaster.FontSize2( dgv , "New Gulim" , fontheader , fontcell );//한자나 글자 깨질 때 이걸로 사용하세요.
-                        //---------------↑ 기본 ↑---------------┘
 
-                        //---------------↓ 생성 ↓---------------┐
                         string[] ColumnsName = new string[] {
-                            //"Inspection", "Value", "Check"
-                            //"A", "A", "A", "A","A", "A", "A", "A","A", "A", "A", "A", "A", "A", "A", "A", "A", "A"
                             "A", "A"
                         };
                         int rows = 1;//초기 생성 Row수
 
 
                         GridMaster.Init3(dgv, true, height, rows, ColumnsName);
-                        //---------------↑ 생성 ↑---------------┘
-
-                        //---------------↓ 사용자 데이터 추가 부분 ↓---------------┐
-                        //GridMaster.LoadCSV_OnlyData( dgv , System.Windows.Forms.Application.StartupPath + "\\AAAA.csv" );//셀데이터로드
-                        //GridMaster.LoadCSV( dgvD0 , @"C:\Users\kclip3\Desktop\CR0.csv" );//셀데이터로드
-                        //dgv.Rows[0].Cells[0].Value = "검사내용";
-                        //dgv.Rows[0].Cells[1].Value = "값";
-
-                        //dgv.Rows[0].Cells[1].Value = "Area 1";
-                        //dgv.Rows[0].Cells[2].Value = "Area 2";
-                        //dgv.Rows[0].Cells[3].Value = "Area 3";
-                        //dgv.Rows[0].Cells[4].Value = "Area 4";
-                        //dgv.Rows[0].Cells[5].Value = "Area 5";
-                        //dgv.Rows[0].Cells[6].Value = "Area 6";
-                        //dgv.Rows[0].Cells[7].Value = "Area 7";
-                        //dgv.Rows[0].Cells[8].Value = "Area 8";
-                        //dgv.Rows[0].Cells[9].Value = "Area 9";
-                        //dgv.Rows[0].Cells[10].Value = "Area 10";
-                        //dgv.Rows[0].Cells[11].Value = "Area 11";
-                        //dgv.Rows[0].Cells[12].Value = "Area 12";
-                        //dgv.Rows[0].Cells[13].Value = "Area 13";
-                        //dgv.Rows[0].Cells[14].Value = "Area 14";
-                        //dgv.Rows[0].Cells[15].Value = "Area 15";
-                        //dgv.Rows[0].Cells[16].Value = "Area 16";
-                        //dgv.Rows[0].Cells[17].Value = "Pattern";
 
                         dgv.Rows[0].Cells[0].Value = "돌출 값";
-                        //dgv.Rows[0].Cells[1].Value = "값";
+                        dgv.Rows[0].Cells[1].Value = "값";
 
                         dgv.Rows[0].Cells[0].Style.Font = new Font("Tahoma", 19, FontStyle.Bold);
                         dgv.Rows[0].Cells[1].Style.Font = new Font("Tahoma", 19, FontStyle.Bold);
 
-                        //dgv.Rows[1].Cells[0].Value = "Area 1";
-                        //dgv.Rows[2].Cells[0].Value = "Area 2";
-                        //dgv.Rows[3].Cells[0].Value = "Area 3";
-                        //dgv.Rows[4].Cells[0].Value = "Area 4";
-                        //dgv.Rows[5].Cells[0].Value = "Area 5";
-                        //dgv.Rows[6].Cells[0].Value = "Area 6";
-                        //dgv.Rows[7].Cells[0].Value = "Area 7";
-                        //dgv.Rows[8].Cells[0].Value = "Area 8";
-                        //dgv.Rows[9].Cells[0].Value = "Area 9";
-                        //dgv.Rows[10].Cells[0].Value = "Area 10";
-                        //dgv.Rows[11].Cells[0].Value = "Area 11";
-                        //dgv.Rows[12].Cells[0].Value = "Area 12";
-                        //dgv.Rows[13].Cells[0].Value = "Area 13";
-                        //dgv.Rows[14].Cells[0].Value = "Area 14";
-                        //dgv.Rows[15].Cells[0].Value = "Area 15";
-                        //dgv.Rows[16].Cells[0].Value = "Area 16";
-                        //dgv.Rows[17].Cells[0].Value = "Pattern";
-
-                        //---------------↑ 사용자 데이터 추가 부분 ↑---------------┘
-
-                        //---------------↓ 정렬 ↓---------------┐
                         GridMaster.CenterAlign(dgv);
-                        //GridMaster.LeftAlign( dgv );
-                        //GridMaster.Align( dgv , 0 , DataGridViewContentAlignment.MiddleLeft );//단일 Column 정렬
-                        //---------------↑ 정렬 ↑---------------┘
 
-                        //---------------↓ 설정 ↓---------------┐
                         dgv.ReadOnly = true;//읽기전용
-                        //dgv.Columns[0].ReadOnly = true;//읽기전용
-
                         GridMaster.DisableSortColumn(dgv);//오름차순 내림차순 정렬 막기
-
-                        //dgv.AllowUserToResizeColumns = false;//컬럼폭 수정불가
                         dgv.ColumnHeadersVisible = false;//컬럼헤더 가리기                        
-                        //dgv.Columns[ 1 ].DefaultCellStyle.Format = "yyyy-MM-dd HH:mm:ss";//표시형식
 
-                        //dgv.DefaultCellStyle.WrapMode = DataGridViewTriState.True;//스페이스 시 줄바꿈
-                        //dgv.DefaultCellStyle.BackColor = Color.Black;//색반전
-                        //dgv.DefaultCellStyle.ForeColor = Color.White;//색반전
-                        //dgv.DefaultCellStyle.Font = new Font("Tahoma", 18, FontStyle.Bold);
-                        //dgv.DefaultCellStyle.SelectionBackColor = Color.Transparent;
-                        //dgv.DefaultCellStyle.SelectionForeColor = Color.Black;
-                        //dgv.BackgroundColor = Color.Black;
-
-                        //---------------↑ 설정 ↑---------------┘
                     }
                     catch (Exception)
                     {
@@ -3194,21 +712,13 @@ namespace MainProgram
                         int fontheader = int.Parse(DataRW.Load_Simple(DGV_name + "FH", "12"));//데이터가져옴
                         int fontcell = int.Parse(DataRW.Load_Simple(DGV_name + "FC", "12"));//데이터가져옴
                         GridMaster.FontSize2(dgv, fontheader, fontcell);//적용
-                        //GridMaster.FontSize2( dgv , "New Gulim" , fontheader , fontcell );//한자나 글자 깨질 때 이걸로 사용하세요.
-                        //---------------↑ 기본 ↑---------------┘
 
-                        //---------------↓ 생성 ↓---------------┐
                         string[] ColumnsName = new string[] {
                             "A"
                         };
                         int rows = 3;//초기 생성 Row수
 
                         GridMaster.Init3(dgv, true, height, rows, ColumnsName);
-                        //---------------↑ 생성 ↑---------------┘
-
-                        //---------------↓ 사용자 데이터 추가 부분 ↓---------------┐
-                        //GridMaster.LoadCSV_OnlyData( dgv , System.Windows.Forms.Application.StartupPath + "\\AAAA.csv" );//셀데이터로드
-                        //GridMaster.LoadCSV( dgvD0 , @"C:\Users\kclip3\Desktop\CR0.csv" );//셀데이터로드
 
                         dgv.Rows[0].Cells[0].Value = "Auto Run";
                         dgv.Rows[1].Cells[0].Value = "PLC (192.168.0.1)";
@@ -3218,32 +728,16 @@ namespace MainProgram
                         dgv.Rows[1].Cells[0].Style.BackColor = Color.Crimson;
                         dgv.Rows[2].Cells[0].Style.BackColor = Color.Crimson;
 
-
-                        //---------------↑ 사용자 데이터 추가 부분 ↑---------------┘
-
-                        //---------------↓ 정렬 ↓---------------┐
                         GridMaster.CenterAlign(dgv);
-                        //GridMaster.LeftAlign( dgv );
-                        //GridMaster.Align( dgv , 0 , DataGridViewContentAlignment.MiddleLeft );//단일 Column 정렬
-                        //---------------↑ 정렬 ↑---------------┘
 
-                        //---------------↓ 설정 ↓---------------┐
                         dgv.ReadOnly = true;//읽기전용
                         //dgv.Columns[ 0 ].ReadOnly = true;//읽기전용
 
                         GridMaster.DisableSortColumn(dgv);//오름차순 내림차순 정렬 막기
 
-                        //dgv.AllowUserToResizeColumns = false;//컬럼폭 수정불가
                         dgv.ColumnHeadersVisible = false;//컬럼헤더 가리기                        
-                        //dgv.Columns[ 1 ].DefaultCellStyle.Format = "yyyy-MM-dd HH:mm:ss";//표시형식
-
-                        //dgv.DefaultCellStyle.WrapMode = DataGridViewTriState.True;//스페이스 시 줄바꿈
-                        //dgv.DefaultCellStyle.BackColor = Color.Black;//색반전
-                        //dgv.DefaultCellStyle.ForeColor = Color.White;//색반전
                         dgv.DefaultCellStyle.Font = new Font("Tahoma", 12, FontStyle.Bold);
-                        //dgv.DefaultCellStyle.SelectionBackColor = Color.Transparent;
-                        //dgv.DefaultCellStyle.SelectionForeColor = Color.Black;
-                        //dgv.BackgroundColor = Color.Black;
+
 
                         //---------------↑ 설정 ↑---------------┘
                     }
@@ -3288,34 +782,12 @@ namespace MainProgram
                         dgv.Rows[1].Cells[0].Style.BackColor = Color.Crimson;
                         dgv.Rows[2].Cells[0].Style.BackColor = Color.Crimson;
 
-
-                        //---------------↑ 사용자 데이터 추가 부분 ↑---------------┘
-
-                        //---------------↓ 정렬 ↓---------------┐
                         GridMaster.CenterAlign(dgv);
-                        //GridMaster.LeftAlign( dgv );
-                        //GridMaster.Align( dgv , 0 , DataGridViewContentAlignment.MiddleLeft );//단일 Column 정렬
-                        //---------------↑ 정렬 ↑---------------┘
-
-                        //---------------↓ 설정 ↓---------------┐
                         dgv.ReadOnly = true;//읽기전용
-                        //dgv.Columns[ 0 ].ReadOnly = true;//읽기전용
-
                         GridMaster.DisableSortColumn(dgv);//오름차순 내림차순 정렬 막기
-
-                        //dgv.AllowUserToResizeColumns = false;//컬럼폭 수정불가
                         dgv.ColumnHeadersVisible = false;//컬럼헤더 가리기                        
-                        //dgv.Columns[ 1 ].DefaultCellStyle.Format = "yyyy-MM-dd HH:mm:ss";//표시형식
-
-                        //dgv.DefaultCellStyle.WrapMode = DataGridViewTriState.True;//스페이스 시 줄바꿈
-                        //dgv.DefaultCellStyle.BackColor = Color.Black;//색반전
-                        //dgv.DefaultCellStyle.ForeColor = Color.White;//색반전
                         dgv.DefaultCellStyle.Font = new Font("Tahoma", 12, FontStyle.Bold);
-                        //dgv.DefaultCellStyle.SelectionBackColor = Color.Transparent;
-                        //dgv.DefaultCellStyle.SelectionForeColor = Color.Black;
-                        //dgv.BackgroundColor = Color.Black;
 
-                        //---------------↑ 설정 ↑---------------┘
                     }
                     catch (Exception)
                     {
@@ -3345,10 +817,6 @@ namespace MainProgram
                         int rows = 50;//초기 생성 Row수
 
                         GridMaster.Init3(dgv, true, height, rows, ColumnsName);
-                        //---------------↑ 생성 ↑---------------┘
-
-                        //---------------↓ 사용자 데이터 추가 부분 ↓---------------┐
-                        //GridMaster.LoadCSV_OnlyData( dgv , System.Windows.Forms.Application.StartupPath + "\\AAAA.csv" );//셀데이터로드
                         GridMaster.LoadCSV_OnlyData(dgv, System.Windows.Forms.Application.StartupPath + "\\Model1.csv");//셀데이터로드
                                                                                                                         //GridMaster.LoadCSV( dgvD0 , @"C:\Users\kclip3\Desktop\CR0.csv" );//셀데이터로드
 
@@ -3357,37 +825,17 @@ namespace MainProgram
                             dgv.Rows[i - 1].Cells[0].Value = i - 1;
                         }
 
-                        dgv.Rows[0].Cells[0].Value = "Model Num";
+                        dgv.Rows[0].Cells[0].Value = "Model Num";                       
                         dgv.Rows[0].Cells[1].Value = "Model Name";
 
-
-                        //---------------↑ 사용자 데이터 추가 부분 ↑---------------┘
-
-                        //---------------↓ 정렬 ↓---------------┐
+                        //ModelNum1 = Convert.ToString(dgv.Rows[0].Cells[0].Value);
                         GridMaster.CenterAlign(dgv);
-                        //GridMaster.LeftAlign( dgv );
-                        //GridMaster.Align( dgv , 0 , DataGridViewContentAlignment.MiddleLeft );//단일 Column 정렬
-                        //---------------↑ 정렬 ↑---------------┘
-
-                        //---------------↓ 설정 ↓---------------┐
                         dgv.ReadOnly = true;//읽기전용
                                             //dgv.Columns[ 0 ].ReadOnly = true;//읽기전용
 
                         GridMaster.DisableSortColumn(dgv);//오름차순 내림차순 정렬 막기
-
-                        //dgv.AllowUserToResizeColumns = false;//컬럼폭 수정불가
                         dgv.ColumnHeadersVisible = false;//컬럼헤더 가리기                        
-                                                         //dgv.Columns[ 1 ].DefaultCellStyle.Format = "yyyy-MM-dd HH:mm:ss";//표시형식
 
-                        //dgv.DefaultCellStyle.WrapMode = DataGridViewTriState.True;//스페이스 시 줄바꿈
-                        //dgv.DefaultCellStyle.BackColor = Color.Black;//색반전
-                        //dgv.DefaultCellStyle.ForeColor = Color.White;//색반전
-                        //dgv.DefaultCellStyle.Font = new Font("Tahoma", 40, FontStyle.Bold);
-                        //dgv.DefaultCellStyle.SelectionBackColor = Color.Transparent;
-                        //dgv.DefaultCellStyle.SelectionForeColor = Color.Black;
-                        //dgv.BackgroundColor = Color.Black;
-
-                        //---------------↑ 설정 ↑---------------┘
                     }
                     catch (Exception)
                     {
@@ -3417,10 +865,6 @@ namespace MainProgram
                         int rows = 50;//초기 생성 Row수
 
                         GridMaster.Init3(dgv, true, height, rows, ColumnsName);
-                        //---------------↑ 생성 ↑---------------┘
-
-                        //---------------↓ 사용자 데이터 추가 부분 ↓---------------┐
-                        //GridMaster.LoadCSV_OnlyData( dgv , System.Windows.Forms.Application.StartupPath + "\\AAAA.csv" );//셀데이터로드
                         GridMaster.LoadCSV_OnlyData(dgv, System.Windows.Forms.Application.StartupPath + "\\Model2.csv");//셀데이터로드
                                                                                                                         //GridMaster.LoadCSV( dgvD0 , @"C:\Users\kclip3\Desktop\CR0.csv" );//셀데이터로드
 
@@ -3432,34 +876,11 @@ namespace MainProgram
                         dgv.Rows[0].Cells[0].Value = "Model Num";
                         dgv.Rows[0].Cells[1].Value = "Model Name";
 
-
-                        //---------------↑ 사용자 데이터 추가 부분 ↑---------------┘
-
-                        //---------------↓ 정렬 ↓---------------┐
                         GridMaster.CenterAlign(dgv);
-                        //GridMaster.LeftAlign( dgv );
-                        //GridMaster.Align( dgv , 0 , DataGridViewContentAlignment.MiddleLeft );//단일 Column 정렬
-                        //---------------↑ 정렬 ↑---------------┘
-
-                        //---------------↓ 설정 ↓---------------┐
                         dgv.ReadOnly = true;//읽기전용
-                                            //dgv.Columns[ 0 ].ReadOnly = true;//읽기전용
-
                         GridMaster.DisableSortColumn(dgv);//오름차순 내림차순 정렬 막기
-
-                        //dgv.AllowUserToResizeColumns = false;//컬럼폭 수정불가
                         dgv.ColumnHeadersVisible = false;//컬럼헤더 가리기                        
-                                                         //dgv.Columns[ 1 ].DefaultCellStyle.Format = "yyyy-MM-dd HH:mm:ss";//표시형식
 
-                        //dgv.DefaultCellStyle.WrapMode = DataGridViewTriState.True;//스페이스 시 줄바꿈
-                        //dgv.DefaultCellStyle.BackColor = Color.Black;//색반전
-                        //dgv.DefaultCellStyle.ForeColor = Color.White;//색반전
-                        //dgv.DefaultCellStyle.Font = new Font("Tahoma", 40, FontStyle.Bold);
-                        //dgv.DefaultCellStyle.SelectionBackColor = Color.Transparent;
-                        //dgv.DefaultCellStyle.SelectionForeColor = Color.Black;
-                        //dgv.BackgroundColor = Color.Black;
-
-                        //---------------↑ 설정 ↑---------------┘
                     }
                     catch (Exception)
                     {
@@ -3488,44 +909,10 @@ namespace MainProgram
 
 
                         GridMaster.Init3(dgv, true, height, rows, ColumnsName);
-                        //---------------↑ 생성 ↑---------------┘
-
-                        //---------------↓ 사용자 데이터 추가 부분 ↓---------------┐
-                        //GridMaster.LoadCSV_OnlyData(dgv, System.Windows.Forms.Application.StartupPath + "\\M.csv");//셀데이터로드
-                        //dgv.Rows[ 0 ].Cells[ 0 ].Value = "CORE HEIGHT 1";
-
-
-                        //for ( int i = 1 ; i < 2 ; i++ )
-                        //{
-                        //    dgv.Rows [ i - 1 ].Cells [ 0 ].Value = i;
-                        //}
-
-                        //---------------↑ 사용자 데이터 추가 부분 ↑---------------┘
-
-                        //---------------↓ 정렬 ↓---------------┐
                         GridMaster.CenterAlign(dgv);
-                        //GridMaster.LeftAlign( dgv );
-                        //GridMaster.Align( dgv , 0 , DataGridViewContentAlignment.MiddleLeft );//단일 Column 정렬
-                        //---------------↑ 정렬 ↑---------------┘
-
-                        //---------------↓ 설정 ↓---------------┐
-                        //dgv.ReadOnly = true;//읽기전용
-                        //dgv.Rows[0].Cells[0].Selected = true; // 셀0,0 선택
-                        //dgv.Columns[ 0 ].ReadOnly = true;//읽기전용
-
                         GridMaster.DisableSortColumn(dgv);//오름차순 내림차순 정렬 막기
-
-                        //dgv.AllowUserToResizeColumns = false;//컬럼폭 수정불가
                         dgv.ColumnHeadersVisible = false;//컬럼헤더 가리기                        
-                                                         //dgv.Columns[ 1 ].DefaultCellStyle.Format = "yyyy-MM-dd HH:mm:ss";//표시형식
 
-                        //dgv.DefaultCellStyle.WrapMode = DataGridViewTriState.True;//스페이스 시 줄바꿈
-                        //dgv.DefaultCellStyle.BackColor = Color.Black;//색반전
-                        //dgv.DefaultCellStyle.ForeColor = Color.White;//색반전
-                        //dgv.DefaultCellStyle.SelectionBackColor = Color.Transparent;
-                        //dgv.DefaultCellStyle.SelectionForeColor = Color.Black;
-
-                        //---------------↑ 설정 ↑---------------┘
                     }
                     catch (Exception)
                     {
@@ -3555,44 +942,10 @@ namespace MainProgram
 
 
                         GridMaster.Init3(dgv, true, height, rows, ColumnsName);
-                        //---------------↑ 생성 ↑---------------┘
-
-                        //---------------↓ 사용자 데이터 추가 부분 ↓---------------┐
-                        //GridMaster.LoadCSV_OnlyData(dgv, System.Windows.Forms.Application.StartupPath + "\\M.csv");//셀데이터로드
-                        //dgv.Rows[ 0 ].Cells[ 0 ].Value = "CORE HEIGHT 1";
-
-
-                        //for ( int i = 1 ; i < 2 ; i++ )
-                        //{
-                        //    dgv.Rows [ i - 1 ].Cells [ 0 ].Value = i;
-                        //}
-
-                        //---------------↑ 사용자 데이터 추가 부분 ↑---------------┘
-
-                        //---------------↓ 정렬 ↓---------------┐
                         GridMaster.CenterAlign(dgv);
-                        //GridMaster.LeftAlign( dgv );
-                        //GridMaster.Align( dgv , 0 , DataGridViewContentAlignment.MiddleLeft );//단일 Column 정렬
-                        //---------------↑ 정렬 ↑---------------┘
-
-                        //---------------↓ 설정 ↓---------------┐
-                        //dgv.ReadOnly = true;//읽기전용
-                        //dgv.Rows[0].Cells[0].Selected = true; // 셀0,0 선택
-                        //dgv.Columns[ 0 ].ReadOnly = true;//읽기전용
-
                         GridMaster.DisableSortColumn(dgv);//오름차순 내림차순 정렬 막기
-
-                        //dgv.AllowUserToResizeColumns = false;//컬럼폭 수정불가
                         dgv.ColumnHeadersVisible = false;//컬럼헤더 가리기                        
-                                                         //dgv.Columns[ 1 ].DefaultCellStyle.Format = "yyyy-MM-dd HH:mm:ss";//표시형식
 
-                        //dgv.DefaultCellStyle.WrapMode = DataGridViewTriState.True;//스페이스 시 줄바꿈
-                        //dgv.DefaultCellStyle.BackColor = Color.Black;//색반전
-                        //dgv.DefaultCellStyle.ForeColor = Color.White;//색반전
-                        //dgv.DefaultCellStyle.SelectionBackColor = Color.Transparent;
-                        //dgv.DefaultCellStyle.SelectionForeColor = Color.Black;
-
-                        //---------------↑ 설정 ↑---------------┘
                     }
                     catch (Exception)
                     {
@@ -3620,44 +973,9 @@ namespace MainProgram
                         int rows = checksetting;//초기 생성 Row수
 
                         GridMaster.Init3(dgv, true, height, rows, ColumnsName);
-                        //---------------↑ 생성 ↑---------------┘
-
-                        //---------------↓ 사용자 데이터 추가 부분 ↓---------------┐
-                        //GridMaster.LoadCSV_OnlyData(dgv, System.Windows.Forms.Application.StartupPath + "\\S0.csv");//셀데이터로드
-                        //dgv.Rows[ 0 ].Cells[ 0 ].Value = "CORE HEIGHT 1";
-
-
-                        //for ( int i = 0 ; i < rows ; i++ )
-                        //{
-                        //    dgv.Rows [ i ].Cells [ 0 ].Value = ( i + 1 );
-                        //}
-
-                        //---------------↑ 사용자 데이터 추가 부분 ↑---------------┘
-
-                        //---------------↓ 정렬 ↓---------------┐
                         GridMaster.CenterAlign(dgv);
-                        //GridMaster.LeftAlign( dgv );
-                        //GridMaster.Align( dgv , 0 , DataGridViewContentAlignment.MiddleLeft );//단일 Column 정렬
-                        //---------------↑ 정렬 ↑---------------┘
-
-                        //---------------↓ 설정 ↓---------------┐
-                        //dgv.ReadOnly = true;//읽기전용
-                        //dgv.Rows[0].Cells[0].Selected = true; // 셀0,0 선택
-                        //dgv.Columns[ 0 ].ReadOnly = true;//읽기전용
-
                         GridMaster.DisableSortColumn(dgv);//오름차순 내림차순 정렬 막기
 
-                        //dgv.AllowUserToResizeColumns = false;//컬럼폭 수정불가
-                        //dgv.ColumnHeadersVisible = false;//컬럼헤더 가리기                        
-                        //dgv.Columns[ 1 ].DefaultCellStyle.Format = "yyyy-MM-dd HH:mm:ss";//표시형식
-
-                        //dgv.DefaultCellStyle.WrapMode = DataGridViewTriState.True;//스페이스 시 줄바꿈
-                        //dgv.DefaultCellStyle.BackColor = Color.Black;//색반전
-                        //dgv.DefaultCellStyle.ForeColor = Color.White;//색반전
-                        //dgv.DefaultCellStyle.SelectionBackColor = Color.Transparent;
-                        //dgv.DefaultCellStyle.SelectionForeColor = Color.Black;
-
-                        //---------------↑ 설정 ↑---------------┘
                     }
                     catch (Exception)
                     {
@@ -3684,44 +1002,9 @@ namespace MainProgram
                         int rows = checksetting2;//초기 생성 Row수
 
                         GridMaster.Init3(dgv, true, height, rows, ColumnsName);
-                        //---------------↑ 생성 ↑---------------┘
-
-                        //---------------↓ 사용자 데이터 추가 부분 ↓---------------┐
-                        //GridMaster.LoadCSV_OnlyData(dgv, System.Windows.Forms.Application.StartupPath + "\\S0.csv");//셀데이터로드
-                        //dgv.Rows[ 0 ].Cells[ 0 ].Value = "CORE HEIGHT 1";
-
-
-                        //for ( int i = 0 ; i < rows ; i++ )
-                        //{
-                        //    dgv.Rows [ i ].Cells [ 0 ].Value = ( i + 1 );
-                        //}
-
-                        //---------------↑ 사용자 데이터 추가 부분 ↑---------------┘
-
-                        //---------------↓ 정렬 ↓---------------┐
                         GridMaster.CenterAlign(dgv);
-                        //GridMaster.LeftAlign( dgv );
-                        //GridMaster.Align( dgv , 0 , DataGridViewContentAlignment.MiddleLeft );//단일 Column 정렬
-                        //---------------↑ 정렬 ↑---------------┘
-
-                        //---------------↓ 설정 ↓---------------┐
-                        //dgv.ReadOnly = true;//읽기전용
-                        //dgv.Rows[0].Cells[0].Selected = true; // 셀0,0 선택
-                        //dgv.Columns[ 0 ].ReadOnly = true;//읽기전용
-
                         GridMaster.DisableSortColumn(dgv);//오름차순 내림차순 정렬 막기
 
-                        //dgv.AllowUserToResizeColumns = false;//컬럼폭 수정불가
-                        //dgv.ColumnHeadersVisible = false;//컬럼헤더 가리기                        
-                        //dgv.Columns[ 1 ].DefaultCellStyle.Format = "yyyy-MM-dd HH:mm:ss";//표시형식
-
-                        //dgv.DefaultCellStyle.WrapMode = DataGridViewTriState.True;//스페이스 시 줄바꿈
-                        //dgv.DefaultCellStyle.BackColor = Color.Black;//색반전
-                        //dgv.DefaultCellStyle.ForeColor = Color.White;//색반전
-                        //dgv.DefaultCellStyle.SelectionBackColor = Color.Transparent;
-                        //dgv.DefaultCellStyle.SelectionForeColor = Color.Black;
-
-                        //---------------↑ 설정 ↑---------------┘
                     }
                     catch (Exception)
                     {
@@ -3740,48 +1023,27 @@ namespace MainProgram
                         int fontheader = int.Parse(DataRW.Load_Simple(DGV_name + "FH", "12"));//데이터가져옴
                         int fontcell = int.Parse(DataRW.Load_Simple(DGV_name + "FC", "12"));//데이터가져옴
                         GridMaster.FontSize2(dgv, fontheader, fontcell);//적용
-                        //---------------↑ 기본 ↑---------------┘
 
-                        //---------------↓ 생성 ↓---------------┐
                         string[] ColumnsName = new string[] {
                             "번지" , "내용" , "Data"
                         };
                         int rows = 500;//초기 생성 Row수
 
                         GridMaster.Init3(dgv, true, height, rows, ColumnsName);
-                        //---------------↑ 생성 ↑---------------┘
 
-                        //---------------↓ 사용자 데이터 추가 부분 ↓---------------┐
-                        //GridMaster.LoadCSV_OnlyData( dgv , System.Windows.Forms.Application.StartupPath + "\\AAAA.csv" );//셀데이터로드
                         GridMaster.LoadCSV_OnlyData( dgv, System.Windows.Forms.Application.StartupPath + "\\P1.csv" );//셀데이터로드
-                        //dgv.Rows[ 0 ].Cells[ 0 ].Value = "CORE HEIGHT 1";
+
 
                         for ( int i = 0; i < rows; i++)
                         {
                             dgv.Rows[i].Cells[0].Value = "D" + (i + 20000);
                         }
 
-                        //---------------↑ 사용자 데이터 추가 부분 ↑---------------┘
-
-                        //---------------↓ 정렬 ↓---------------┐
                         GridMaster.CenterAlign(dgv);
-                        //GridMaster.LeftAlign( dgv );
-                        //GridMaster.Align( dgv , 0 , DataGridViewContentAlignment.MiddleLeft );//단일 Column 정렬
-                        //---------------↑ 정렬 ↑---------------┘
 
-                        //---------------↓ 설정 ↓---------------┐
-                        //dgv.ReadOnly = true;//읽기전용
+
                         GridMaster.DisableSortColumn(dgv);//오름차순 내림차순 정렬 막기
-                                                          //dgv.Columns[ 0 ].ReadOnly = true;//읽기전용
-                                                          //dgv.AllowUserToResizeColumns = false;//컬럼폭 수정불가
 
-                        //dgv.Columns[ 1 ].DefaultCellStyle.Format = "yyyy-MM-dd HH:mm:ss";//표시형식
-                        //dgv.ColumnHeadersVisible = false;//컬럼헤더 가리기                        
-                        //dgv.DefaultCellStyle.WrapMode = DataGridViewTriState.True;//스페이스 시 줄바꿈
-                        //dgv.DefaultCellStyle.BackColor = Color.Black;//색반전
-                        //dgv.DefaultCellStyle.ForeColor = Color.White;//색반전
-
-                        //---------------↑ 설정 ↑---------------┘
 
                     }
                     catch (Exception)
@@ -3790,131 +1052,6 @@ namespace MainProgram
                     }
 
                     break;
-
-
-                //case "dgvH0":
-
-                //    try
-                //    {
-                //        //---------------↓ 기본 ↓---------------┐
-                //        DataGridView dgv = (DataGridView)Reflection_K.Get(this, name);//이름가져옴
-                //        string DGV_name = dgv.Name;//적용
-                //        int height = int.Parse(DataRW.Load_Simple(DGV_name + "H", "30"));//데이터가져옴
-                //        int fontheader = int.Parse(DataRW.Load_Simple(DGV_name + "FH", "12"));//데이터가져옴
-                //        int fontcell = int.Parse(DataRW.Load_Simple(DGV_name + "FC", "12"));//데이터가져옴
-                //        GridMaster.FontSize2(dgv, fontheader, fontcell);//적용
-                //        //---------------↑ 기본 ↑---------------┘
-
-                //        //---------------↓ 생성 ↓---------------┐
-                //        string[] ColumnsName = new string[] {
-                //            //"A","A","A","A","A","A","A","A"
-                //            };
-                //        int rows = 0;//초기 생성 Row수
-
-                //        GridMaster.Init3(dgv, false, height, rows, ColumnsName);
-                //        //---------------↑ 생성 ↑---------------┘
-
-                //        //---------------↓ 사용자 데이터 추가 부분 ↓---------------┐
-                //        //GridMaster.LoadCSV_OnlyData( dgv , System.Windows.Forms.Application.StartupPath + "\\AAAA.csv" );//셀데이터로드
-                //        //dgv.Rows[ 0 ].Cells[ 0 ].Value = "CORE HEIGHT 1";
-
-                //        //dgv.Columns[0].HeaderText = "Model";
-                //        //dgv.Columns[1].HeaderText = "DateTime";
-                //        //dgv.Columns[2].HeaderText = "Result";
-                //        //dgv.Columns[3].HeaderText = "Area 1";
-                //        //dgv.Columns[4].HeaderText = "Area 2";
-                //        //dgv.Columns[5].HeaderText = "Area 3";
-                //        //dgv.Columns[6].HeaderText = "Area 4";
-                //        //dgv.Columns[7].HeaderText = "Area 5";
-
-                //        //dgv.Columns[0].HeaderText = "Model";
-                //        //dgv.Columns[1].HeaderText = "Datetime";
-                //        //dgv.Columns[2].HeaderText = "Barcode";
-                //        //dgv.Columns[3].HeaderText = "CamNum";
-                //        //dgv.Columns[4].HeaderText = "CamResult1";
-                //        //dgv.Columns[5].HeaderText = "CamResult2";
-                //        //dgv.Columns[6].HeaderText = "CapNum";
-                //        //dgv.Columns[7].HeaderText = "CapResult";
-                //        //dgv.Columns[8].HeaderText = "Wash";
-                //        //dgv.Columns[9].HeaderText = "Cap1";
-                //        //dgv.Columns[10].HeaderText = "Cap2";
-                //        //dgv.Columns[11].HeaderText = "Cap3";
-                //        //dgv.Columns[12].HeaderText = "LVDTResult";
-                //        //dgv.Columns[13].HeaderText = "LVDT1";
-                //        //dgv.Columns[14].HeaderText = "LVDT2";
-                //        //dgv.Columns[15].HeaderText = "LVDT3";
-                //        //dgv.Columns[16].HeaderText = "LVDT4";
-                //        //dgv.Columns[17].HeaderText = "LVDT5";
-                //        //dgv.Columns[18].HeaderText = "LVDT6";
-                //        //dgv.Columns[19].HeaderText = "LVDT7";
-                //        //dgv.Columns[20].HeaderText = "LVDT8";
-                //        //dgv.Columns[21].HeaderText = "LVDT9";
-                //        //dgv.Columns[22].HeaderText = "GasLeakNum";
-                //        //dgv.Columns[23].HeaderText = "GasLeakResult";
-                //        //dgv.Columns[24].HeaderText = "GasLeak1";
-                //        //dgv.Columns[25].HeaderText = "WaterLeakNum";
-                //        //dgv.Columns[26].HeaderText = "WaterLeakResult";
-                //        //dgv.Columns[27].HeaderText = "WaterLeak1";
-
-                //        //dgv.Columns[1].DefaultCellStyle.Format = "yyyy-MM-dd HH:mm:ss";
-
-                //        //---------------↓ OKNG 색칠 ↓---------------┐
-
-                //        //GridMaster.Color_Painting(dgv, 5);
-                //        //GridMaster.Color_Painting(dgv, 12);
-
-                //        //GridMaster.Color_Painting(dgv, 17);
-                //        //GridMaster.Color_Painting(dgv, 19);
-                //        //GridMaster.Color_Painting(dgv, 21);
-                //        //GridMaster.Color_Painting(dgv, 23);
-                //        //GridMaster.Color_Painting(dgv, 27);
-                //        //GridMaster.Color_Painting(dgv, 38);
-
-
-
-                //        //---------------↑ OKNG 색칠 ↑---------------┘
-
-
-
-                //        //---------------↑ 사용자 데이터 추가 부분 ↑---------------┘
-
-                //        //---------------↓ 정렬 ↓---------------┐
-                //        GridMaster.CenterAlign(dgv);
-                //        //GridMaster.LeftAlign( dgv );
-                //        //GridMaster.Align( dgv , 0 , DataGridViewContentAlignment.MiddleLeft );//단일 Column 정렬
-                //        //---------------↑ 정렬 ↑---------------┘
-
-                //        //---------------↓ 설정 ↓---------------┐
-                //        dgv.ReadOnly = true;//읽기전용
-                //        //GridMaster.DisableSortColumn(dgv);//오름차순 내림차순 정렬 막기
-                //        //dgv.Columns[0].ReadOnly = true;//읽기전용
-                //        //dgv.AllowUserToResizeColumns = false;//컬럼폭 수정불가
-                //        dgv.Columns[1].DefaultCellStyle.Format = "yyyy-MM-dd HH:mm:ss";//표시형식
-                //        //dgv.ColumnHeadersVisible = false;//컬럼헤더 가리기                        
-                //        //dgv.DefaultCellStyle.WrapMode = DataGridViewTriState.True;//스페이스 시 줄바꿈
-                //        //dgv.DefaultCellStyle.BackColor = Color.Black;//색반전
-                //        //dgv.DefaultCellStyle.ForeColor = Color.White;//색반전
-
-                //        //---------------↑ 설정 ↑---------------┘
-
-                //        //for ( int i = 0 ; i < dgvH0.RowCount ; i++ )
-                //        //{
-                //        //    for ( int j = 3 ; j < 8 ; j++ )
-                //        //    {
-                //        //        if ( dgvH0.Rows [ i ].Cells [ j ].Value.ToString( ) != "1" )
-                //        //        {
-                //        //            dgvH0.Rows [ i ].Cells [ j ].Style.BackColor = Color.Crimson;
-                //        //        }
-                //        //    }
-                //        //}
-                //    }
-                //    catch (Exception)
-                //    {
-                //        Console.WriteLine("dgvH0");
-                //    }
-
-                //    break;
-
 
                 case "dgvH0":
 
@@ -3936,73 +1073,12 @@ namespace MainProgram
                         int rows = 0;//초기 생성 Row수
 
                         GridMaster.Init3(dgv, false, height, rows, ColumnsName);
-                        //---------------↑ 생성 ↑---------------┘
-
-                        //---------------↓ 사용자 데이터 추가 부분 ↓---------------┐
-                        //GridMaster.LoadCSV_OnlyData( dgv , System.Windows.Forms.Application.StartupPath + "\\AAAA.csv" );//셀데이터로드
-                        //dgv.Rows[ 0 ].Cells[ 0 ].Value = "CORE HEIGHT 1";
-
-                        //dgv.Columns[0].HeaderText = "Model";
-                        //dgv.Columns[1].HeaderText = "DateTime";
-                        //dgv.Columns[2].HeaderText = "Result";
-                        //dgv.Columns[3].HeaderText = "Area 1";
-                        //dgv.Columns[4].HeaderText = "Area 2";
-                        //dgv.Columns[5].HeaderText = "Area 3";
-                        //dgv.Columns[6].HeaderText = "Area 4";
-                        //dgv.Columns[7].HeaderText = "Area 5";
-
-                        //dgv.Columns[1].DefaultCellStyle.Format = "yyyy-MM-dd HH:mm:ss";
-
-                        //---------------↓ OKNG 색칠 ↓---------------┐
-
-                        //GridMaster.Color_Painting(dgv, 5);
-                        //GridMaster.Color_Painting(dgv, 12);
-
-                        //GridMaster.Color_Painting(dgv, 17);
-                        //GridMaster.Color_Painting(dgv, 19);
-                        //GridMaster.Color_Painting(dgv, 21);
-                        //GridMaster.Color_Painting(dgv, 23);
-                        //GridMaster.Color_Painting(dgv, 27);
-                        //GridMaster.Color_Painting(dgv, 38);
-
-
-
-                        //---------------↑ OKNG 색칠 ↑---------------┘
-
-
-
-                        //---------------↑ 사용자 데이터 추가 부분 ↑---------------┘
-
-                        //---------------↓ 정렬 ↓---------------┐
                         GridMaster.CenterAlign(dgv);
-                        //GridMaster.LeftAlign( dgv );
-                        //GridMaster.Align( dgv , 0 , DataGridViewContentAlignment.MiddleLeft );//단일 Column 정렬
-                        //---------------↑ 정렬 ↑---------------┘
-
-                        //---------------↓ 설정 ↓---------------┐
                         dgv.ReadOnly = true;//읽기전용
                         //GridMaster.DisableSortColumn( dgv );//오름차순 내림차순 정렬 막기
                         dgv.Columns[0].ReadOnly = true;//읽기전용
                         //dgv.AllowUserToResizeColumns = false;//컬럼폭 수정불가
-                        dgv.Columns[1].DefaultCellStyle.Format = "yyyy-MM-dd HH:mm:ss";//표시형식
-                        //dgv.ColumnHeadersVisible = false;//컬럼헤더 가리기                        
-                        //dgv.DefaultCellStyle.WrapMode = DataGridViewTriState.True;//스페이스 시 줄바꿈
-                        //dgv.DefaultCellStyle.BackColor = Color.Black;//색반전
-                        //dgv.DefaultCellStyle.ForeColor = Color.White;//색반전
-                        //dgv.Columns[1].SortMode = DataGridViewColumnSortMode.Programmatic;
-                        //dgv.Columns[0].HeaderCell.SortGlyphDirection = SortOrder.Ascending;
-                        //---------------↑ 설정 ↑---------------┘
-
-                        //for ( int i = 0 ; i < dgvH0.RowCount ; i++ )
-                        //{
-                        //    for ( int j = 3 ; j < 8 ; j++ )
-                        //    {
-                        //        if ( dgvH0.Rows [ i ].Cells [ j ].Value.ToString( ) != "1" )
-                        //        {
-                        //            dgvH0.Rows [ i ].Cells [ j ].Style.BackColor = Color.Crimson;
-                        //        }
-                        //    }
-                        //}
+                        dgv.Columns[1].DefaultCellStyle.Format = "yyyy-MM-dd HH:mm:ss"; //표시형식
                     }
                     catch (Exception)
                     {
@@ -4031,72 +1107,12 @@ namespace MainProgram
                         int rows = 0;//초기 생성 Row수
 
                         GridMaster.Init3(dgv, false, height, rows, ColumnsName);
-                        //---------------↑ 생성 ↑---------------┘
-
-                        //---------------↓ 사용자 데이터 추가 부분 ↓---------------┐
-                        //GridMaster.LoadCSV_OnlyData( dgv , System.Windows.Forms.Application.StartupPath + "\\AAAA.csv" );//셀데이터로드
-                        //dgv.Rows[ 0 ].Cells[ 0 ].Value = "CORE HEIGHT 1";
-
-                        //dgv.Columns[0].HeaderText = "Model";
-                        //dgv.Columns[1].HeaderText = "DateTime";
-                        //dgv.Columns[2].HeaderText = "Result";
-                        //dgv.Columns[3].HeaderText = "Area 1";
-                        //dgv.Columns[4].HeaderText = "Area 2";
-                        //dgv.Columns[5].HeaderText = "Area 3";
-                        //dgv.Columns[6].HeaderText = "Area 4";
-                        //dgv.Columns[7].HeaderText = "Area 5";
-
-                        //dgv.Columns[1].DefaultCellStyle.Format = "yyyy-MM-dd HH:mm:ss";
-
-                        //---------------↓ OKNG 색칠 ↓---------------┐
-
-                        //GridMaster.Color_Painting(dgv, 5);
-                        //GridMaster.Color_Painting(dgv, 12);
-
-                        //GridMaster.Color_Painting(dgv, 17);
-                        //GridMaster.Color_Painting(dgv, 19);
-                        //GridMaster.Color_Painting(dgv, 21);
-                        //GridMaster.Color_Painting(dgv, 23);
-                        //GridMaster.Color_Painting(dgv, 27);
-                        //GridMaster.Color_Painting(dgv, 38);
-
-
-
-                        //---------------↑ OKNG 색칠 ↑---------------┘
-
-
-
-                        //---------------↑ 사용자 데이터 추가 부분 ↑---------------┘
-
-                        //---------------↓ 정렬 ↓---------------┐
                         GridMaster.CenterAlign(dgv);
-                        //GridMaster.LeftAlign( dgv );
-                        //GridMaster.Align( dgv , 0 , DataGridViewContentAlignment.MiddleLeft );//단일 Column 정렬
-                        //---------------↑ 정렬 ↑---------------┘
 
-                        //---------------↓ 설정 ↓---------------┐
                         dgv.ReadOnly = true;//읽기전용
                         //GridMaster.DisableSortColumn( dgv );//오름차순 내림차순 정렬 막기
                         dgv.Columns[0].ReadOnly = true;//읽기전용
-                        //dgv.AllowUserToResizeColumns = false;//컬럼폭 수정불가
-                        //dgv.Columns[1].DefaultCellStyle.Format = "yyyy-MM-dd HH:mm:ss";//표시형식
-                        //dgv.ColumnHeadersVisible = false;//컬럼헤더 가리기                        
-                        //dgv.DefaultCellStyle.WrapMode = DataGridViewTriState.True;//스페이스 시 줄바꿈
-                        //dgv.DefaultCellStyle.BackColor = Color.Black;//색반전
-                        //dgv.DefaultCellStyle.ForeColor = Color.White;//색반전
 
-                        //---------------↑ 설정 ↑---------------┘
-
-                        //for ( int i = 0 ; i < dgvH0.RowCount ; i++ )
-                        //{
-                        //    for ( int j = 3 ; j < 8 ; j++ )
-                        //    {
-                        //        if ( dgvH0.Rows [ i ].Cells [ j ].Value.ToString( ) != "1" )
-                        //        {
-                        //            dgvH0.Rows [ i ].Cells [ j ].Style.BackColor = Color.Crimson;
-                        //        }
-                        //    }
-                        //}
                     }
                     catch (Exception)
                     {
@@ -4125,72 +1141,11 @@ namespace MainProgram
                         int rows = 0;//초기 생성 Row수
 
                         GridMaster.Init3(dgv, false, height, rows, ColumnsName);
-                        //---------------↑ 생성 ↑---------------┘
-
-                        //---------------↓ 사용자 데이터 추가 부분 ↓---------------┐
-                        //GridMaster.LoadCSV_OnlyData( dgv , System.Windows.Forms.Application.StartupPath + "\\AAAA.csv" );//셀데이터로드
-                        //dgv.Rows[ 0 ].Cells[ 0 ].Value = "CORE HEIGHT 1";
-
-                        //dgv.Columns[0].HeaderText = "Model";
-                        //dgv.Columns[1].HeaderText = "DateTime";
-                        //dgv.Columns[2].HeaderText = "Result";
-                        //dgv.Columns[3].HeaderText = "Area 1";
-                        //dgv.Columns[4].HeaderText = "Area 2";
-                        //dgv.Columns[5].HeaderText = "Area 3";
-                        //dgv.Columns[6].HeaderText = "Area 4";
-                        //dgv.Columns[7].HeaderText = "Area 5";
-
-                        //dgv.Columns[1].DefaultCellStyle.Format = "yyyy-MM-dd HH:mm:ss";
-
-                        //---------------↓ OKNG 색칠 ↓---------------┐
-
-                        //GridMaster.Color_Painting(dgv, 5);
-                        //GridMaster.Color_Painting(dgv, 12);
-
-                        //GridMaster.Color_Painting(dgv, 17);
-                        //GridMaster.Color_Painting(dgv, 19);
-                        //GridMaster.Color_Painting(dgv, 21);
-                        //GridMaster.Color_Painting(dgv, 23);
-                        //GridMaster.Color_Painting(dgv, 27);
-                        //GridMaster.Color_Painting(dgv, 38);
-
-
-
-                        //---------------↑ OKNG 색칠 ↑---------------┘
-
-
-
-                        //---------------↑ 사용자 데이터 추가 부분 ↑---------------┘
-
-                        //---------------↓ 정렬 ↓---------------┐
                         GridMaster.CenterAlign(dgv);
-                        //GridMaster.LeftAlign( dgv );
-                        //GridMaster.Align( dgv , 0 , DataGridViewContentAlignment.MiddleLeft );//단일 Column 정렬
-                        //---------------↑ 정렬 ↑---------------┘
 
-                        //---------------↓ 설정 ↓---------------┐
                         dgv.ReadOnly = true;//읽기전용
-                        //GridMaster.DisableSortColumn( dgv );//오름차순 내림차순 정렬 막기
                         dgv.Columns[0].ReadOnly = true;//읽기전용
-                        //dgv.AllowUserToResizeColumns = false;//컬럼폭 수정불가
-                        //dgv.Columns[1].DefaultCellStyle.Format = "yyyy-MM-dd HH:mm:ss";//표시형식
-                        //dgv.ColumnHeadersVisible = false;//컬럼헤더 가리기                        
-                        //dgv.DefaultCellStyle.WrapMode = DataGridViewTriState.True;//스페이스 시 줄바꿈
-                        //dgv.DefaultCellStyle.BackColor = Color.Black;//색반전
-                        //dgv.DefaultCellStyle.ForeColor = Color.White;//색반전
 
-                        //---------------↑ 설정 ↑---------------┘
-
-                        //for ( int i = 0 ; i < dgvH0.RowCount ; i++ )
-                        //{
-                        //    for ( int j = 3 ; j < 8 ; j++ )
-                        //    {
-                        //        if ( dgvH0.Rows [ i ].Cells [ j ].Value.ToString( ) != "1" )
-                        //        {
-                        //            dgvH0.Rows [ i ].Cells [ j ].Style.BackColor = Color.Crimson;
-                        //        }
-                        //    }
-                        //}
                     }
                     catch (Exception)
                     {
@@ -4219,72 +1174,11 @@ namespace MainProgram
                         int rows = 0;//초기 생성 Row수
 
                         GridMaster.Init3(dgv, false, height, rows, ColumnsName);
-                        //---------------↑ 생성 ↑---------------┘
+                         GridMaster.CenterAlign(dgv);
 
-                        //---------------↓ 사용자 데이터 추가 부분 ↓---------------┐
-                        //GridMaster.LoadCSV_OnlyData( dgv , System.Windows.Forms.Application.StartupPath + "\\AAAA.csv" );//셀데이터로드
-                        //dgv.Rows[ 0 ].Cells[ 0 ].Value = "CORE HEIGHT 1";
-
-                        //dgv.Columns[0].HeaderText = "Model";
-                        //dgv.Columns[1].HeaderText = "DateTime";
-                        //dgv.Columns[2].HeaderText = "Result";
-                        //dgv.Columns[3].HeaderText = "Area 1";
-                        //dgv.Columns[4].HeaderText = "Area 2";
-                        //dgv.Columns[5].HeaderText = "Area 3";
-                        //dgv.Columns[6].HeaderText = "Area 4";
-                        //dgv.Columns[7].HeaderText = "Area 5";
-
-                        //dgv.Columns[1].DefaultCellStyle.Format = "yyyy-MM-dd HH:mm:ss";
-
-                        //---------------↓ OKNG 색칠 ↓---------------┐
-
-                        //GridMaster.Color_Painting(dgv, 5);
-                        //GridMaster.Color_Painting(dgv, 12);
-
-                        //GridMaster.Color_Painting(dgv, 17);
-                        //GridMaster.Color_Painting(dgv, 19);
-                        //GridMaster.Color_Painting(dgv, 21);
-                        //GridMaster.Color_Painting(dgv, 23);
-                        //GridMaster.Color_Painting(dgv, 27);
-                        //GridMaster.Color_Painting(dgv, 38);
-
-
-
-                        //---------------↑ OKNG 색칠 ↑---------------┘
-
-
-
-                        //---------------↑ 사용자 데이터 추가 부분 ↑---------------┘
-
-                        //---------------↓ 정렬 ↓---------------┐
-                        GridMaster.CenterAlign(dgv);
-                        //GridMaster.LeftAlign( dgv );
-                        //GridMaster.Align( dgv , 0 , DataGridViewContentAlignment.MiddleLeft );//단일 Column 정렬
-                        //---------------↑ 정렬 ↑---------------┘
-
-                        //---------------↓ 설정 ↓---------------┐
                         dgv.ReadOnly = true;//읽기전용
-                        //GridMaster.DisableSortColumn( dgv );//오름차순 내림차순 정렬 막기
                         dgv.Columns[0].ReadOnly = true;//읽기전용
-                        //dgv.AllowUserToResizeColumns = false;//컬럼폭 수정불가
-                        //dgv.Columns[1].DefaultCellStyle.Format = "yyyy-MM-dd HH:mm:ss";//표시형식
-                        //dgv.ColumnHeadersVisible = false;//컬럼헤더 가리기                        
-                        //dgv.DefaultCellStyle.WrapMode = DataGridViewTriState.True;//스페이스 시 줄바꿈
-                        //dgv.DefaultCellStyle.BackColor = Color.Black;//색반전
-                        //dgv.DefaultCellStyle.ForeColor = Color.White;//색반전
-
-                        //---------------↑ 설정 ↑---------------┘
-
-                        //for ( int i = 0 ; i < dgvH0.RowCount ; i++ )
-                        //{
-                        //    for ( int j = 3 ; j < 8 ; j++ )
-                        //    {
-                        //        if ( dgvH0.Rows [ i ].Cells [ j ].Value.ToString( ) != "1" )
-                        //        {
-                        //            dgvH0.Rows [ i ].Cells [ j ].Style.BackColor = Color.Crimson;
-                        //        }
-                        //    }
-                        //}
+ 
                     }
                     catch (Exception)
                     {
@@ -4312,73 +1206,13 @@ namespace MainProgram
                             };
                         int rows = 0;//초기 생성 Row수
 
-                        GridMaster.Init3(dgv, false, height, rows, ColumnsName);
-                        //---------------↑ 생성 ↑---------------┘
-
-                        //---------------↓ 사용자 데이터 추가 부분 ↓---------------┐
-                        //GridMaster.LoadCSV_OnlyData( dgv , System.Windows.Forms.Application.StartupPath + "\\AAAA.csv" );//셀데이터로드
-                        //dgv.Rows[ 0 ].Cells[ 0 ].Value = "CORE HEIGHT 1";
-
-                        //dgv.Columns[0].HeaderText = "Model";
-                        //dgv.Columns[1].HeaderText = "DateTime";
-                        //dgv.Columns[2].HeaderText = "Result";
-                        //dgv.Columns[3].HeaderText = "Area 1";
-                        //dgv.Columns[4].HeaderText = "Area 2";
-                        //dgv.Columns[5].HeaderText = "Area 3";
-                        //dgv.Columns[6].HeaderText = "Area 4";
-                        //dgv.Columns[7].HeaderText = "Area 5";
-
-                        //dgv.Columns[1].DefaultCellStyle.Format = "yyyy-MM-dd HH:mm:ss";
-
-                        //---------------↓ OKNG 색칠 ↓---------------┐
-
-                        //GridMaster.Color_Painting(dgv, 5);
-                        //GridMaster.Color_Painting(dgv, 12);
-
-                        //GridMaster.Color_Painting(dgv, 17);
-                        //GridMaster.Color_Painting(dgv, 19);
-                        //GridMaster.Color_Painting(dgv, 21);
-                        //GridMaster.Color_Painting(dgv, 23);
-                        //GridMaster.Color_Painting(dgv, 27);
-                        //GridMaster.Color_Painting(dgv, 38);
-
-
-
-                        //---------------↑ OKNG 색칠 ↑---------------┘
-
-
-
-                        //---------------↑ 사용자 데이터 추가 부분 ↑---------------┘
-
-                        //---------------↓ 정렬 ↓---------------┐
+                        GridMaster.Init3(dgv, false, height, rows, ColumnsName);  
                         GridMaster.CenterAlign(dgv);
-                        //GridMaster.LeftAlign( dgv );
-                        //GridMaster.Align( dgv , 0 , DataGridViewContentAlignment.MiddleLeft );//단일 Column 정렬
-                        //---------------↑ 정렬 ↑---------------┘
 
-                        //---------------↓ 설정 ↓---------------┐
                         dgv.ReadOnly = true;//읽기전용
-                        //GridMaster.DisableSortColumn( dgv );//오름차순 내림차순 정렬 막기
+                     
                         dgv.Columns[0].ReadOnly = true;//읽기전용
-                        //dgv.AllowUserToResizeColumns = false;//컬럼폭 수정불가
-                        //dgv.Columns[1].DefaultCellStyle.Format = "yyyy-MM-dd HH:mm:ss";//표시형식
-                        //dgv.ColumnHeadersVisible = false;//컬럼헤더 가리기                        
-                        //dgv.DefaultCellStyle.WrapMode = DataGridViewTriState.True;//스페이스 시 줄바꿈
-                        //dgv.DefaultCellStyle.BackColor = Color.Black;//색반전
-                        //dgv.DefaultCellStyle.ForeColor = Color.White;//색반전
-
-                        //---------------↑ 설정 ↑---------------┘
-
-                        //for ( int i = 0 ; i < dgvH0.RowCount ; i++ )
-                        //{
-                        //    for ( int j = 3 ; j < 8 ; j++ )
-                        //    {
-                        //        if ( dgvH0.Rows [ i ].Cells [ j ].Value.ToString( ) != "1" )
-                        //        {
-                        //            dgvH0.Rows [ i ].Cells [ j ].Style.BackColor = Color.Crimson;
-                        //        }
-                        //    }
-                        //}
+     
                     }
                     catch (Exception)
                     {
@@ -4407,72 +1241,10 @@ namespace MainProgram
                         int rows = 0;//초기 생성 Row수
 
                         GridMaster.Init3(dgv, false, height, rows, ColumnsName);
-                        //---------------↑ 생성 ↑---------------┘
-
-                        //---------------↓ 사용자 데이터 추가 부분 ↓---------------┐
-                        //GridMaster.LoadCSV_OnlyData( dgv , System.Windows.Forms.Application.StartupPath + "\\AAAA.csv" );//셀데이터로드
-                        //dgv.Rows[ 0 ].Cells[ 0 ].Value = "CORE HEIGHT 1";
-
-                        //dgv.Columns[0].HeaderText = "Model";
-                        //dgv.Columns[1].HeaderText = "DateTime";
-                        //dgv.Columns[2].HeaderText = "Result";
-                        //dgv.Columns[3].HeaderText = "Area 1";
-                        //dgv.Columns[4].HeaderText = "Area 2";
-                        //dgv.Columns[5].HeaderText = "Area 3";
-                        //dgv.Columns[6].HeaderText = "Area 4";
-                        //dgv.Columns[7].HeaderText = "Area 5";
-
-                        //dgv.Columns[1].DefaultCellStyle.Format = "yyyy-MM-dd HH:mm:ss";
-
-                        //---------------↓ OKNG 색칠 ↓---------------┐
-
-                        //GridMaster.Color_Painting(dgv, 5);
-                        //GridMaster.Color_Painting(dgv, 12);
-
-                        //GridMaster.Color_Painting(dgv, 17);
-                        //GridMaster.Color_Painting(dgv, 19);
-                        //GridMaster.Color_Painting(dgv, 21);
-                        //GridMaster.Color_Painting(dgv, 23);
-                        //GridMaster.Color_Painting(dgv, 27);
-                        //GridMaster.Color_Painting(dgv, 38);
-
-
-
-                        //---------------↑ OKNG 색칠 ↑---------------┘
-
-
-
-                        //---------------↑ 사용자 데이터 추가 부분 ↑---------------┘
-
-                        //---------------↓ 정렬 ↓---------------┐
                         GridMaster.CenterAlign(dgv);
-                        //GridMaster.LeftAlign( dgv );
-                        //GridMaster.Align( dgv , 0 , DataGridViewContentAlignment.MiddleLeft );//단일 Column 정렬
-                        //---------------↑ 정렬 ↑---------------┘
-
-                        //---------------↓ 설정 ↓---------------┐
                         dgv.ReadOnly = true;//읽기전용
-                        //GridMaster.DisableSortColumn( dgv );//오름차순 내림차순 정렬 막기
                         dgv.Columns[0].ReadOnly = true;//읽기전용
-                        //dgv.AllowUserToResizeColumns = false;//컬럼폭 수정불가
-                        //dgv.Columns[1].DefaultCellStyle.Format = "yyyy-MM-dd HH:mm:ss";//표시형식
-                        //dgv.ColumnHeadersVisible = false;//컬럼헤더 가리기                        
-                        //dgv.DefaultCellStyle.WrapMode = DataGridViewTriState.True;//스페이스 시 줄바꿈
-                        //dgv.DefaultCellStyle.BackColor = Color.Black;//색반전
-                        //dgv.DefaultCellStyle.ForeColor = Color.White;//색반전
-
-                        //---------------↑ 설정 ↑---------------┘
-
-                        //for ( int i = 0 ; i < dgvH0.RowCount ; i++ )
-                        //{
-                        //    for ( int j = 3 ; j < 8 ; j++ )
-                        //    {
-                        //        if ( dgvH0.Rows [ i ].Cells [ j ].Value.ToString( ) != "1" )
-                        //        {
-                        //            dgvH0.Rows [ i ].Cells [ j ].Style.BackColor = Color.Crimson;
-                        //        }
-                        //    }
-                        //}
+  
                     }
                     catch (Exception)
                     {
@@ -4501,73 +1273,11 @@ namespace MainProgram
                         int rows = 0;//초기 생성 Row수
 
                         GridMaster.Init3(dgv, false, height, rows, ColumnsName);
-                        //---------------↑ 생성 ↑---------------┘
-
-                        //---------------↓ 사용자 데이터 추가 부분 ↓---------------┐
-                        //GridMaster.LoadCSV_OnlyData( dgv , System.Windows.Forms.Application.StartupPath + "\\AAAA.csv" );//셀데이터로드
-                        //dgv.Rows[ 0 ].Cells[ 0 ].Value = "CORE HEIGHT 1";
-
-                        //dgv.Columns[0].HeaderText = "Model";
-                        //dgv.Columns[1].HeaderText = "DateTime";
-                        //dgv.Columns[2].HeaderText = "Result";
-                        //dgv.Columns[3].HeaderText = "Area 1";
-                        //dgv.Columns[4].HeaderText = "Area 2";
-                        //dgv.Columns[5].HeaderText = "Area 3";
-                        //dgv.Columns[6].HeaderText = "Area 4";
-                        //dgv.Columns[7].HeaderText = "Area 5";
-
-                        //dgv.Columns[1].DefaultCellStyle.Format = "yyyy-MM-dd HH:mm:ss";
-
-                        //---------------↓ OKNG 색칠 ↓---------------┐
-
-                        //GridMaster.Color_Painting(dgv, 5);
-                        //GridMaster.Color_Painting(dgv, 12);
-
-                        //GridMaster.Color_Painting(dgv, 17);
-                        //GridMaster.Color_Painting(dgv, 19);
-                        //GridMaster.Color_Painting(dgv, 21);
-                        //GridMaster.Color_Painting(dgv, 23);
-                        //GridMaster.Color_Painting(dgv, 27);
-                        //GridMaster.Color_Painting(dgv, 38);
-
-
-
-                        //---------------↑ OKNG 색칠 ↑---------------┘
-
-
-
-                        //---------------↑ 사용자 데이터 추가 부분 ↑---------------┘
-
-                        //---------------↓ 정렬 ↓---------------┐
                         GridMaster.CenterAlign(dgv);
-                        //GridMaster.LeftAlign( dgv );
-                        //GridMaster.Align( dgv , 0 , DataGridViewContentAlignment.MiddleLeft );//단일 Column 정렬
-                        //---------------↑ 정렬 ↑---------------┘
-
-                        //---------------↓ 설정 ↓---------------┐
                         dgv.ReadOnly = true;//읽기전용
-                        //GridMaster.DisableSortColumn( dgv );//오름차순 내림차순 정렬 막기
-                        dgv.Columns[0].ReadOnly = true;//읽기전용
-                        //dgv.AllowUserToResizeColumns = false;//컬럼폭 수정불가
-                        //dgv.Columns[1].DefaultCellStyle.Format = "yyyy-MM-dd HH:mm:ss";//표시형식
-                        //dgv.ColumnHeadersVisible = false;//컬럼헤더 가리기                        
-                        //dgv.DefaultCellStyle.WrapMode = DataGridViewTriState.True;//스페이스 시 줄바꿈
-                        //dgv.DefaultCellStyle.BackColor = Color.Black;//색반전
-                        //dgv.DefaultCellStyle.ForeColor = Color.White;//색반전
-
-                        //---------------↑ 설정 ↑---------------┘
-
-                        //for ( int i = 0 ; i < dgvH0.RowCount ; i++ )
-                        //{
-                        //    for ( int j = 3 ; j < 8 ; j++ )
-                        //    {
-                        //        if ( dgvH0.Rows [ i ].Cells [ j ].Value.ToString( ) != "1" )
-                        //        {
-                        //            dgvH0.Rows [ i ].Cells [ j ].Style.BackColor = Color.Crimson;
-                        //        }
-                        //    }
-                        //}
+                        dgv.Columns[0].ReadOnly = true; //읽기전용
                     }
+
                     catch (Exception)
                     {
                         Console.WriteLine("dgvH6");
@@ -4595,72 +1305,10 @@ namespace MainProgram
                         int rows = 0;//초기 생성 Row수
 
                         GridMaster.Init3(dgv, false, height, rows, ColumnsName);
-                        //---------------↑ 생성 ↑---------------┘
-
-                        //---------------↓ 사용자 데이터 추가 부분 ↓---------------┐
-                        //GridMaster.LoadCSV_OnlyData( dgv , System.Windows.Forms.Application.StartupPath + "\\AAAA.csv" );//셀데이터로드
-                        //dgv.Rows[ 0 ].Cells[ 0 ].Value = "CORE HEIGHT 1";
-
-                        //dgv.Columns[0].HeaderText = "Model";
-                        //dgv.Columns[1].HeaderText = "DateTime";
-                        //dgv.Columns[2].HeaderText = "Result";
-                        //dgv.Columns[3].HeaderText = "Area 1";
-                        //dgv.Columns[4].HeaderText = "Area 2";
-                        //dgv.Columns[5].HeaderText = "Area 3";
-                        //dgv.Columns[6].HeaderText = "Area 4";
-                        //dgv.Columns[7].HeaderText = "Area 5";
-
-                        //dgv.Columns[1].DefaultCellStyle.Format = "yyyy-MM-dd HH:mm:ss";
-
-                        //---------------↓ OKNG 색칠 ↓---------------┐
-
-                        //GridMaster.Color_Painting(dgv, 5);
-                        //GridMaster.Color_Painting(dgv, 12);
-
-                        //GridMaster.Color_Painting(dgv, 17);
-                        //GridMaster.Color_Painting(dgv, 19);
-                        //GridMaster.Color_Painting(dgv, 21);
-                        //GridMaster.Color_Painting(dgv, 23);
-                        //GridMaster.Color_Painting(dgv, 27);
-                        //GridMaster.Color_Painting(dgv, 38);
-
-
-
-                        //---------------↑ OKNG 색칠 ↑---------------┘
-
-
-
-                        //---------------↑ 사용자 데이터 추가 부분 ↑---------------┘
-
-                        //---------------↓ 정렬 ↓---------------┐
-                        GridMaster.CenterAlign(dgv);
-                        //GridMaster.LeftAlign( dgv );
-                        //GridMaster.Align( dgv , 0 , DataGridViewContentAlignment.MiddleLeft );//단일 Column 정렬
-                        //---------------↑ 정렬 ↑---------------┘
-
-                        //---------------↓ 설정 ↓---------------┐
+                        GridMaster.CenterAlign(dgv);         
                         dgv.ReadOnly = true;//읽기전용
-                        //GridMaster.DisableSortColumn( dgv );//오름차순 내림차순 정렬 막기
                         dgv.Columns[0].ReadOnly = true;//읽기전용
-                        //dgv.AllowUserToResizeColumns = false;//컬럼폭 수정불가
-                        //dgv.Columns[1].DefaultCellStyle.Format = "yyyy-MM-dd HH:mm:ss";//표시형식
-                        //dgv.ColumnHeadersVisible = false;//컬럼헤더 가리기                        
-                        //dgv.DefaultCellStyle.WrapMode = DataGridViewTriState.True;//스페이스 시 줄바꿈
-                        //dgv.DefaultCellStyle.BackColor = Color.Black;//색반전
-                        //dgv.DefaultCellStyle.ForeColor = Color.White;//색반전
-
-                        //---------------↑ 설정 ↑---------------┘
-
-                        //for ( int i = 0 ; i < dgvH0.RowCount ; i++ )
-                        //{
-                        //    for ( int j = 3 ; j < 8 ; j++ )
-                        //    {
-                        //        if ( dgvH0.Rows [ i ].Cells [ j ].Value.ToString( ) != "1" )
-                        //        {
-                        //            dgvH0.Rows [ i ].Cells [ j ].Style.BackColor = Color.Crimson;
-                        //        }
-                        //    }
-                        //}
+                  
                     }
                     catch (Exception)
                     {
@@ -4689,73 +1337,11 @@ namespace MainProgram
                             };
                         int rows = 0;//초기 생성 Row수
 
-                        GridMaster.Init3(dgv, false, height, rows, ColumnsName);
-                        //---------------↑ 생성 ↑---------------┘
-
-                        //---------------↓ 사용자 데이터 추가 부분 ↓---------------┐
-                        //GridMaster.LoadCSV_OnlyData( dgv , System.Windows.Forms.Application.StartupPath + "\\AAAA.csv" );//셀데이터로드
-                        //dgv.Rows[ 0 ].Cells[ 0 ].Value = "CORE HEIGHT 1";
-
-                        //dgv.Columns[0].HeaderText = "Model";
-                        //dgv.Columns[1].HeaderText = "DateTime";
-                        //dgv.Columns[2].HeaderText = "Result";
-                        //dgv.Columns[3].HeaderText = "Area 1";
-                        //dgv.Columns[4].HeaderText = "Area 2";
-                        //dgv.Columns[5].HeaderText = "Area 3";
-                        //dgv.Columns[6].HeaderText = "Area 4";
-                        //dgv.Columns[7].HeaderText = "Area 5";
-
-                        //dgv.Columns[1].DefaultCellStyle.Format = "yyyy-MM-dd HH:mm:ss";
-
-                        //---------------↓ OKNG 색칠 ↓---------------┐
-
-                        //GridMaster.Color_Painting(dgv, 5);
-                        //GridMaster.Color_Painting(dgv, 12);
-
-                        //GridMaster.Color_Painting(dgv, 17);
-                        //GridMaster.Color_Painting(dgv, 19);
-                        //GridMaster.Color_Painting(dgv, 21);
-                        //GridMaster.Color_Painting(dgv, 23);
-                        //GridMaster.Color_Painting(dgv, 27);
-                        //GridMaster.Color_Painting(dgv, 38);
-
-
-
-                        //---------------↑ OKNG 색칠 ↑---------------┘
-
-
-
-                        //---------------↑ 사용자 데이터 추가 부분 ↑---------------┘
-
-                        //---------------↓ 정렬 ↓---------------┐
-                        GridMaster.CenterAlign(dgv);
-                        //GridMaster.LeftAlign( dgv );
-                        //GridMaster.Align( dgv , 0 , DataGridViewContentAlignment.MiddleLeft );//단일 Column 정렬
-                        //---------------↑ 정렬 ↑---------------┘
-
-                        //---------------↓ 설정 ↓---------------┐
-                        dgv.ReadOnly = true;//읽기전용
-                        //GridMaster.DisableSortColumn( dgv );//오름차순 내림차순 정렬 막기
+                        GridMaster.Init3(dgv, false, height, rows, ColumnsName);      
+                        GridMaster.CenterAlign(dgv);        
+                        dgv.ReadOnly = true;//읽기전용                
                         dgv.Columns[0].ReadOnly = true;//읽기전용
-                        //dgv.AllowUserToResizeColumns = false;//컬럼폭 수정불가
-                        //dgv.Columns[1].DefaultCellStyle.Format = "yyyy-MM-dd HH:mm:ss";//표시형식
-                        //dgv.ColumnHeadersVisible = false;//컬럼헤더 가리기                        
-                        //dgv.DefaultCellStyle.WrapMode = DataGridViewTriState.True;//스페이스 시 줄바꿈
-                        //dgv.DefaultCellStyle.BackColor = Color.Black;//색반전
-                        //dgv.DefaultCellStyle.ForeColor = Color.White;//색반전
-
-                        //---------------↑ 설정 ↑---------------┘
-
-                        //for ( int i = 0 ; i < dgvH0.RowCount ; i++ )
-                        //{
-                        //    for ( int j = 3 ; j < 8 ; j++ )
-                        //    {
-                        //        if ( dgvH0.Rows [ i ].Cells [ j ].Value.ToString( ) != "1" )
-                        //        {
-                        //            dgvH0.Rows [ i ].Cells [ j ].Style.BackColor = Color.Crimson;
-                        //        }
-                        //    }
-                        //}
+                  
                     }
                     catch (Exception)
                     {
@@ -5921,11 +2507,10 @@ namespace MainProgram
 
 
         #region 트리거 triger
-        
+
         //t1t1t1t1t1
         private void triger1()  //  vision2
-        {
-            
+        {          
             autoDelete();
 
             string time = DateTime.Now.ToString("HH.mm.ss");
@@ -5935,9 +2520,7 @@ namespace MainProgram
             {
 
                 Bitmap cbmp = new Bitmap(pictureBox_Cam1.Image);
-
                 CogImage8Grey cimage = new CogImage8Grey(cbmp);
-
                 CogIPOneImageTool ipt = (CogIPOneImageTool)Cogtg.Tools[0];
 
                 ipt.InputImage = cimage;
@@ -5959,16 +2542,12 @@ namespace MainProgram
                     resultall[i] = Convert.ToDouble(result.Inputs[i * 3].Value) + Convert.ToDouble(result.Inputs[i * 3 + 1].Value) + Convert.ToDouble(result.Inputs[i * 3 + 2].Value);
                 }
 
-                for (int j = 0; j < checksetting; j++) // 1,2부터 시작 - 데이터 넣기
+                
+                this.Invoke(new dele(() =>
                 {
-                    this.Invoke(new dele(() =>
-                    {
-                        if (j == 16)
-                            dgvD1.Rows[j + 1].Cells[1].Value = Convert.ToInt32(resultall[j] * 100);
-                        else
-                            dgvD1.Rows[j + 1].Cells[1].Value = Convert.ToInt32(resultall[j]);
-                    }));
-                }
+                    dgvD1.Rows[0].Cells[1].Value = Convert.ToInt32(resultall[0]);
+                }));
+                
 
                 string imgsavepath = @"D:\Vision\Image";
                 string year = imgsavepath + "\\" + DateTime.Now.ToString("yyyy");
@@ -5987,162 +2566,77 @@ namespace MainProgram
                 if (!System.IO.Directory.Exists(ngpath))
                     System.IO.Directory.CreateDirectory(ngpath);
 
-                int pattern = Convert.ToInt32(resultall[16] * 100);
+                float lenVal = Convert.ToInt32(resultall[0] * 100);
 
-                this.Invoke(new dele(() =>
+                dbData = lenVal;
+
+                if (min[0] <= lenVal && lenVal <= max[0])   //OK 판정
                 {
-                    int cnt = 0;
-                    for (int i = 0; i < checksetting; i++)
+                    this.Invoke(new dele(() =>
                     {
-                        if (i == 16)
-                        {
-                            if (min[i] <= pattern && pattern <= max[i])
-                            {
-                                dgvD1.Rows[i + 1].Cells[1].Style.BackColor = Color.LightGreen;
-                                cnt += 1;
-                            }
-                            else
-                            {
-                                dgvD1.Rows[i + 1].Cells[1].Style.BackColor = Color.Crimson;
-                            }
-                        }
-                        else
-                        {
-                            if (min[i] <= resultall[i] && resultall[i] <= max[i])
-                            {
-                                dgvD1.Rows[i + 1].Cells[1].Style.BackColor = Color.LightGreen;
-                                cnt += 1;
-                            }
-                            else
-                            {
-                                dgvD1.Rows[i + 1].Cells[1].Style.BackColor = Color.Crimson;
-                            }
-                        }
-                    }
-
-                    if (cnt == checksetting)    //  ok판정
+                    dgvD1.Rows[0].Cells[1].Style.BackColor = Color.LightGreen;
+                    Label_Result1.Text = "O K";
+                    Label_Result1.BackColor = Color.LightGreen;
+                    }));
+                    try
                     {
-                        okcnt += 1;
-                        Label_Result1.Text = "O K";
-                        Label_Result1.BackColor = Color.LightGreen;
+                        if (check_OKImage1.Checked)
+                            pictureBox_Cam1.Image.Save(okpath + "\\" + ModelNamelbl1.Text + "_" + time + ".bmp", System.Drawing.Imaging.ImageFormat.Bmp);
 
-                        try
-                        {
-                            if(check_OKImage1.Checked)
-                                pictureBox_Cam1.Image.Save(okpath + "\\" + ModelNamelbl1.Text + "_" + time + ".bmp", System.Drawing.Imaging.ImageFormat.Bmp);
+                        Log_K.WriteLog(log_lst, Mainpath, "[Cam1 결과 : OK]" + Environment.NewLine);
 
-                            Log_K.WriteLog(log_lst, Mainpath, "[Cam1 결과 : OK]" + Environment.NewLine);
-
-                            Decision1 = "OK";
-                            Delay(100);
-
-                                plc1.MasterK_Write_W("3230303131", "0100"); //  최종판정ok 
-
-                            try
-                            {
-                               
-                                this.Invoke(new dele(() =>
-                                {
-                                    Log_K.WriteLog(log_lst, Mainpath, "Cam1 검사 최종판정ok 보냄");
-                                }));
-                            }
-                            catch (Exception)
-                            {
-                                this.Invoke(new dele(() =>
-                                {
-                                    Log_K.WriteLog(log_lst, Mainpath, "Cam1 검사 최종판정ok 에러");
-                                }));
-                            }
-
-                            //Delay(500);
-                            try
-                            {
-
-                                this.Invoke(new dele(() =>
-                                {
-                                    Log_K.WriteLog(log_lst, Mainpath, "Cam1 검사 완료신호 보냄");
-                                }));
-                            }
-                            catch (Exception)
-                            {
-                                this.Invoke(new dele(() =>
-                                {
-                                    Log_K.WriteLog(log_lst, Mainpath, "Cam1 검사 완료신호 에러");
-                                }));
-                            }
-
-                        }
-                        catch (Exception)
-                        {
-                            Log_K.WriteLog(log_lst, Mainpath, "검사 후 전송 OK 에러");
-                            Console.WriteLine("검사 후 전송 OK");
-                        }
+                        Decision1 = "OK";
                         Delay(100);
-                    
-                            plc1.MasterK_Write_W("3230303131", "0100"); //  최종판정ok 
-                      
+
                     }
-                    else                // ng 판정
+                    catch (Exception)
                     {
-                        ngcnt += 1;
+                        Log_K.WriteLog(log_lst, Mainpath, "검사 후 전송 OK 에러");
+                        Console.WriteLine("검사 후 전송 OK");
+                    }
+                    Delay(100);
+                }
+
+
+                else   //NG 판정
+                {
+                    this.Invoke(new dele(() =>
+                    {
+                        dgvD1.Rows[0].Cells[1].Style.BackColor = Color.Crimson;
+
                         Label_Result1.Text = "N G";
                         Label_Result1.BackColor = Color.Crimson;
+                    }));
+                    try
+                    {
+                        if (check_NGImage1.Checked)
+                            pictureBox_Cam1.Image.Save(ngpath + "\\" + ModelNamelbl1.Text + "__" + time + ".bmp", System.Drawing.Imaging.ImageFormat.Bmp);
 
-                        try
-                        {
-                            if (check_NGImage1.Checked)
-                                pictureBox_Cam1.Image.Save(ngpath + "\\" + ModelNamelbl1.Text + "__" + time + ".bmp", System.Drawing.Imaging.ImageFormat.Bmp);
+                        Log_K.WriteLog(log_lst, Mainpath, "[Cam1 결과 : NG]" + Environment.NewLine);
 
-                            Log_K.WriteLog(log_lst, Mainpath, "[Cam1 결과 : NG]" + Environment.NewLine);
-
-                            Decision1 = "NG";
-                            Delay(100);
-
-                                plc1.MasterK_Write_W("3230303131", "0200"); //  최종판정ng 
-
-                            try
-                            {
-                                //plc1.MasterK_Write_W("3230303131", "0200"); //  최종판정ng
-                                this.Invoke(new dele(() =>
-                                {
-                                    Log_K.WriteLog(log_lst, Mainpath, "Cam1 검사 최종판정ng 보냄");
-                                }));
-                            }
-                            catch (Exception)
-                            {
-                                this.Invoke(new dele(() =>
-                                {
-                                    Log_K.WriteLog(log_lst, Mainpath, "Cam1 검사 최종판정ng 에러");
-                                }));
-                            }
-
-                        }
-                        catch (Exception)
-                        {
-                            Log_K.WriteLog(log_lst, Mainpath, "검사 후 전송 NG 에러");
-                        }
+                        Decision1 = "NG";
                         Delay(100);
 
-                            plc1.MasterK_Write_W("3230303131", "0200"); //  최종판정ng 
                     }
+                    catch (Exception)
+                    {
+                        Log_K.WriteLog(log_lst, Mainpath, "검사 후 전송 NG 에러");
+                    }
+                    Delay(100);
+                }
 
-
-                    string cmd = Ken2.Database.SQLiteCMD_K.MakeInsertCmdSentence(sql.table,   //  무조건 DB에 올림 A로
-
-                            "Model", ModelNamelbl1.Text,
-                        "Datetime", Dtime.Now(Dtime.StringType.ForDatum),
-                        "CamNum", "1",
-                        "CamResult1", Decision1
-                        
-                            );
-
-                    sql.ExecuteNonQuery(cmd);
-
-                    Log_K.WriteLog(log_lst, Mainpath, "Cam1 DB에 데이터 > 인서트");
-                   
-
-                }));
                 
+                
+                string cmd = Ken2.Database.SQLiteCMD_K.MakeInsertCmdSentence(sql.table,   // CAM1 DB 업데이트
+                        "Datetime", Dtime.Now(Dtime.StringType.ForDatum),
+                        "CamNum", "CAM1",
+                        "ModelNum", ModelNamelbl1.Text,
+                        "PointNum", Convert.ToString(CamPoint1),
+                        "Data", Convert.ToString(dbData)
+                         );
+
+                sql.ExecuteNonQuery(cmd);
+
 
                 for (int k = 0; k < result.Inputs.Count; k++)    //  데이터 0으로 초기화
                 {
@@ -6161,6 +2655,7 @@ namespace MainProgram
             {
                 Log_K.WriteLog(log_lst, Mainpath, "triger1 함수NG 에러");
                 Console.WriteLine("triger1 함수 NG");
+                
             }
 
         }
@@ -6330,6 +2825,16 @@ namespace MainProgram
 
                 }));
 
+                string cmd = Ken2.Database.SQLiteCMD_K.MakeInsertCmdSentence(sql.table,   // CAM2 DB 업데이트
+                       "Datetime", Dtime.Now(Dtime.StringType.ForDatum),
+                       "CamNum", "CAM2",
+                       "ModelNum", ModelNamelbl1.Text,
+                       "PointNum", Convert.ToString(CamPoint2),
+                       "Data", Convert.ToString(dbData)
+                        );
+
+                sql.ExecuteNonQuery(cmd);
+
                 for (int k = 0; k < result.Inputs.Count; k++)    //  데이터 0으로 초기화
                 {
                     result.Inputs[k].Value = 0;
@@ -6473,35 +2978,13 @@ namespace MainProgram
             if (NameSearchcheck.Checked)
             {
 
-                string cmd = SQLiteCMD_K.Select_Equal("table1", "Barcode", NameSearchTB.Text,
+                string cmd = SQLiteCMD_K.Select_Equal("table1", "Data", NameSearchTB.Text,
 
-                        "Model", 
                         "Datetime",
-                        "Barcode",
-                        "CamResult1",
-                        "CamResult2",
-                        "CapNum",
-                        "CapResult",
-                        "Wash",
-                        "Cap1",
-                        "Cap2",
-                        "Cap3",
-                        "LVDTResult",
-                        "LVDT1",
-                        "LVDT2",
-                        "LVDT3",
-                        "LVDT4",
-                        "LVDT5",
-                        "LVDT6",
-                        "LVDT7",
-                        "LVDT8",
-                        "LVDT9",
-                        "GasLeakNum",
-                        "GasLeakResult",
-                        "GasLeak1",
-                        "WaterLeakNum",
-                        "WaterLeakResult",
-                        "WaterLeak1"
+                        "CamNum",
+                        "ModelNum",
+                        "PointNum",
+                        "Data"                    
                         );
 
                 sql.Select(dgvH0, cmd, false);
@@ -6510,34 +2993,11 @@ namespace MainProgram
             {
                 string cmd = SQLiteCMD_K.Select_Datetime("table1", "Datetime", Dtime.GetDateTime_string(Date0, Time0), Dtime.GetDateTime_string(Date1, Time1), "",
 
-                        "Model",
-                        "Datetime",
-                        "Barcode",
-                        "CamResult1",
-                        "CamResult2",
-                        "CapNum",
-                        "CapResult",
-                        "Wash",
-                        "Cap1",
-                        "Cap2",
-                        "Cap3",
-                        "LVDTResult",
-                        "LVDT1",
-                        "LVDT2",
-                        "LVDT3",
-                        "LVDT4",
-                        "LVDT5",
-                        "LVDT6",
-                        "LVDT7",
-                        "LVDT8",
-                        "LVDT9",
-                        "GasLeakNum",
-                        "GasLeakResult",
-                        "GasLeak1",
-                        "WaterLeakNum",
-                        "WaterLeakResult",
-                        "WaterLeak1"
-
+                         "Datetime",
+                        "CamNum",
+                        "ModelNum",
+                        "PointNum",
+                        "Data"
                         );
 
                 sql.Select(dgvH0, cmd, false);
@@ -6991,7 +3451,7 @@ namespace MainProgram
         private void simpleButton5_Click(object sender, EventArgs e)
         {
             string bcrr = "a";
-            string cmdd = "DELETE FROM table1 WHERE `Barcode` = '" + bcrr + "';";
+            string cmdd = "DELETE FROM table1 WHERE `Data` = '" + bcrr + "';";
 
             sql.ExecuteNonQuery(cmdd);
         }
@@ -7052,6 +3512,40 @@ namespace MainProgram
         {
 
         }
-        
+        //ccccccccccccccccc
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            SaveTxt();
+
+            StopmainThread(0);
+
+            try
+            {
+                if (cam1 != null)
+                    cam1.Dispose();
+                if (plc1 != null)
+                {
+                    plc1.CommStop();
+                    plc1.Disconnect();
+                    plc1.Dispose();
+                }
+
+                Thread.Sleep(1000);
+
+                try
+                {
+                    Process.GetCurrentProcess().Kill();
+                }
+                catch (Exception)
+                {
+                    //Log_K.WriteLog(log_err, Mainpath, "Form Closing 에러");
+                }
+            }
+            catch (Exception)
+            {
+                //Log_K.WriteLog(log_err, Mainpath, "Form Closing 에러2");
+            }
+        }
+
     }
 }
