@@ -15,7 +15,7 @@ using System.Threading;
 using System.Windows.Forms;
 
 
-namespace Vision_Seojin
+namespace VisionProgram
 {
     public partial class Form1 : Form
     {
@@ -643,7 +643,7 @@ namespace Vision_Seojin
   
 
                         dgv.Rows[0].Cells[0].Value = "돌출 값";
-                        dgv.Rows[0].Cells[1].Value = "";
+                        //dgv.Rows[0].Cells[1].Value = "";
 
                         dgv.Rows[0].Cells[0].Style.Font = new Font("Tahoma", 19, FontStyle.Bold);
                         dgv.Rows[0].Cells[1].Style.Font = new Font("Tahoma", 19, FontStyle.Bold);
@@ -2526,26 +2526,11 @@ namespace Vision_Seojin
                 ipt.InputImage = cimage;
                 ipt.Run();
 
-                CogToolBlock result = (CogToolBlock)Cogtg.Tools["result"];
-
-                for (int k = 0; k < result.Inputs.Count; k++)    //  데이터 0으로 초기화
-                {
-                    result.Inputs[k].Value = 0;
-                }
-
-                Cogtg.Run();
-
-                double[] resultall = new double[100]; //  전체결과 앞부터 3개씩 데이터 합치기
-
-                for (int i = 0; i < result.Inputs.Count / 3; i++)
-                {
-                    resultall[i] = Convert.ToDouble(result.Inputs[i * 3].Value) + Convert.ToDouble(result.Inputs[i * 3 + 1].Value) + Convert.ToDouble(result.Inputs[i * 3 + 2].Value);
-                }
-
                 
                 this.Invoke(new dele(() =>
                 {
                     dgvD1.Rows[0].Cells[1].Value = Convert.ToInt32(resultall[0]);
+
                 }));
                 
 
@@ -2566,9 +2551,7 @@ namespace Vision_Seojin
                 if (!System.IO.Directory.Exists(ngpath))
                     System.IO.Directory.CreateDirectory(ngpath);
 
-                float lenVal = Convert.ToInt32(resultall[0] * 100);
 
-                dbData = lenVal;
 
                 if (min[0] <= lenVal && lenVal <= max[0])   //OK 판정
                 {
@@ -2577,6 +2560,7 @@ namespace Vision_Seojin
                     dgvD1.Rows[0].Cells[1].Style.BackColor = Color.LightGreen;
                     Label_Result1.Text = "O K";
                     Label_Result1.BackColor = Color.LightGreen;
+                    
                     }));
                     try
                     {
@@ -2584,7 +2568,7 @@ namespace Vision_Seojin
                             pictureBox_Cam1.Image.Save(okpath + "\\" + ModelNamelbl1.Text + "_" + time + ".bmp", System.Drawing.Imaging.ImageFormat.Bmp);
 
                         Log_K.WriteLog(log_lst, Mainpath, "[Cam1 결과 : OK]" + Environment.NewLine);
-
+                        
                         Decision1 = "OK";
                         Delay(100);
 
