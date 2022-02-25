@@ -211,6 +211,10 @@ namespace VisionProgram
             Directory.CreateDirectory("D:\\" + Mainpath + "\\Image");
             Log_K.WriteLog(log_lst, Mainpath, "프로그램 시작");
 
+            if (Txt_LastModel1.Text.Length > 0)
+                CurrentModelNum1 = Int32.Parse(Txt_LastModel1.Text);
+            else
+                CurrentModelNum1 = 1;
             modelOpen1(CurrentModelNum1);
             //modelOpen2(CurrentModelNum2);
 
@@ -1833,7 +1837,9 @@ namespace VisionProgram
             {
                 ModelNamelbl1.Text = dgvM1.Rows[modelnum].Cells[1].Value.ToString();
 
+                //Cogtg = (CogToolGroup)CogSerializer.LoadObjectFromFile(System.Windows.Forms.Application.StartupPath + "\\" + CurrentModelNum1 + "_1.vpp");
                 Cogtg = (CogToolGroup)CogSerializer.LoadObjectFromFile(System.Windows.Forms.Application.StartupPath + "\\" + CurrentModelNum1 + "_1.vpp");
+
                 CogToolBlock result = (CogToolBlock)Cogtg.Tools["result"];
                 for (int i = 0; i < result.Inputs.Count; i++)
                 {
@@ -2515,24 +2521,21 @@ namespace VisionProgram
 
             string time = DateTime.Now.ToString("HH.mm.ss");
             totalcnt += 1;
+            CamPoint1 = Convert.ToInt32(textBox1.Text);   //  검사포인트 변수에 넣음
 
             try
             {
 
-                Bitmap cbmp = new Bitmap(pictureBox_Cam1.Image);
-                CogImage8Grey cimage = new CogImage8Grey(cbmp);
-                CogIPOneImageTool ipt = (CogIPOneImageTool)Cogtg.Tools[0];
+                Bitmap cbmp = new Bitmap(pictureBox_Cam1.Image);    //  카메라 찍어서 받은 이미지 cbm 변수에 저장
+                CogImage8Grey cimage = new CogImage8Grey(cbmp);     //  비전프로에 넣을이미지로 변환
+               //CogImage24PlanarColor ccimage = new CogImage24PlanarColor(cbmp); //  비전프로에 넣을이미지로 변환  //  컬러일 경우
 
-                ipt.InputImage = cimage;
-                ipt.Run();
+                CogIPOneImageTool ipt = (CogIPOneImageTool)Cogtg.Tools[0];  //  IPONEImage 변수
 
-                
-                this.Invoke(new dele(() =>
-                {
-                    dgvD1.Rows[0].Cells[1].Value = Convert.ToInt32(resultall[0]);
+                ipt.InputImage = cimage;    //  IPONEImage에 이미지 넣기
+                ipt.Run();                  //  IPONEImage에 이미지 돌리기
 
-                }));
-                
+        
 
                 string imgsavepath = @"D:\Vision\Image";
                 string year = imgsavepath + "\\" + DateTime.Now.ToString("yyyy");
@@ -2557,10 +2560,10 @@ namespace VisionProgram
                 {
                     this.Invoke(new dele(() =>
                     {
-                    dgvD1.Rows[0].Cells[1].Style.BackColor = Color.LightGreen;
-                    Label_Result1.Text = "O K";
-                    Label_Result1.BackColor = Color.LightGreen;
-                    
+                        dgvD1.Rows[0].Cells[1].Style.BackColor = Color.LightGreen;
+                        Label_Result1.Text = "O K";
+                        Label_Result1.BackColor = Color.LightGreen;
+
                     }));
                     try
                     {
@@ -2568,7 +2571,7 @@ namespace VisionProgram
                             pictureBox_Cam1.Image.Save(okpath + "\\" + ModelNamelbl1.Text + "_" + time + ".bmp", System.Drawing.Imaging.ImageFormat.Bmp);
 
                         Log_K.WriteLog(log_lst, Mainpath, "[Cam1 결과 : OK]" + Environment.NewLine);
-                        
+
                         Decision1 = "OK";
                         Delay(100);
 
@@ -2609,37 +2612,35 @@ namespace VisionProgram
                     Delay(100);
                 }
 
-                
-                
+
                 string cmd = Ken2.Database.SQLiteCMD_K.MakeInsertCmdSentence(sql.table,   // CAM1 DB 업데이트
                         "Datetime", Dtime.Now(Dtime.StringType.ForDatum),
                         "CamNum", "CAM1",
                         "ModelNum", ModelNamelbl1.Text,
                         "PointNum", Convert.ToString(CamPoint1),
-                        "Data", Convert.ToString(dbData)
+                        "Data", Convert.ToString(dgvD1.Rows[0].Cells[1].Value)
                          );
 
                 sql.ExecuteNonQuery(cmd);
 
 
-                for (int k = 0; k < result.Inputs.Count; k++)    //  데이터 0으로 초기화
-                {
-                    result.Inputs[k].Value = 0;
-                }
+                //for (int k = 0; k < result.Inputs.Count; k++)    //  데이터 0으로 초기화
+                //{
+                //    result.Inputs[k].Value = 0;
+                //}
 
                 this.Invoke(new dele(() =>
                 {
                     cogRecordDisplay1.Record = Cogtg.CreateLastRunRecord().SubRecords[0];  //  메인화면 이미지 띄우기
                     cogRecordDisplay1.AutoFit = true;
                 }));
-
+                
 
             }
             catch (Exception ex)
             {
                 Log_K.WriteLog(log_lst, Mainpath, "triger1 함수NG 에러");
-                Console.WriteLine("triger1 함수 NG");
-                
+                Console.WriteLine("triger1 함수 NG");              
             }
 
         }
@@ -2652,6 +2653,8 @@ namespace VisionProgram
 
             string time = DateTime.Now.ToString("HH.mm.ss");
             totalcnt2 += 1;
+
+            CamPoint2 = Convert.ToInt32(textBox2.Text);   //  검사포인트 변수에 넣음
 
             try
             {
@@ -2670,25 +2673,24 @@ namespace VisionProgram
                     result.Inputs[k].Value = 0;
                 }
 
+                CogToolBlock input = (CogToolBlock)Cogtg.Tools["Tools"];    //  툴 블락 Tools 에 어느포인트 툴 사용할지 선택하기위해 툴블락 Tools 가져옴
+                input.Inputs[1].Value = CamPoint2;                          //  툴 블락 Tools에 Input 밸류를 넣어서 어느툴 사용할지 선택함
+
                 Cogtg2.Run();
 
-                double[] resultall = new double[100]; //  전체결과 앞부터 3개씩 데이터 합치기
+                double[] resultall2 = new double[30]; //  전체결과 앞부터 3개씩 데이터 합치기
 
-                for (int i = 0; i < result.Inputs.Count / 3; i++)
-                {
-                    resultall[i] = Convert.ToDouble(result.Inputs[i * 3].Value) + Convert.ToDouble(result.Inputs[i * 3 + 1].Value) + Convert.ToDouble(result.Inputs[i * 3 + 2].Value);
-                }
 
-                for (int j = 0; j < checksetting2; j++) // 1,2부터 시작 - 데이터 넣기
+                resultall2[CamPoint2] = Convert.ToDouble(result.Inputs[CamPoint2 - 1].Value);    // PLC에서 받은 검사 포인트 번호를 resultall 에 넣음
+
+                double lenVal2 = resultall2[0];
+
+                this.Invoke(new dele(() =>
                 {
-                    this.Invoke(new dele(() =>
-                    {
-                        if (j == 16)
-                            dgvD2.Rows[j + 1].Cells[1].Value = Convert.ToInt32(resultall[j] * 100);
-                        else
-                            dgvD2.Rows[j + 1].Cells[1].Value = Convert.ToInt32(resultall[j]);
-                    }));
-                }
+                    dgvD2.Rows[0].Cells[1].Value = resultall2[CamPoint2].ToString("F2");     // 메인 모니터 상에 수치 출력
+
+                }));
+
 
                 string imgsavepath = @"D:\Vision\Image";
                 string year = imgsavepath + "\\" + DateTime.Now.ToString("yyyy");
@@ -2707,114 +2709,68 @@ namespace VisionProgram
                     System.IO.Directory.CreateDirectory(ngpath2);
 
 
-                int pattern = Convert.ToInt32(resultall[16] * 100);
-
-                this.Invoke(new dele(() =>
+                if (min[0] <= lenVal2 && lenVal2 <= max[0])   //OK 판정
                 {
-                    int cnt = 0;
-                    for (int i = 0; i < checksetting2; i++)
+                    this.Invoke(new dele(() =>
                     {
-                        if (i == 16)
-                        {
-                            if (min2[i] <= pattern && pattern <= max2[i])
-                            {
-                                dgvD2.Rows[i + 1].Cells[1].Style.BackColor = Color.LightGreen;
-                                cnt += 1;
-                            }
-                            else
-                            {
-                                dgvD2.Rows[i + 1].Cells[1].Style.BackColor = Color.Crimson;
-                            }
-                        }
-                        else
-                        {
-                            if (min2[i] <= resultall[i] && resultall[i] <= max2[i])
-                            {
-                                dgvD2.Rows[i + 1].Cells[1].Style.BackColor = Color.LightGreen;
-                                cnt += 1;
-                            }
-                            else
-                            {
-                                dgvD2.Rows[i + 1].Cells[1].Style.BackColor = Color.Crimson;
-                            }
-                        }
-                    }
-
-                    if (cnt == checksetting2)    //  ok판정
-                    {
-                        okcnt2 += 1;
+                        dgvD2.Rows[0].Cells[1].Style.BackColor = Color.LightGreen;
                         Label_Result2.Text = "O K";
                         Label_Result2.BackColor = Color.LightGreen;
 
-                        try
-                        {
-                            if (check_OKImage2.Checked)
-                                pictureBox_Cam2.Image.Save(okpath2 + "\\" + ModelNamelbl1.Text + "_" + time + ".bmp", System.Drawing.Imaging.ImageFormat.Bmp);
-                            
-                            Log_K.WriteLog(log_lst, Mainpath, "[Cam2 결과 : OK]" + Environment.NewLine);
-                            
-                            //txt_Cam2Result.Text = "OK";
-
-                            plc1.MasterK_Write_W("3230303134", "0100"); //  카메라 2 최종판정ok 
-
-                            try
-                            {
-                                this.Invoke(new dele(() =>
-                                {
-                                    Log_K.WriteLog(log_lst, Mainpath, "Cam2 검사 최종판정ok 보냄");
-                                }));
-                            }
-                            catch (Exception)
-                            {
-                                this.Invoke(new dele(() =>
-                                {
-                                    Log_K.WriteLog(log_lst, Mainpath, "Cam2 검사 최종판정ok 에러");
-                                }));
-                            }
-                        }
-                        catch (Exception)
-                        {
-                            Log_K.WriteLog(log_lst, Mainpath, "검사 후 전송 OK 에러");
-                            Console.WriteLine("검사 후 전송 OK");
-                        }
-
-                            plc1.MasterK_Write_W("3230303134", "0100"); //  카메라 2 최종판정ok 
-                    }
-                    else                // ng 판정
+                    }));
+                    try
                     {
-                        ngcnt2 += 1;
+                        if (check_OKImage2.Checked)
+                            pictureBox_Cam2.Image.Save(okpath2 + "\\" + ModelNamelbl1.Text + "_" + time + ".bmp", System.Drawing.Imaging.ImageFormat.Bmp);
+
+                        Log_K.WriteLog(log_lst, Mainpath, "[Cam1 결과 : OK]" + Environment.NewLine);
+
+                        Decision2 = "OK";
+                        Delay(100);
+
+                    }
+                    catch (Exception)
+                    {
+                        Log_K.WriteLog(log_lst, Mainpath, "검사 후 전송 OK 에러");
+                        Console.WriteLine("검사 후 전송 OK");
+                    }
+                    Delay(100);
+                }
+
+
+                else   //NG 판정
+                {
+                    this.Invoke(new dele(() =>
+                    {
+                        dgvD2.Rows[0].Cells[1].Style.BackColor = Color.Crimson;
+
                         Label_Result2.Text = "N G";
                         Label_Result2.BackColor = Color.Crimson;
+                    }));
+                    try
+                    {
+                        if (check_NGImage2.Checked)
+                            pictureBox_Cam2.Image.Save(ngpath2 + "\\" + ModelNamelbl1.Text + "__" + time + ".bmp", System.Drawing.Imaging.ImageFormat.Bmp);
 
-                        try
-                        {
-                            if (check_NGImage2.Checked)
-                                pictureBox_Cam2.Image.Save(ngpath2 + "\\" + ModelNamelbl1.Text + "__" + time + ".bmp", System.Drawing.Imaging.ImageFormat.Bmp);
-                           
-                            Log_K.WriteLog(log_lst, Mainpath, "[Cam2 결과 : NG]" + Environment.NewLine);
+                        Log_K.WriteLog(log_lst, Mainpath, "[Cam1 결과 : NG]" + Environment.NewLine);
 
-                            //txt_Cam2Result.Text = "NG";
-                            
-                                plc1.MasterK_Write_W("3230303134", "0200"); //  카메라2 최종판정ok 
-                           
-                        }
-                        catch (Exception)
-                        {
-                            Log_K.WriteLog(log_lst, Mainpath, "검사 후 전송 NG 에러");
-                            Console.WriteLine("Cam2 검사 후 전송 NG ");
-                        }
+                        Decision2 = "NG";
+                        Delay(100);
 
-                            plc1.MasterK_Write_W("3230303134", "0200"); //  카메라2 최종판정ok 
                     }
-
-                }));
+                    catch (Exception)
+                    {
+                        Log_K.WriteLog(log_lst, Mainpath, "검사 후 전송 NG 에러");
+                    }
+                    Delay(100);
+                }
 
                 string cmd = Ken2.Database.SQLiteCMD_K.MakeInsertCmdSentence(sql.table,   // CAM2 DB 업데이트
                        "Datetime", Dtime.Now(Dtime.StringType.ForDatum),
                        "CamNum", "CAM2",
                        "ModelNum", ModelNamelbl1.Text,
                        "PointNum", Convert.ToString(CamPoint2),
-                       "Data", Convert.ToString(dbData)
+                       "Data", Convert.ToString(dgvD2.Rows[0].Cells[1].Value)
                         );
 
                 sql.ExecuteNonQuery(cmd);
@@ -2891,9 +2847,11 @@ namespace VisionProgram
             if (xtraTabControlVision.SelectedTabPage == Tab_VisionTool1)
             {
                 int modelnum = Convert.ToInt32(Txt_LastModel1.Text);
-                Cogtg = (CogToolGroup)CogSerializer.LoadObjectFromFile(System.Windows.Forms.Application.StartupPath + "\\" + modelnum + "_1.vpp");
+                
+                //Cogtg = (CogToolGroup)CogSerializer.LoadObjectFromFile(System.Windows.Forms.Application.StartupPath + "\\" + modelnum + "_1.vpp");
                 cogToolGroupEditV21.Subject = Cogtg;
-                MessageBox.Show(ModelNamelbl1.Text + " 툴을 불러왔습니다.");
+                //MessageBox.Show(ModelNamelbl1.Text + " 툴을 불러왔습니다.");
+                Console.WriteLine(" 툴을 불러왔습니다.");
             }
             if (xtraTabControlVision.SelectedTabPage == Tab_VisionTool2)
             {
