@@ -15,7 +15,7 @@ using System.Threading;
 using System.Windows.Forms;
 
 
-namespace VisionProgram
+namespace Vision_Seojin
 {
     public partial class Form1 : Form
     {
@@ -2535,7 +2535,31 @@ namespace VisionProgram
                 ipt.InputImage = cimage;    //  IPONEImage에 이미지 넣기
                 ipt.Run();                  //  IPONEImage에 이미지 돌리기
 
+                CogToolBlock result = (CogToolBlock)Cogtg.Tools["result"];  //  Cogtg 중 데이터 가져올 툴 블락 result 변수로 미리 만들어둠
+
+                for (int k = 0; k < result.Inputs.Count; k++)    //  데이터 0으로 초기화
+                {
+                    result.Inputs[k].Value = 0;
+                }
+
+                CogToolBlock input = (CogToolBlock)Cogtg.Tools["Tools"];    //  툴 블락 Tools 에 어느포인트 툴 사용할지 선택하기위해 툴블락 Tools 가져옴
+                input.Inputs[1].Value = CamPoint1;                          //  툴 블락 Tools에 Input 밸류를 넣어서 어느툴 사용할지 선택함
+               
+
+                Cogtg.Run();    //  Cogtg 실행
+
+                double[] resultall = new double[30];    //결과 data값 넣는 배열
+
+                resultall[CamPoint1] = Convert.ToDouble(result.Inputs[CamPoint1 - 1].Value);    // PLC에서 받은 검사 포인트 번호를 resultall 에 넣음
         
+                double lenVal = resultall[0];
+
+                this.Invoke(new dele(() =>
+                {
+                    dgvD1.Rows[0].Cells[1].Value = resultall[CamPoint1].ToString("F2");     // 메인 모니터 상에 수치 출력
+
+                }));
+
 
                 string imgsavepath = @"D:\Vision\Image";
                 string year = imgsavepath + "\\" + DateTime.Now.ToString("yyyy");
