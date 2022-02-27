@@ -15,7 +15,7 @@ using System.Threading;
 using System.Windows.Forms;
 
 
-namespace Vision_Seojin
+namespace VisionProgram
 {
     public partial class Form1 : Form
     {
@@ -152,7 +152,7 @@ namespace Vision_Seojin
             //제목 투명효과
            int port = Int32.Parse(Txt_Port.Text);
 
-            plc1 = new MasterK200_1("192.168.0.1", 2004, 1000, "192.168.0.20", 0, this);
+            plc1 = new MasterK200_1("192.168.50.230", 2004, 1000, "192.168.50.101", 0, this);
 
             plc1.TalkingComm += Plc1_TalkingComm;
 
@@ -331,18 +331,18 @@ namespace Vision_Seojin
             {
 
                 string[] AllData = (string[])data;
-                string[] indata = new string[600];
-                string[] address = new string[300];
+                string[] indata = new string[100];
+                string[] address = new string[50];
 
                 try
                 {
-                    for (int i = 0; i < 600; i++)
+                    for (int i = 0; i < 50; i++)
                     {
                         indata[i] = AllData[32 + i];
                     }
 
 
-                    for (int j = 0; j < 300; j++)   //  address [] 배열에 스타트 번지부터 값 300개 넣기
+                    for (int j = 0; j < 50; j++)   //  address [] 배열에 스타트 번지부터 값 350개 넣기
                     {
                         address[j] = indata[start] + indata[end];
                         start += 2;
@@ -365,7 +365,7 @@ namespace Vision_Seojin
                     this.Invoke(new dele(() =>
                     {
 
-                        for (int i = 0; i < 300; i++)
+                        for (int i = 0; i < 50; i++)
                         {
                             dgvC1.Rows[i].Cells[1].Value = address[i]; //  C0 16진수
 
@@ -1031,7 +1031,7 @@ namespace Vision_Seojin
                         string[] ColumnsName = new string[] {
                             "번지" , "내용" , "Data"
                         };
-                        int rows = 500;//초기 생성 Row수
+                        int rows = 50;//초기 생성 Row수
 
                         GridMaster.Init3(dgv, true, height, rows, ColumnsName);
 
@@ -2230,7 +2230,9 @@ namespace Vision_Seojin
             string tstr = Txt_Address.Text;
 
             //plc1.MasterK_Write_W("3" + tstr.Substring(0, 1) + "3" + tstr.Substring(1, 1) + "3" + tstr.Substring(2, 1) + "3" + tstr.Substring(3, 1) , Txt_Data.Text);
-            plc1.MasterK_Write_W("3" + tstr.Substring(0, 1) + "3" + tstr.Substring(1, 1) + "3" + tstr.Substring(2, 1) + "3" + tstr.Substring(3, 1) + "3" + tstr.Substring(4, 1), Txt_Data.Text);
+
+            //plc1.MasterK_Write_W("3" + tstr.Substring(0, 1) + "3" + tstr.Substring(1, 1) + "3" + tstr.Substring(2, 1) + "3" + tstr.Substring(3, 1) + "3" + tstr.Substring(4, 1), Txt_Data.Text); 2225
+            plc1.MasterK_Write_W();
         }
 
         private void button7_Click(object sender, EventArgs e)  //  PLC 데이터 리셋
@@ -2239,7 +2241,7 @@ namespace Vision_Seojin
             string tstr = Txt_Address.Text;
             
             //plc1.MasterK_Write_W("3" + tstr.Substring(0, 1) + "3" + tstr.Substring(1, 1) + "3" + tstr.Substring(2, 1) + "3" + tstr.Substring(3, 1), "0000");
-            plc1.MasterK_Write_W("3" + tstr.Substring(0, 1) + "3" + tstr.Substring(1, 1) + "3" + tstr.Substring(2, 1) + "3" + tstr.Substring(3, 1) + "3" + tstr.Substring(4, 1), "0000");
+           // plc1.MasterK_Write_W("3" + tstr.Substring(0, 1) + "3" + tstr.Substring(1, 1) + "3" + tstr.Substring(2, 1) + "3" + tstr.Substring(3, 1) + "3" + tstr.Substring(4, 1), "0000");
 
         }
 
@@ -3424,39 +3426,39 @@ namespace Vision_Seojin
 
         private void button3_Click(object sender, EventArgs e)
         {
-            plc1.MasterK_Write_W("3230303939", "0100");
+           // plc1.MasterK_Write_W("3230303939", "0100");
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
-            plc1.MasterK_Write_W("3230303939", "0000");
+           // plc1.MasterK_Write_W("3230303939", "0000");
         }
 
         private void button3_Click_1(object sender, EventArgs e)
         {
-            plc1.MasterK_Write_W("3230303939", "0100");
+          //  plc1.MasterK_Write_W("3230303939", "0100");
         }
 
         private void button4_Click_1(object sender, EventArgs e)
         {
-            plc1.MasterK_Write_W("3230303939", "0000");
+            //plc1.MasterK_Write_W("3230303939", "0000");
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-                plc1.MasterK_Write_W("3230303034", "0100");
-                plc1.MasterK_Write_W("3230303035", "0100");
-            plc1.MasterK_Write_W("3230303036", "0100");
-            plc1.MasterK_Write_W("3230303037", "0100"); 
+             //   plc1.MasterK_Write_W("3230303034", "0100");
+             //   plc1.MasterK_Write_W("3230303035", "0100");
+          //  plc1.MasterK_Write_W("3230303036", "0100");
+           // plc1.MasterK_Write_W("3230303037", "0100"); 
 
         }
 
         private void button5_Click(object sender, EventArgs e)
         {
-            plc1.MasterK_Write_W("3230303034", "0000");
-            plc1.MasterK_Write_W("3230303035", "0000");
-            plc1.MasterK_Write_W("3230303036", "0000");
-            plc1.MasterK_Write_W("3230303037", "0000");
+            //plc1.MasterK_Write_W("3230303034", "0000");
+            //plc1.MasterK_Write_W("3230303035", "0000");
+            //plc1.MasterK_Write_W("3230303036", "0000");
+            //plc1.MasterK_Write_W("3230303037", "0000");
         }
 
         private void kenButton6_Click(object sender, EventArgs e)
