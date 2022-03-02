@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace VisionProgram
+namespace Vision_Seojin
 {
    
 
@@ -20,6 +20,8 @@ namespace VisionProgram
     public class PulseDetector
     {
         int data = 0;
+
+      
 
         /// <summary>
         /// 데이터가 바뀌기만 해도 감지합니다.
@@ -67,7 +69,6 @@ namespace VisionProgram
             }
 
         }
-
 
         /// <summary>
         /// 이전 데이터 파라미터 추가됨.
@@ -185,16 +186,26 @@ namespace VisionProgram
 
         public void MasterK_Read_B( string address )    //  바이트로 읽기때문에 번지 address x2 해야함  16진수형식으로 EX ) 4000번지 ㅡ> (*2해서) 38 30 30 30 
         {
-            Send("4C4749532D474C4F4641 0000 0033 0000 1300 0000 5400 1400 0000 0100 0700 25 44 42" + address + "2C01");
+            //Send("4C5349532D47544F4641 0000 0033 0000 1300 0000 5400 1400 0000 0100 0700 25 44 42" + address + "2C01");   본
+              Send("4C5349532D5847540000 0000 B033 0000 1300 0152 5400 1400 0000 0100 0700 25 44 42 34 30 30 30 3C00");  //DB4000 부터 30개워드 연속읽기
+
+            // Send("4C4749532D474C4F4641 0000 0033 0000 1300 0000 5400 1400 0000 0100 0700 25 44 42" + address + "2C01");
         }
 
-        public void MasterK_Write_W( string address, string value )     //  Word로 쓰기때문에 번지 그대로 써도됨 단, 16진수형식
+        //public void MasterK_Write_W( string address, string value )     //  Word로 쓰기때문에 번지 그대로 써도됨 단, 16진수형식
+        public void MasterK_Write_W()     //  Word로 쓰기때문에 번지 그대로 써도됨 단, 16진수형식
         {
             lock (lockObjj)
             {
                 Delay(10);
 
-                Send("4C4749532D474C4F4641 0000 0033 0000 1600 0000 5800 0200 0000 0100 0800 25 44 57" + address + "0200" + value);
+                //Send("4C5349532D47544F4641 0000 0033 0000 1600 0000 5800 0200 0000 0100 0800 25 44 57" + address + "0200" + value);공유
+
+                //Send("4C 53 49 53 2D 58 47 54 00 00 00 00 B0 33 00 00 14 00 01 53 54 00 14 00 00 00 01 00 08 00 25 44 42 34 30 30 30 30 16 00");ㅌ
+                // Send("4C 53 49 53 2D 58 47 54 00 00 00 00 B0 33 00 00 15 00 01 54 58 00 02 00 00 00 01 00 07 00 25 44 57 32 30 30 30 02 00 01 00");2225 최종
+                Send("4C 53 49 53 2D 58 47 54 00 00 00 00 B0 33 00 00 15 00 01 54 58 00 02 00 00 00 01 00 07 00 25 44 57 32 30 30 30 02 00 01 00");
+
+                //Send("4C4749532D474C4F4641 0000 0033 0000 1600 0000 5800 0200 0000 0100 0800 25 44 57" + address + "0200" + value);
 
                 //Delay(10);
             }
@@ -290,14 +301,21 @@ namespace VisionProgram
         private Thread Comm;//스레드
         bool CommFlag = false;//Bool Flag
 
+        public interface CamPoint
+        {
+            void SetCamPoint1(int pointNum1);
+            void SetCamPoint2(int pointNum2);
+        }
+
         //tttttttttttttttttttttttttttttttttt
         private void CommMethod()
         {
             PulseDetector Trigger1 = new PulseDetector();
             PulseDetector Trigger2 = new PulseDetector();
 
+           
 
-            byte[] buff = new byte[4096];
+        byte[] buff = new byte[4096];
 
             int length = 0;
 
@@ -312,7 +330,12 @@ namespace VisionProgram
                     //Send( "4C4749532D474C4F4641 0000 0033 0000 1300 0000 5400 1400 0000 0100 0700 25 44 42 38 30 30 30 9001" );
                     // %  D  B  8  0  0  0  400개
                     //Send("4C4749532D474C4F4641 0000 0033 0000 1300 0000 5400 1400 0000 0100 0700 25 44 42 36 30 30 30 9001");
-                    Send("4C4749532D474C4F4641 0000 0033 0000 1400 0000 5400 1400 0000 0100 0800 25 44 42 34 30 30 30 30 6400");
+
+                    Send("4C 53 49 53 2D 58 47 54 00 00 00 00 B0 33 00 00 13 00 01 52 54 00 14 00 00 00 01 00 07 00 25 44 42 34 30 30 30 3C 00");
+
+                    //Send("4C5349532D47544F4641 0000 0033 0000 1400 0000 5400 1400 0000 0100 0800 25 44 42 34 30 30 30 30 6400");  본
+
+
                     //                                        변함      읽기                변함 %  D  B   4  0  0 0  0  6000 36 30 30 30
                     //Send("4C4749532D474C4F4641 0000 0033 0000 1400 0000 5400 1400 0000 0100 0800 25 44 42 31 30 30 30 30 9001");   //  address = 10000 or 10100 // 9001
                     //Send("4C4749532D474C4F4641 0000 0033 0000 1400 0000 5400 1400 0000 0100 0800 25 44 42 32 30 30 30 30 9001"); 1000번지일경우 400개바이트 가져오기
@@ -338,21 +361,21 @@ namespace VisionProgram
 
                     if (ready == 1)
                     {
-                        MasterK_Write_W("3230303230", "0000");
+                       // MasterK_Write_W("3230303230", "0000");
 
                         //System.Windows.Forms.MessageBox.Show(ready.ToString());
                     }
                     else if (ready == 0)
                     {
-                        MasterK_Write_W("3230303230", "0100");
+                       // MasterK_Write_W("3230303230", "0100");
 
                         //System.Windows.Forms.MessageBox.Show(ready.ToString());
                     }
-
+                     
                     int resultTriger1 = Int32.Parse(result[36]); //  36 20002번지
                     //int modelNum1 = Int32.Parse(result[32]); // 32 20000번지
-                    int camPoint1 = Int32.Parse(result[34]); // 34 20001번지                  
-
+                    int camPoint1 = Int32.Parse(result[34]); // 34 20001번지   
+                       
                     if (Trigger1.Detect(resultTriger1, 1, 0))  //Cam1 트리거 신호
                     {
                         if (TalkingComm != null) TalkingComm("Trigger1", camPoint1, length);
@@ -467,7 +490,6 @@ namespace VisionProgram
         }
 
         #endregion
-
 
     }
     
