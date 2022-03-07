@@ -15,7 +15,7 @@ using System.Threading;
 using System.Windows.Forms;
 
 
-namespace VisionProgram
+namespace Vision_Seojin
 {
     public partial class Form1 : Form
     {
@@ -23,10 +23,10 @@ namespace VisionProgram
 
         Ken2.UIControl.dgvManager dgvmanager;
 
-        PylonBasler cam1,cam2 = null;
-  
+        PylonBasler cam1, cam2 = null;
+
         public MasterK200_1 plc1;
-        
+
         Mysql_K sql;
 
         public int CurrentModelNum1 = 1;
@@ -51,7 +51,7 @@ namespace VisionProgram
         int totalcnt = 0;
         int okcnt = 0;
         int ngcnt = 0;
-        
+
         int okcnt2 = 0;
         int ngcnt2 = 0;
         int totalcnt2 = 0;
@@ -76,14 +76,14 @@ namespace VisionProgram
 
         private object lockObj = new object();
 
-        private static DateTime Delay( int MS )
+        private static DateTime Delay(int MS)
         {
             DateTime ThisMoment = DateTime.Now;
-            TimeSpan duration = new TimeSpan( 0, 0, 0, 0, MS );
-            DateTime AfterWards = ThisMoment.Add( duration );
-            while ( AfterWards >= ThisMoment )
+            TimeSpan duration = new TimeSpan(0, 0, 0, 0, MS);
+            DateTime AfterWards = ThisMoment.Add(duration);
+            while (AfterWards >= ThisMoment)
             {
-                System.Windows.Forms.Application.DoEvents( );
+                System.Windows.Forms.Application.DoEvents();
                 ThisMoment = DateTime.Now;
             }
             return DateTime.Now;
@@ -96,7 +96,7 @@ namespace VisionProgram
 
         public void SaveTxt()
         {
-            ControlData.Save(Txt_DeleteDay); 
+            ControlData.Save(Txt_DeleteDay);
             ControlData.Save(Txt_LastModel1);
             ControlData.Save(textBox_ok);
             ControlData.Save(textBox_ng);
@@ -136,7 +136,7 @@ namespace VisionProgram
 
         }
 
- 
+
 
         //ffffffffffffffffff
         private void Form1_Load(object sender, EventArgs e)
@@ -150,7 +150,7 @@ namespace VisionProgram
             title_kenlb.Controls.Add(title_lbc);
             title_kenlb.Controls.Add(title_piced);
             //제목 투명효과
-           int port = Int32.Parse(Txt_Port.Text);
+            int port = Int32.Parse(Txt_Port.Text);
 
             plc1 = new MasterK200_1("192.168.50.230", 2004, 1000, "192.168.50.101", 0, this);
 
@@ -280,24 +280,24 @@ namespace VisionProgram
             if (name.Equals("Trigger1"))
             {
                 CamPoint1 = Convert.ToInt32(data);
-                
+
                 this.Invoke(new dele(() =>
                 {
                     Log_K.WriteLog(log_lst, Mainpath, "자동 검사1 -> " + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff"));
-                    
+
                 }));
                 try
                 {
                     cam1.OneShot();
-                    
+
                 }
                 catch (Exception)
                 {
                     Log_K.WriteLog(log_lst, Mainpath, "카메라1 트리거 에러");
                 }
-                
+
             }
-            
+
             if (name.Equals("Trigger2"))
             {
                 CamPoint2 = Convert.ToInt32(data);
@@ -369,8 +369,8 @@ namespace VisionProgram
                         {
                             dgvC1.Rows[i].Cells[1].Value = address[i]; //  C0 16진수
 
-                                int val10 = Convert.ToInt32(address[i], 16);   //  C0 10진수
-                                dgvC1.Rows[i].Cells[2].Value = val10;
+                            int val10 = Convert.ToInt32(address[i], 16);   //  C0 10진수
+                            dgvC1.Rows[i].Cells[2].Value = val10;
                         }
                     }));
 
@@ -384,12 +384,12 @@ namespace VisionProgram
                 }
 
             }
-           
-            
+
+
         }
 
 
-      
+
 
         #region Cameraaaaaaaa
         private void cam1_ImageSignal(PylonBasler.CurrentStatus Command, object Data, int ArrayNum)
@@ -398,7 +398,7 @@ namespace VisionProgram
             {
                 pictureBox_Cam1.Image = (Bitmap)Data;
                 image1 = (Bitmap)Data;
-                triger1( );
+                triger1();
                 //point = Convert.ToInt32(textBox2.Text);
                 //triger1(image1);
             }
@@ -531,7 +531,7 @@ namespace VisionProgram
 
 
         #endregion
-        
+
         #region 관리자모드 단축키 Ctrl+Q / W
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
@@ -559,7 +559,7 @@ namespace VisionProgram
 
         }
         #endregion
-        
+
         #region ////////////////// mainThread //////////////////    //  시간
         private Thread mainThread;
         bool mainThreadFlag = false;
@@ -616,7 +616,7 @@ namespace VisionProgram
             mainThread.Abort();
         }
         #endregion ////////////////// mainThread //////////////////
-        
+
         #region DGVvvvvvvv
         public void dgvInit(string name)
         {
@@ -644,7 +644,7 @@ namespace VisionProgram
                         int rows = 1;//초기 생성 Row수
 
                         GridMaster.Init3(dgv, true, height, rows, ColumnsName);
-  
+
 
                         dgv.Rows[0].Cells[0].Value = "돌출 값";
                         //dgv.Rows[0].Cells[1].Value = "";
@@ -829,7 +829,7 @@ namespace VisionProgram
                             dgv.Rows[i - 1].Cells[0].Value = i - 1;
                         }
 
-                        dgv.Rows[0].Cells[0].Value = "Model Num";                       
+                        dgv.Rows[0].Cells[0].Value = "Model Num";
                         dgv.Rows[0].Cells[1].Value = "Model Name";
 
                         //ModelNum1 = Convert.ToString(dgv.Rows[0].Cells[0].Value);
@@ -1035,10 +1035,10 @@ namespace VisionProgram
 
                         GridMaster.Init3(dgv, true, height, rows, ColumnsName);
 
-                        GridMaster.LoadCSV_OnlyData( dgv, System.Windows.Forms.Application.StartupPath + "\\P1.csv" );//셀데이터로드
+                        GridMaster.LoadCSV_OnlyData(dgv, System.Windows.Forms.Application.StartupPath + "\\P1.csv");//셀데이터로드
 
 
-                        for ( int i = 0; i < rows; i++)
+                        for (int i = 0; i < rows; i++)
                         {
                             dgv.Rows[i].Cells[0].Value = "D" + (i + 20000);
                         }
@@ -1178,11 +1178,11 @@ namespace VisionProgram
                         int rows = 0;//초기 생성 Row수
 
                         GridMaster.Init3(dgv, false, height, rows, ColumnsName);
-                         GridMaster.CenterAlign(dgv);
+                        GridMaster.CenterAlign(dgv);
 
                         dgv.ReadOnly = true;//읽기전용
                         dgv.Columns[0].ReadOnly = true;//읽기전용
- 
+
                     }
                     catch (Exception)
                     {
@@ -1210,13 +1210,13 @@ namespace VisionProgram
                             };
                         int rows = 0;//초기 생성 Row수
 
-                        GridMaster.Init3(dgv, false, height, rows, ColumnsName);  
+                        GridMaster.Init3(dgv, false, height, rows, ColumnsName);
                         GridMaster.CenterAlign(dgv);
 
                         dgv.ReadOnly = true;//읽기전용
-                     
+
                         dgv.Columns[0].ReadOnly = true;//읽기전용
-     
+
                     }
                     catch (Exception)
                     {
@@ -1248,7 +1248,7 @@ namespace VisionProgram
                         GridMaster.CenterAlign(dgv);
                         dgv.ReadOnly = true;//읽기전용
                         dgv.Columns[0].ReadOnly = true;//읽기전용
-  
+
                     }
                     catch (Exception)
                     {
@@ -1309,10 +1309,10 @@ namespace VisionProgram
                         int rows = 0;//초기 생성 Row수
 
                         GridMaster.Init3(dgv, false, height, rows, ColumnsName);
-                        GridMaster.CenterAlign(dgv);         
+                        GridMaster.CenterAlign(dgv);
                         dgv.ReadOnly = true;//읽기전용
                         dgv.Columns[0].ReadOnly = true;//읽기전용
-                  
+
                     }
                     catch (Exception)
                     {
@@ -1341,11 +1341,11 @@ namespace VisionProgram
                             };
                         int rows = 0;//초기 생성 Row수
 
-                        GridMaster.Init3(dgv, false, height, rows, ColumnsName);      
-                        GridMaster.CenterAlign(dgv);        
+                        GridMaster.Init3(dgv, false, height, rows, ColumnsName);
+                        GridMaster.CenterAlign(dgv);
                         dgv.ReadOnly = true;//읽기전용                
                         dgv.Columns[0].ReadOnly = true;//읽기전용
-                  
+
                     }
                     catch (Exception)
                     {
@@ -1365,7 +1365,7 @@ namespace VisionProgram
         }
 
         #endregion
-        
+
         #region DGV 자동맞춤
         private void dgvD1_MouseDoubleClick(object sender, MouseEventArgs e)
         {
@@ -1643,11 +1643,11 @@ namespace VisionProgram
             }));
             try
             {
-                cam1.OneShot( );
+                cam1.OneShot();
             }
-            catch ( Exception )
+            catch (Exception)
             {
-                Log_K.WriteLog( log_lst, Mainpath, "카메라1 트리거 에러" );
+                Log_K.WriteLog(log_lst, Mainpath, "카메라1 트리거 에러");
             }
         }
 
@@ -1692,7 +1692,7 @@ namespace VisionProgram
         {
             //Process.Start("explorer.exe", "D:\\" + "\\Vision" + "\\Image");
             //Directory.CreateDirectory( @"D:\" + Mainpath + @"\Image\" );
-            System.Diagnostics.Process.Start( "explorer.exe", @"D:\" + Mainpath + @"\Image\" );
+            System.Diagnostics.Process.Start("explorer.exe", @"D:\" + Mainpath + @"\Image\");
         }
 
         private void Btn_History_Click(object sender, EventArgs e)  //  DB 이력
@@ -1711,22 +1711,22 @@ namespace VisionProgram
             Btn_Main.Appearance.BackColor = Color.LightSlateGray;
         }
 
-        private void Btn_AutoStart_MouseMove( object sender, MouseEventArgs e )
+        private void Btn_AutoStart_MouseMove(object sender, MouseEventArgs e)
         {
             Btn_AutoStart.Appearance.BackColor = Color.LightSkyBlue;
         }
 
-        private void Btn_AutoStart_MouseLeave( object sender, EventArgs e )
+        private void Btn_AutoStart_MouseLeave(object sender, EventArgs e)
         {
             Btn_AutoStart.Appearance.BackColor = Color.LightSlateGray;
         }
 
-        private void Btn_AutoStop_MouseMove( object sender, MouseEventArgs e )
+        private void Btn_AutoStop_MouseMove(object sender, MouseEventArgs e)
         {
             Btn_AutoStop.Appearance.BackColor = Color.LightSkyBlue;
         }
 
-        private void Btn_AutoStop_MouseLeave( object sender, EventArgs e )
+        private void Btn_AutoStop_MouseLeave(object sender, EventArgs e)
         {
             Btn_AutoStop.Appearance.BackColor = Color.LightSlateGray;
         }
@@ -1895,55 +1895,55 @@ namespace VisionProgram
                 if (cogToolGroupEditV21.Subject != null)
                     Cogtg = cogToolGroupEditV21.Subject;
 
-                    try
+                try
+                {
+                    if (dgvM1.Rows[dgvM1.CurrentCell.RowIndex].Cells[1].Value.ToString() != "")
                     {
-                        if (dgvM1.Rows[dgvM1.CurrentCell.RowIndex].Cells[1].Value.ToString() != "")
-                        {
 
-                            CogSerializer.SaveObjectToFile(Cogtg, System.Windows.Forms.Application.StartupPath + "\\" + dgvM1.CurrentCell.RowIndex + "_1.vpp", typeof(System.Runtime.Serialization.Formatters.Binary.BinaryFormatter), CogSerializationOptionsConstants.Minimum);
+                        CogSerializer.SaveObjectToFile(Cogtg, System.Windows.Forms.Application.StartupPath + "\\" + dgvM1.CurrentCell.RowIndex + "_1.vpp", typeof(System.Runtime.Serialization.Formatters.Binary.BinaryFormatter), CogSerializationOptionsConstants.Minimum);
 
-                            GridMaster.SaveCSV_OnlyData(dgvS1, System.Windows.Forms.Application.StartupPath + "\\" + dgvM1.CurrentCell.RowIndex + "_S1.csv");//셀데이터 세이브
-                            GridMaster.SaveCSV_OnlyData(dgvCam1, System.Windows.Forms.Application.StartupPath + "\\" + dgvM1.CurrentCell.RowIndex + "_C1.csv");//셀데이터 세이브
+                        GridMaster.SaveCSV_OnlyData(dgvS1, System.Windows.Forms.Application.StartupPath + "\\" + dgvM1.CurrentCell.RowIndex + "_S1.csv");//셀데이터 세이브
+                        GridMaster.SaveCSV_OnlyData(dgvCam1, System.Windows.Forms.Application.StartupPath + "\\" + dgvM1.CurrentCell.RowIndex + "_C1.csv");//셀데이터 세이브
 
-                            SettingMinMax();
+                        SettingMinMax();
 
-                            CogSerializer.SaveObjectToFile(Cogtg2, System.Windows.Forms.Application.StartupPath + "\\" + dgvM1.CurrentCell.RowIndex + "_2.vpp", typeof(System.Runtime.Serialization.Formatters.Binary.BinaryFormatter), CogSerializationOptionsConstants.Minimum);
+                        CogSerializer.SaveObjectToFile(Cogtg2, System.Windows.Forms.Application.StartupPath + "\\" + dgvM1.CurrentCell.RowIndex + "_2.vpp", typeof(System.Runtime.Serialization.Formatters.Binary.BinaryFormatter), CogSerializationOptionsConstants.Minimum);
 
-                            GridMaster.SaveCSV_OnlyData(dgvS2, System.Windows.Forms.Application.StartupPath + "\\" + dgvM1.CurrentCell.RowIndex + "_S2.csv");//셀데이터 세이브
-                            GridMaster.SaveCSV_OnlyData(dgvCam2, System.Windows.Forms.Application.StartupPath + "\\" + dgvM1.CurrentCell.RowIndex + "_C2.csv");//셀데이터 세이브
+                        GridMaster.SaveCSV_OnlyData(dgvS2, System.Windows.Forms.Application.StartupPath + "\\" + dgvM1.CurrentCell.RowIndex + "_S2.csv");//셀데이터 세이브
+                        GridMaster.SaveCSV_OnlyData(dgvCam2, System.Windows.Forms.Application.StartupPath + "\\" + dgvM1.CurrentCell.RowIndex + "_C2.csv");//셀데이터 세이브
 
-                            SettingMinMax2();
+                        SettingMinMax2();
 
-                            MessageBox.Show("저장이 완료되었습니다.");
-                        }
-                        else if (dgvM1.Rows[dgvM1.CurrentCell.RowIndex].Cells[1].Value.ToString() == "")
-                        {
-                            dgvM1.Rows[dgvM1.CurrentCell.RowIndex].Cells[1].Value = ModelNamelbl1.Text;
-                            CogSerializer.SaveObjectToFile(Cogtg, System.Windows.Forms.Application.StartupPath + "\\" + dgvM1.CurrentCell.RowIndex + "_1.vpp", typeof(System.Runtime.Serialization.Formatters.Binary.BinaryFormatter), CogSerializationOptionsConstants.Minimum);
+                        MessageBox.Show("저장이 완료되었습니다.");
+                    }
+                    else if (dgvM1.Rows[dgvM1.CurrentCell.RowIndex].Cells[1].Value.ToString() == "")
+                    {
+                        dgvM1.Rows[dgvM1.CurrentCell.RowIndex].Cells[1].Value = ModelNamelbl1.Text;
+                        CogSerializer.SaveObjectToFile(Cogtg, System.Windows.Forms.Application.StartupPath + "\\" + dgvM1.CurrentCell.RowIndex + "_1.vpp", typeof(System.Runtime.Serialization.Formatters.Binary.BinaryFormatter), CogSerializationOptionsConstants.Minimum);
 
-                            GridMaster.SaveCSV_OnlyData(dgvS1, System.Windows.Forms.Application.StartupPath + "\\" + dgvM1.CurrentCell.RowIndex + "_S1.csv");//셀데이터 세이브
-                            GridMaster.SaveCSV_OnlyData(dgvCam1, System.Windows.Forms.Application.StartupPath + "\\" + dgvM1.CurrentCell.RowIndex + "_C1.csv");//셀데이터 세이브
+                        GridMaster.SaveCSV_OnlyData(dgvS1, System.Windows.Forms.Application.StartupPath + "\\" + dgvM1.CurrentCell.RowIndex + "_S1.csv");//셀데이터 세이브
+                        GridMaster.SaveCSV_OnlyData(dgvCam1, System.Windows.Forms.Application.StartupPath + "\\" + dgvM1.CurrentCell.RowIndex + "_C1.csv");//셀데이터 세이브
 
-                            SettingMinMax();
+                        SettingMinMax();
 
-                            CogSerializer.SaveObjectToFile(Cogtg2, System.Windows.Forms.Application.StartupPath + "\\" + dgvM1.CurrentCell.RowIndex + "_2.vpp", typeof(System.Runtime.Serialization.Formatters.Binary.BinaryFormatter), CogSerializationOptionsConstants.Minimum);
+                        CogSerializer.SaveObjectToFile(Cogtg2, System.Windows.Forms.Application.StartupPath + "\\" + dgvM1.CurrentCell.RowIndex + "_2.vpp", typeof(System.Runtime.Serialization.Formatters.Binary.BinaryFormatter), CogSerializationOptionsConstants.Minimum);
 
-                            GridMaster.SaveCSV_OnlyData(dgvS2, System.Windows.Forms.Application.StartupPath + "\\" + dgvM1.CurrentCell.RowIndex + "_S2.csv");//셀데이터 세이브
-                            GridMaster.SaveCSV_OnlyData(dgvCam2, System.Windows.Forms.Application.StartupPath + "\\" + dgvM1.CurrentCell.RowIndex + "_C2.csv");//셀데이터 세이브
+                        GridMaster.SaveCSV_OnlyData(dgvS2, System.Windows.Forms.Application.StartupPath + "\\" + dgvM1.CurrentCell.RowIndex + "_S2.csv");//셀데이터 세이브
+                        GridMaster.SaveCSV_OnlyData(dgvCam2, System.Windows.Forms.Application.StartupPath + "\\" + dgvM1.CurrentCell.RowIndex + "_C2.csv");//셀데이터 세이브
 
-                            SettingMinMax2();
+                        SettingMinMax2();
 
-                            MessageBox.Show("저장이 완료되었습니다.");
-                        }
-
-                        GridMaster.SaveCSV_OnlyData(dgvC1, System.Windows.Forms.Application.StartupPath + "\\P1.csv");//셀데이터 세이브
+                        MessageBox.Show("저장이 완료되었습니다.");
                     }
 
-                    catch (Exception)
-                    {
-                        //Log_K.WriteLog(log_err, Mainpath, "모델 저장버튼 에러");
-                        //Console.WriteLine("모델 저장버튼");
-                    }
+                    GridMaster.SaveCSV_OnlyData(dgvC1, System.Windows.Forms.Application.StartupPath + "\\P1.csv");//셀데이터 세이브
+                }
+
+                catch (Exception)
+                {
+                    //Log_K.WriteLog(log_err, Mainpath, "모델 저장버튼 에러");
+                    //Console.WriteLine("모델 저장버튼");
+                }
             }
             else
             {
@@ -2024,7 +2024,8 @@ namespace VisionProgram
                     MessageBox.Show("모델을 성공적으로 삭제하였습니다.", "Message");
 
                 }
-            }catch (Exception)
+            }
+            catch (Exception)
             {
                 //Log_K.WriteLog(log_err, Mainpath, "모델 삭제버튼 에러1");
             }
@@ -2105,7 +2106,7 @@ namespace VisionProgram
                     if (dgvM2.Rows[dgvM2.CurrentCell.RowIndex].Cells[1].Value.ToString() != "")
                     {
                         CogSerializer.SaveObjectToFile(Cogtg2, System.Windows.Forms.Application.StartupPath + "\\" + dgvM2.CurrentCell.RowIndex + "_2.vpp", typeof(System.Runtime.Serialization.Formatters.Binary.BinaryFormatter), CogSerializationOptionsConstants.Minimum);
-                        
+
                         GridMaster.SaveCSV_OnlyData(dgvS2, System.Windows.Forms.Application.StartupPath + "\\" + dgvM2.CurrentCell.RowIndex + "_S2.csv");//셀데이터 세이브
                         GridMaster.SaveCSV_OnlyData(dgvCam2, System.Windows.Forms.Application.StartupPath + "\\" + dgvM2.CurrentCell.RowIndex + "_C2.csv");//셀데이터 세이브
 
@@ -2239,9 +2240,9 @@ namespace VisionProgram
         {
             //plc1.MCWrite(int.Parse(Txt_Address.Text), 0);
             string tstr = Txt_Address.Text;
-            
+
             //plc1.MasterK_Write_W("3" + tstr.Substring(0, 1) + "3" + tstr.Substring(1, 1) + "3" + tstr.Substring(2, 1) + "3" + tstr.Substring(3, 1), "0000");
-           // plc1.MasterK_Write_W("3" + tstr.Substring(0, 1) + "3" + tstr.Substring(1, 1) + "3" + tstr.Substring(2, 1) + "3" + tstr.Substring(3, 1) + "3" + tstr.Substring(4, 1), "0000");
+            // plc1.MasterK_Write_W("3" + tstr.Substring(0, 1) + "3" + tstr.Substring(1, 1) + "3" + tstr.Substring(2, 1) + "3" + tstr.Substring(3, 1) + "3" + tstr.Substring(4, 1), "0000");
 
         }
 
@@ -2471,7 +2472,7 @@ namespace VisionProgram
             plc1.CommStart();
 
             dgvStatus1.Rows[0].Cells[0].Style.BackColor = Color.Lime;
-            dgvStatus1.Rows [ 0 ].Cells [ 0 ].Value = "Auto Run";
+            dgvStatus1.Rows[0].Cells[0].Value = "Auto Run";
 
             dgvStatus2.Rows[0].Cells[0].Style.BackColor = Color.Lime;
             dgvStatus2.Rows[0].Cells[0].Value = "Auto Run";
@@ -2497,7 +2498,7 @@ namespace VisionProgram
             plc1.CommStop();
 
             dgvStatus1.Rows[0].Cells[0].Style.BackColor = Color.Crimson;
-            dgvStatus1.Rows [ 0 ].Cells [ 0 ].Value = "Auto Stop";
+            dgvStatus1.Rows[0].Cells[0].Value = "Auto Stop";
 
             dgvStatus2.Rows[0].Cells[0].Style.BackColor = Color.Crimson;
             dgvStatus2.Rows[0].Cells[0].Value = "Auto Stop";
@@ -2518,7 +2519,7 @@ namespace VisionProgram
 
         //t1t1t1t1t1
         private void triger1()  //  vision2
-        {          
+        {
             autoDelete();
 
             string time = DateTime.Now.ToString("HH.mm.ss");
@@ -2530,7 +2531,7 @@ namespace VisionProgram
 
                 Bitmap cbmp = new Bitmap(pictureBox_Cam1.Image);    //  카메라 찍어서 받은 이미지 cbm 변수에 저장
                 CogImage8Grey cimage = new CogImage8Grey(cbmp);     //  비전프로에 넣을이미지로 변환
-               //CogImage24PlanarColor ccimage = new CogImage24PlanarColor(cbmp); //  비전프로에 넣을이미지로 변환  //  컬러일 경우
+                                                                    //CogImage24PlanarColor ccimage = new CogImage24PlanarColor(cbmp); //  비전프로에 넣을이미지로 변환  //  컬러일 경우
 
                 CogIPOneImageTool ipt = (CogIPOneImageTool)Cogtg.Tools[0];  //  IPONEImage 변수
 
@@ -2546,14 +2547,14 @@ namespace VisionProgram
 
                 CogToolBlock input = (CogToolBlock)Cogtg.Tools["Tools"];    //  툴 블락 Tools 에 어느포인트 툴 사용할지 선택하기위해 툴블락 Tools 가져옴
                 input.Inputs[1].Value = CamPoint1;                          //  툴 블락 Tools에 Input 밸류를 넣어서 어느툴 사용할지 선택함
-               
+
 
                 Cogtg.Run();    //  Cogtg 실행
 
                 double[] resultall = new double[30];    //결과 data값 넣는 배열
 
                 resultall[CamPoint1] = Convert.ToDouble(result.Inputs[CamPoint1 - 1].Value);    // PLC에서 받은 검사 포인트 번호를 resultall 에 넣음
-        
+
                 double lenVal = resultall[0];
 
                 this.Invoke(new dele(() =>
@@ -2660,13 +2661,13 @@ namespace VisionProgram
                     cogRecordDisplay1.Record = Cogtg.CreateLastRunRecord().SubRecords[0];  //  메인화면 이미지 띄우기
                     cogRecordDisplay1.AutoFit = true;
                 }));
-                
+
 
             }
             catch (Exception ex)
             {
                 Log_K.WriteLog(log_lst, Mainpath, "triger1 함수NG 에러");
-                Console.WriteLine("triger1 함수 NG");              
+                Console.WriteLine("triger1 함수 NG");
             }
 
         }
@@ -2823,7 +2824,7 @@ namespace VisionProgram
 
         #endregion
 
-       
+
 
         private void SettingMinMax()
         {
@@ -2873,7 +2874,7 @@ namespace VisionProgram
             if (xtraTabControlVision.SelectedTabPage == Tab_VisionTool1)
             {
                 int modelnum = Convert.ToInt32(Txt_LastModel1.Text);
-                
+
                 //Cogtg = (CogToolGroup)CogSerializer.LoadObjectFromFile(System.Windows.Forms.Application.StartupPath + "\\" + modelnum + "_1.vpp");
                 cogToolGroupEditV21.Subject = Cogtg;
                 //MessageBox.Show(ModelNamelbl1.Text + " 툴을 불러왔습니다.");
@@ -2882,7 +2883,7 @@ namespace VisionProgram
             if (xtraTabControlVision.SelectedTabPage == Tab_VisionTool2)
             {
                 int modelnum = Convert.ToInt32(Txt_LastModel1.Text);
-                Cogtg = (CogToolGroup)CogSerializer.LoadObjectFromFile(System.Windows.Forms.Application.StartupPath + "\\" + modelnum + "_2.vpp");          
+                Cogtg = (CogToolGroup)CogSerializer.LoadObjectFromFile(System.Windows.Forms.Application.StartupPath + "\\" + modelnum + "_2.vpp");
                 cogToolGroupEditV22.Subject = Cogtg2;
                 MessageBox.Show(ModelNamelbl1.Text + " 툴을 불러왔습니다.");
             }
@@ -2902,7 +2903,7 @@ namespace VisionProgram
                 cogToolGroupEditV22.Subject = null;
             }
         }
-               
+
         public void autoDelete()   //  폴더 자동 삭제
         {
             try
@@ -2929,7 +2930,7 @@ namespace VisionProgram
                 Console.WriteLine("자동삭제");
             }
         }
-        
+
         private void SetToday()
         {
             Date0.Value = DateTime.Now;
@@ -2952,7 +2953,7 @@ namespace VisionProgram
                         "CamNum",
                         "ModelNum",
                         "PointNum",
-                        "Data"                    
+                        "Data"
                         );
 
                 sql.Select(dgvH0, cmd, false);
@@ -2969,16 +2970,16 @@ namespace VisionProgram
                         );
 
                 sql.Select(dgvH0, cmd, false);
-         
+
             }
-            
+
             dgvInit("dgvH0");
         }
 
         private void simpleButton2_Click(object sender, EventArgs e)    //  recheck route Button / Visible = false
         {
             System.Windows.Forms.OpenFileDialog choofdlog = new System.Windows.Forms.OpenFileDialog();
-            if(textBox4.Text == "" || textBox4.Text == null)
+            if (textBox4.Text == "" || textBox4.Text == null)
             {
                 choofdlog.InitialDirectory = @"D:\" + Mainpath + @"\Image\";
             }
@@ -2988,7 +2989,7 @@ namespace VisionProgram
                 choofdlog.InitialDirectory = @"" + folder + "\\";
             }
 
-            if(choofdlog.ShowDialog() == DialogResult.OK)
+            if (choofdlog.ShowDialog() == DialogResult.OK)
             {
                 Bitmap bmp = (Bitmap)Image.FromFile(choofdlog.FileName);
                 pictureBox_Cam1.Image = bmp;
@@ -2996,8 +2997,8 @@ namespace VisionProgram
             }
         }
 
-      
-        private void retriger1()  
+
+        private void retriger1()
         {
             this.Invoke(new dele(() =>
             {
@@ -3045,7 +3046,7 @@ namespace VisionProgram
                     }));
                 }
 
-                int pattern = Convert.ToInt32( resultall[16] * 100);
+                int pattern = Convert.ToInt32(resultall[16] * 100);
 
                 this.Invoke(new dele(() =>
                 {
@@ -3186,7 +3187,7 @@ namespace VisionProgram
                     }));
                 }
 
-                int pattern = Convert.ToInt32( resultall[16] * 100);
+                int pattern = Convert.ToInt32(resultall[16] * 100);
 
                 this.Invoke(new dele(() =>
                 {
@@ -3223,7 +3224,7 @@ namespace VisionProgram
                     {
                         Label_Result2.Text = "O K";
                         Label_Result2.BackColor = Color.LightGreen;
-  
+
                         try
                         {
 
@@ -3257,7 +3258,7 @@ namespace VisionProgram
 
                     }
 
-                    }));
+                }));
 
                 for (int k = 0; k < result.Inputs.Count; k++)    //  데이터 0으로 초기화
                 {
@@ -3288,8 +3289,8 @@ namespace VisionProgram
             setTool = comboBoxEdit1.Text;
             setToolNum = numericUpDown1.Value.ToString();
             OpenTool = setTool + setToolNum;
-            
-            if(setTool == "CogBlobTool")
+
+            if (setTool == "CogBlobTool")
             {
                 try
                 {
@@ -3301,7 +3302,7 @@ namespace VisionProgram
                 }
             }
 
-            else if(setTool == "CogFindCircleTool")
+            else if (setTool == "CogFindCircleTool")
             {
                 try
                 {
@@ -3316,12 +3317,12 @@ namespace VisionProgram
 
         private void kenButton4_Click(object sender, EventArgs e)   //  패턴 설정1
         {
-           new Tools.Line(Cogtg.Tools["CogFindLineTool1"], 0).ShowDialog();
+            new Tools.Line(Cogtg.Tools["CogFindLineTool1"], 0).ShowDialog();
         }
 
         private void kenButton10_Click(object sender, EventArgs e)  //  LoadImage1
         {
-            System.Windows.Forms.OpenFileDialog choofdlog = new System.Windows.Forms.OpenFileDialog( );
+            System.Windows.Forms.OpenFileDialog choofdlog = new System.Windows.Forms.OpenFileDialog();
 
             choofdlog.InitialDirectory = @"D:\" + Mainpath + @"\Image\";
 
@@ -3343,7 +3344,7 @@ namespace VisionProgram
             setTool2 = comboBoxEdit2.Text;
             setToolNum2 = numericUpDown2.Value.ToString();
             OpenTool2 = setTool2 + setToolNum2;
-            
+
             if (setTool2 == "CogBlobTool")
             {
                 try
@@ -3409,7 +3410,7 @@ namespace VisionProgram
         {
             DBReset();
         }
-        
+
         void DBReset()
         {
             string cmd = "DELETE FROM table1";
@@ -3426,17 +3427,17 @@ namespace VisionProgram
 
         private void button3_Click(object sender, EventArgs e)
         {
-           // plc1.MasterK_Write_W("3230303939", "0100");
+            // plc1.MasterK_Write_W("3230303939", "0100");
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
-           // plc1.MasterK_Write_W("3230303939", "0000");
+            // plc1.MasterK_Write_W("3230303939", "0000");
         }
 
         private void button3_Click_1(object sender, EventArgs e)
         {
-          //  plc1.MasterK_Write_W("3230303939", "0100");
+            //  plc1.MasterK_Write_W("3230303939", "0100");
         }
 
         private void button4_Click_1(object sender, EventArgs e)
@@ -3446,10 +3447,10 @@ namespace VisionProgram
 
         private void button2_Click(object sender, EventArgs e)
         {
-             //   plc1.MasterK_Write_W("3230303034", "0100");
-             //   plc1.MasterK_Write_W("3230303035", "0100");
-          //  plc1.MasterK_Write_W("3230303036", "0100");
-           // plc1.MasterK_Write_W("3230303037", "0100"); 
+            //   plc1.MasterK_Write_W("3230303034", "0100");
+            //   plc1.MasterK_Write_W("3230303035", "0100");
+            //  plc1.MasterK_Write_W("3230303036", "0100");
+            // plc1.MasterK_Write_W("3230303037", "0100"); 
 
         }
 
@@ -3476,7 +3477,7 @@ namespace VisionProgram
             new Tools.Line(Cogtg2.Tools["CogFindLineTool2"], 0).ShowDialog();
         }
 
-        private void dgvH0_CellFormatting( object sender, DataGridViewCellFormattingEventArgs e )
+        private void dgvH0_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
 
         }
