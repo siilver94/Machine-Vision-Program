@@ -15,7 +15,7 @@ using System.Threading;
 using System.Windows.Forms;
 
 
-namespace Vision_Seojin
+namespace VisionProgram
 {
     public partial class Form1 : Form
     {
@@ -3425,41 +3425,18 @@ namespace Vision_Seojin
             sql.ExecuteNonQuery(cmdd);
         }
 
-        private void button3_Click(object sender, EventArgs e)
-        {
-            // plc1.MasterK_Write_W("3230303939", "0100");
-        }
-
-        private void button4_Click(object sender, EventArgs e)
-        {
-            // plc1.MasterK_Write_W("3230303939", "0000");
-        }
-
-        private void button3_Click_1(object sender, EventArgs e)
-        {
-            //  plc1.MasterK_Write_W("3230303939", "0100");
-        }
-
-        private void button4_Click_1(object sender, EventArgs e)
-        {
-            //plc1.MasterK_Write_W("3230303939", "0000");
-        }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            //   plc1.MasterK_Write_W("3230303034", "0100");
-            //   plc1.MasterK_Write_W("3230303035", "0100");
-            //  plc1.MasterK_Write_W("3230303036", "0100");
-            // plc1.MasterK_Write_W("3230303037", "0100"); 
-
+            plc1.MasterK_Write_W("32303130", "0100");
+            plc1.MasterK_Write_W("32303131", "0100");
+         
         }
 
         private void button5_Click(object sender, EventArgs e)
         {
-            //plc1.MasterK_Write_W("3230303034", "0000");
-            //plc1.MasterK_Write_W("3230303035", "0000");
-            //plc1.MasterK_Write_W("3230303036", "0000");
-            //plc1.MasterK_Write_W("3230303037", "0000");
+            plc1.MasterK_Write_W("32303130", "0000");
+            plc1.MasterK_Write_W("32303131", "0000");
         }
 
         private void kenButton6_Click(object sender, EventArgs e)
