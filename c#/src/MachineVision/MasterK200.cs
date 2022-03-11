@@ -10,9 +10,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Vision_Seojin
+namespace VisionProgram
 {
-   
+
 
     /// <summary>
     /// 펄스 데이터를 감지합니다.
@@ -21,16 +21,16 @@ namespace Vision_Seojin
     {
         int data = 0;
 
-      
+
 
         /// <summary>
         /// 데이터가 바뀌기만 해도 감지합니다.
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        public bool Detect( int input )
+        public bool Detect(int input)
         {
-            if ( input != data )
+            if (input != data)
             {
                 data = input;
 
@@ -42,7 +42,7 @@ namespace Vision_Seojin
 
                 return false;
             }
-            
+
         }
 
         /// <summary>
@@ -53,9 +53,9 @@ namespace Vision_Seojin
         /// <param name="input"></param>
         /// <param name="DetectValue"></param>
         /// <returns></returns>
-        public bool Detect( int input, int DetectValue )
+        public bool Detect(int input, int DetectValue)
         {
-            if ( input == DetectValue && input != data )
+            if (input == DetectValue && input != data)
             {
                 data = input;
 
@@ -77,9 +77,9 @@ namespace Vision_Seojin
         /// <param name="DetectValue"></param>
         /// <param name="BeforeValue"></param>
         /// <returns></returns>
-        public bool Detect( int input, int DetectValue, int BeforeValue )
+        public bool Detect(int input, int DetectValue, int BeforeValue)
         {
-            if ( input == DetectValue && data == BeforeValue )
+            if (input == DetectValue && data == BeforeValue)
             {
                 data = input;
 
@@ -94,7 +94,7 @@ namespace Vision_Seojin
 
         }
     }
-    
+
 
     public class MasterK200_1
     {
@@ -103,20 +103,20 @@ namespace Vision_Seojin
 
         Form1 mainform;
 
-        private static DateTime Delay( int MS )
+        private static DateTime Delay(int MS)
         {
             DateTime ThisMoment = DateTime.Now;
-            TimeSpan duration = new TimeSpan( 0, 0, 0, 0, MS );
-            DateTime AfterWards = ThisMoment.Add( duration );
-            while ( AfterWards >= ThisMoment )
+            TimeSpan duration = new TimeSpan(0, 0, 0, 0, MS);
+            DateTime AfterWards = ThisMoment.Add(duration);
+            while (AfterWards >= ThisMoment)
             {
-                System.Windows.Forms.Application.DoEvents( );
+                System.Windows.Forms.Application.DoEvents();
                 ThisMoment = DateTime.Now;
             }
             return DateTime.Now;
         }
 
-        LingerOption lingeroption = new LingerOption( true, 0 );
+        LingerOption lingeroption = new LingerOption(true, 0);
 
         string ServerIP = "";
         int ServerPort = 0;
@@ -126,7 +126,7 @@ namespace Vision_Seojin
         int ClientPort = 0;
 
 
-        public delegate void EveHandler( string name, object data, int length );
+        public delegate void EveHandler(string name, object data, int length);
         public event EveHandler TalkingComm;
 
 
@@ -134,8 +134,8 @@ namespace Vision_Seojin
         public NetworkStream _stream = null;
         private TcpClient mClient;
 
-        
-        public MasterK200_1( string ServerIP, int ServerPort, int ReceiveTimeOut, string ClientIP, int ClientPort, Form1 mainform )
+
+        public MasterK200_1(string ServerIP, int ServerPort, int ReceiveTimeOut, string ClientIP, int ClientPort, Form1 mainform)
         {
 
             this.ServerIP = ServerIP;
@@ -147,67 +147,63 @@ namespace Vision_Seojin
 
         }
 
-        object tcplock = new object( );
-        
-        public void Send( string str )
+        object tcplock = new object();
+
+        public void Send(string str)
         {
 
             try
             {
-                string SendData = Parsing.DeleteSpace( str );
-                
-                char [ ] CharArray = SendData.ToCharArray( );// 0 0 0 0
+                string SendData = Parsing.DeleteSpace(str);
 
-                string [ ] NewSendData = new string [ CharArray.Length / 2 ];// 2
+                char[] CharArray = SendData.ToCharArray();// 0 0 0 0
 
-                for ( int i = 0 ; i < NewSendData.Length ; i++ )
+                string[] NewSendData = new string[CharArray.Length / 2];// 2
+
+                for (int i = 0; i < NewSendData.Length; i++)
                 {
-                    NewSendData [ i ] = CharArray [ i * 2 ].ToString( ) + CharArray [ i * 2 + 1 ].ToString( );
+                    NewSendData[i] = CharArray[i * 2].ToString() + CharArray[i * 2 + 1].ToString();
                 }
 
-                byte [ ] SendBuffer = new byte [ NewSendData.Length ];
+                byte[] SendBuffer = new byte[NewSendData.Length];
 
-                for ( int i = 0 ; i < SendBuffer.Length ; i++ )
+                for (int i = 0; i < SendBuffer.Length; i++)
                 {
-                    SendBuffer [ i ] = byte.Parse( NewSendData [ i ], System.Globalization.NumberStyles.HexNumber );
+                    SendBuffer[i] = byte.Parse(NewSendData[i], System.Globalization.NumberStyles.HexNumber);
                 }
 
-                _stream.Write( SendBuffer, 0, SendBuffer.Length );
+                _stream.Write(SendBuffer, 0, SendBuffer.Length);
 
 
             }
-            catch ( Exception eee )
+            catch (Exception eee)
             {
-                Pause( );
+                Pause();
+                Console.WriteLine(eee);
 
             }
 
         }
 
-        public void MasterK_Read_B( string address )    //  바이트로 읽기때문에 번지 address x2 해야함  16진수형식으로 EX ) 4000번지 ㅡ> (*2해서) 38 30 30 30 
+        public void MasterK_Read_B(string address)    //  바이트로 읽기때문에 번지 address x2 해야함  16진수형식으로 EX ) 4000번지 ㅡ> (*2해서) 38 30 30 30 
         {
-            //Send("4C5349532D47544F4641 0000 0033 0000 1300 0000 5400 1400 0000 0100 0700 25 44 42" + address + "2C01");   본
-              Send("4C5349532D5847540000 0000 B033 0000 1300 0152 5400 1400 0000 0100 0700 25 44 42 34 30 30 30 3C00");  //DB4000 부터 30개워드 연속읽기
+            //Send("4C5349532D47544F4641 0000 0033 0000 1300 0000 5400 1400 0000 0100 0700 25 44 42" + address + "2C01");   본               
+            Send("4C5349532D5847540000 0000 B033 0000 1300 0152 5400 1400 0000 0100 0700 25 44 42" + address + "3C00");//DB4000 부터 30개워드 연속읽기
+                //44C5349532D5847540000 0000 B033 0000 1300 0152 5400 1400 0000 0100 0700 25 44 42   34303030   3C00
 
-            // Send("4C4749532D474C4F4641 0000 0033 0000 1300 0000 5400 1400 0000 0100 0700 25 44 42" + address + "2C01");
         }
 
         //public void MasterK_Write_W( string address, string value )     //  Word로 쓰기때문에 번지 그대로 써도됨 단, 16진수형식
-        public void MasterK_Write_W()     //  Word로 쓰기때문에 번지 그대로 써도됨 단, 16진수형식
+        public void MasterK_Write_W(string address, string value)     //  Word로 쓰기때문에 번지 그대로 써도됨 단, 16진수형식
         {
             lock (lockObjj)
             {
                 Delay(10);
 
-                //Send("4C5349532D47544F4641 0000 0033 0000 1600 0000 5800 0200 0000 0100 0800 25 44 57" + address + "0200" + value);공유
+               //Send("4C5349532D47544F4641 0000 0033 0000 1600 0000 5800 0200 0000 0100 0800 25 44 57" + address + "0200" + value);   //본래
+                Send("4C5349532D5847540000 0000 B033 0000 1500 0154 5800 0200 0000 0100 0700 25 44 57" + address + "0200" + value);   //수정 후
+                    //4C5349532D5847540000 0000 B033 0000 1500 0154 5800 0200 0000 0100 0700 25 44 57    32303030   0200     0100
 
-                //Send("4C 53 49 53 2D 58 47 54 00 00 00 00 B0 33 00 00 14 00 01 53 54 00 14 00 00 00 01 00 08 00 25 44 42 34 30 30 30 30 16 00");ㅌ
-                // Send("4C 53 49 53 2D 58 47 54 00 00 00 00 B0 33 00 00 15 00 01 54 58 00 02 00 00 00 01 00 07 00 25 44 57 32 30 30 30 02 00 01 00");2225 최종
-                Send("4C 53 49 53 2D 58 47 54 00 00 00 00 B0 33 00 00 15 00 01 54 58 00 02 00 00 00 01 00 07 00 25 44 57 32 30 30 30 02 00 01 00");
-
-                //Send("4C4749532D474C4F4641 0000 0033 0000 1600 0000 5800 0200 0000 0100 0800 25 44 57" + address + "0200" + value);
-
-                //Delay(10);
             }
         }
 
@@ -217,48 +213,48 @@ namespace Vision_Seojin
         private Thread Connect;//스레드
         bool ConnectFlag = false;//Bool Flag
         //스레드함수
-        private void ConnectMethod( object param )
+        private void ConnectMethod(object param)
         {
-            int para = ( int ) param;
+            int para = (int)param;
 
-            while ( true )
+            while (true)
             {
-                Thread.Sleep( 1000 );
-                if ( ConnectFlag == false )
+                Thread.Sleep(1000);
+                if (ConnectFlag == false)
                     break;
 
                 try
                 {
 
-                    if ( Server_Connected == false )//연결끊어졌을때만 함
+                    if (Server_Connected == false)//연결끊어졌을때만 함
                     {
 
 
-                        System.Net.IPAddress ip = System.Net.IPAddress.Parse( ClientIP );
-                        IPEndPoint ipLocalEndPoint = new IPEndPoint( ip, ClientPort );
-                        mClient = new TcpClient( ipLocalEndPoint );
+                        System.Net.IPAddress ip = System.Net.IPAddress.Parse(ClientIP);
+                        IPEndPoint ipLocalEndPoint = new IPEndPoint(ip, ClientPort);
+                        mClient = new TcpClient(ipLocalEndPoint);
 
-                        mClient.Client.SetSocketOption( SocketOptionLevel.Socket, SocketOptionName.DontLinger, false );
-                        mClient.Client.SetSocketOption( SocketOptionLevel.Socket, SocketOptionName.Linger, lingeroption );
-                        mClient.Client.SetSocketOption( SocketOptionLevel.Socket, SocketOptionName.KeepAlive, 0 );
+                        mClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.DontLinger, false);
+                        mClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.Linger, lingeroption);
+                        mClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, 0);
 
                         mClient.ReceiveTimeout = ReceiveTimeOut;
-                        mClient.Connect( ServerIP, ServerPort );
-                        _stream = mClient.GetStream( );
+                        mClient.Connect(ServerIP, ServerPort);
+                        _stream = mClient.GetStream();
                         _stream.ReadTimeout = 1000;
                         Server_Connected = true;
 
-                        CommStart( );//연결되었으니 통신스레드 시작함.
+                        CommStart();//연결되었으니 통신스레드 시작함.
 
 
 
-                        TalkingComm( "Connected", 0, 0 );
+                        TalkingComm("Connected", 0, 0);
                     }
 
 
 
                 }
-                catch ( Exception )
+                catch (Exception)
                 {
                     Console.WriteLine("PLC연결 실패");
                 }
@@ -267,15 +263,15 @@ namespace Vision_Seojin
 
         }
         //스레드함수
-        public void ConnectStart( int param )
+        public void ConnectStart(int param)
         {
             //스레드스타트
             ConnectFlag = true;
-            Connect = new Thread( ( new ParameterizedThreadStart( ConnectMethod ) ) );
-            Connect.Start( param );
+            Connect = new Thread((new ParameterizedThreadStart(ConnectMethod)));
+            Connect.Start(param);
             //스레드스타트
         }
-        public void ConnectStop( )
+        public void ConnectStop()
         {
 
             ConnectFlag = false;
@@ -284,7 +280,7 @@ namespace Vision_Seojin
         #endregion
 
         int Start = 20000;
-        int CalcByte( int Offset )
+        int CalcByte(int Offset)
         {
             int result = Offset - Start;
             return result * 2;
@@ -313,9 +309,9 @@ namespace Vision_Seojin
             PulseDetector Trigger1 = new PulseDetector();
             PulseDetector Trigger2 = new PulseDetector();
 
-           
 
-        byte[] buff = new byte[4096];
+
+            byte[] buff = new byte[4096];
 
             int length = 0;
 
@@ -351,7 +347,7 @@ namespace Vision_Seojin
                     string input = BitConverter.ToString(buff, 0, length);
                     string[] result = input.Split(new string[] { "-" }, StringSplitOptions.None);
 
-                    
+
                     if (mainform.Viewdatachk.Checked)
                     {
                         if (TalkingComm != null) TalkingComm("Data", result, length);
@@ -361,25 +357,25 @@ namespace Vision_Seojin
 
                     if (ready == 1)
                     {
-                       // MasterK_Write_W("3230303230", "0000");
+                        // MasterK_Write_W("3230303230", "0000");
 
                         //System.Windows.Forms.MessageBox.Show(ready.ToString());
                     }
                     else if (ready == 0)
                     {
-                       // MasterK_Write_W("3230303230", "0100");
+                        // MasterK_Write_W("3230303230", "0100");
 
                         //System.Windows.Forms.MessageBox.Show(ready.ToString());
                     }
-                     
+
                     int resultTriger1 = Int32.Parse(result[36]); //  36 20002번지
                     //int modelNum1 = Int32.Parse(result[32]); // 32 20000번지
                     int camPoint1 = Int32.Parse(result[34]); // 34 20001번지   
-                       
+
                     if (Trigger1.Detect(resultTriger1, 1, 0))  //Cam1 트리거 신호
                     {
                         if (TalkingComm != null) TalkingComm("Trigger1", camPoint1, length);
-                                                   
+
                     }
 
                     int resultTriger2 = Int32.Parse(result[42]); //  36 20005번지
@@ -388,7 +384,7 @@ namespace Vision_Seojin
 
                     if (Trigger1.Detect(resultTriger2, 1, 0))   //Cam2 트리거 신호
                     {
-                        if (TalkingComm != null)TalkingComm("Trigger1", camPoint2, length);                       
+                        if (TalkingComm != null) TalkingComm("Trigger1", camPoint2, length);
                     }
 
 
@@ -491,6 +487,7 @@ namespace Vision_Seojin
 
         #endregion
 
+
     }
-    
+
 }
