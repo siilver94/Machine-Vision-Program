@@ -21,8 +21,6 @@ namespace VisionProgram
     {
         int data = 0;
 
-
-
         /// <summary>
         /// 데이터가 바뀌기만 해도 감지합니다.
         /// </summary>
@@ -124,7 +122,6 @@ namespace VisionProgram
 
         string ClientIP = "";
         int ClientPort = 0;
-
 
         public delegate void EveHandler(string name, object data, int length);
         public event EveHandler TalkingComm;
@@ -288,8 +285,6 @@ namespace VisionProgram
 
 
         #region -----# Comm #-----
-
-
         int flag1, flag2, flag3, flag4, flag5, flag6, flag7, flag8;
         int flag11, flag12, flag13, flag14, flag15, flag16, flag17, flag18;
         int flag19, flag20, flag21;
@@ -308,8 +303,6 @@ namespace VisionProgram
         {
             PulseDetector Trigger1 = new PulseDetector();
             PulseDetector Trigger2 = new PulseDetector();
-
-
 
             byte[] buff = new byte[4096];
 
