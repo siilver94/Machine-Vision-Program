@@ -139,6 +139,7 @@ namespace VisionProgram
 
 
         //ffffffffffffffffff
+        //ffffffffffffffffff
         private void Form1_Load(object sender, EventArgs e)
         {
 
@@ -207,8 +208,8 @@ namespace VisionProgram
 
             SetToday();
 
-            Directory.CreateDirectory("D:\\" + Mainpath + "\\Log");
-            Directory.CreateDirectory("D:\\" + Mainpath + "\\Image");
+            Directory.CreateDirectory("C:\\" + Mainpath + "\\Log");
+            Directory.CreateDirectory("C:\\" + Mainpath + "\\Image");
             Log_K.WriteLog(log_lst, Mainpath, "프로그램 시작");
 
             if (Txt_LastModel1.Text.Length > 0)
@@ -686,7 +687,7 @@ namespace VisionProgram
                         GridMaster.Init3(dgv, true, height, rows, ColumnsName);
 
                         dgv.Rows[0].Cells[0].Value = "돌출 값";
-                        dgv.Rows[0].Cells[1].Value = "값";
+                        //dgv.Rows[0].Cells[1].Value = "값";
 
                         dgv.Rows[0].Cells[0].Style.Font = new Font("Tahoma", 19, FontStyle.Bold);
                         dgv.Rows[0].Cells[1].Style.Font = new Font("Tahoma", 19, FontStyle.Bold);
@@ -1040,7 +1041,7 @@ namespace VisionProgram
 
                         for (int i = 0; i < rows; i++)
                         {
-                            dgv.Rows[i].Cells[0].Value = "D" + (i + 20000);
+                            dgv.Rows[i].Cells[0].Value = "D" + (i + 2000);
                         }
 
                         GridMaster.CenterAlign(dgv);
@@ -1692,7 +1693,7 @@ namespace VisionProgram
         {
             //Process.Start("explorer.exe", "D:\\" + "\\Vision" + "\\Image");
             //Directory.CreateDirectory( @"D:\" + Mainpath + @"\Image\" );
-            System.Diagnostics.Process.Start("explorer.exe", @"D:\" + Mainpath + @"\Image\");
+            System.Diagnostics.Process.Start("explorer.exe", @"C:\" + Mainpath + @"\Image\");
         }
 
         private void Btn_History_Click(object sender, EventArgs e)  //  DB 이력
@@ -2233,7 +2234,8 @@ namespace VisionProgram
             //plc1.MasterK_Write_W("3" + tstr.Substring(0, 1) + "3" + tstr.Substring(1, 1) + "3" + tstr.Substring(2, 1) + "3" + tstr.Substring(3, 1) , Txt_Data.Text);
 
             //plc1.MasterK_Write_W("3" + tstr.Substring(0, 1) + "3" + tstr.Substring(1, 1) + "3" + tstr.Substring(2, 1) + "3" + tstr.Substring(3, 1) + "3" + tstr.Substring(4, 1), Txt_Data.Text); 2225
-            plc1.MasterK_Write_W();
+            plc1.MasterK_Write_W("3" + tstr.Substring(0, 1) + "3" + tstr.Substring(1, 1) + "3" + tstr.Substring(2, 1) + "3" + tstr.Substring(3, 1), Txt_Data.Text);
+            // plc1.MasterK_Write_W();
         }
 
         private void button7_Click(object sender, EventArgs e)  //  PLC 데이터 리셋
@@ -2242,7 +2244,7 @@ namespace VisionProgram
             string tstr = Txt_Address.Text;
 
             //plc1.MasterK_Write_W("3" + tstr.Substring(0, 1) + "3" + tstr.Substring(1, 1) + "3" + tstr.Substring(2, 1) + "3" + tstr.Substring(3, 1), "0000");
-            // plc1.MasterK_Write_W("3" + tstr.Substring(0, 1) + "3" + tstr.Substring(1, 1) + "3" + tstr.Substring(2, 1) + "3" + tstr.Substring(3, 1) + "3" + tstr.Substring(4, 1), "0000");
+            plc1.MasterK_Write_W("3" + tstr.Substring(0, 1) + "3" + tstr.Substring(1, 1) + "3" + tstr.Substring(2, 1) + "3" + tstr.Substring(3, 1), "0000");
 
         }
 
@@ -2454,16 +2456,16 @@ namespace VisionProgram
 
         private void simpleButton3_Click(object sender, EventArgs e)    //  csv 파일로 저장
         {
-            Directory.CreateDirectory(@"D:\" + Mainpath + @"\Data\");
-            GridMaster.SaveCSV(dgvH0, @"D:\" + Mainpath + @"\Data\" + Dtime.Now(Dtime.StringType.ForFile) + ".csv");
+            Directory.CreateDirectory(@"C:\" + Mainpath + @"\Data\");
+            GridMaster.SaveCSV(dgvH0, @"C:\" + Mainpath + @"\Data\" + Dtime.Now(Dtime.StringType.ForFile) + ".csv");
 
-            MessageBox.Show("Save Data.\nLocation : " + @"D:\" + Mainpath + @"\Data\", "Message");
+            MessageBox.Show("Save Data.\nLocation : " + @"C:\" + Mainpath + @"\Data\", "Message");
         }
 
         private void simpleButton34_Click(object sender, EventArgs e)   //  csv 폴더 열기
         {
-            Directory.CreateDirectory(@"D:\" + Mainpath + @"\Data\");
-            System.Diagnostics.Process.Start("explorer.exe", @"D:\" + Mainpath + @"\Data\");
+            Directory.CreateDirectory(@"C:\" + Mainpath + @"\Data\");
+            System.Diagnostics.Process.Start("explorer.exe", @"C:\" + Mainpath + @"\Data\");
         }
         #endregion
 
@@ -2524,6 +2526,7 @@ namespace VisionProgram
 
             string time = DateTime.Now.ToString("HH.mm.ss");
             totalcnt += 1;
+            
             CamPoint1 = Convert.ToInt32(textBox1.Text);   //  검사포인트 변수에 넣음
 
             try
@@ -2555,7 +2558,7 @@ namespace VisionProgram
 
                 resultall[CamPoint1] = Convert.ToDouble(result.Inputs[CamPoint1 - 1].Value);    // PLC에서 받은 검사 포인트 번호를 resultall 에 넣음
 
-                double lenVal = resultall[0];
+                double lenVal = resultall[1];
 
                 this.Invoke(new dele(() =>
                 {
@@ -2564,7 +2567,7 @@ namespace VisionProgram
                 }));
 
 
-                string imgsavepath = @"D:\Vision\Image";
+                string imgsavepath = @"C:\Vision\Image";
                 string year = imgsavepath + "\\" + DateTime.Now.ToString("yyyy");
                 string month = year + DateTime.Now.ToString("MM");
                 string day = month + DateTime.Now.ToString("dd");
@@ -2590,16 +2593,18 @@ namespace VisionProgram
                         dgvD1.Rows[0].Cells[1].Style.BackColor = Color.LightGreen;
                         Label_Result1.Text = "O K";
                         Label_Result1.BackColor = Color.LightGreen;
+                        
 
                     }));
                     try
                     {
                         if (check_OKImage1.Checked)
-                            pictureBox_Cam1.Image.Save(okpath + "\\" + ModelNamelbl1.Text + "_" + time + ".bmp", System.Drawing.Imaging.ImageFormat.Bmp);
+                            pictureBox_Cam1.Image.Save(okpath + "\\" + ModelNamelbl1.Text + "_" + textBox1.Text + "_" + time + ".bmp", System.Drawing.Imaging.ImageFormat.Bmp);
 
                         Log_K.WriteLog(log_lst, Mainpath, "[Cam1 결과 : OK]" + Environment.NewLine);
 
                         Decision1 = "OK";
+                        plc1.MasterK_Write_W("32303135", "0100");
                         Delay(100);
 
                     }
@@ -2620,6 +2625,7 @@ namespace VisionProgram
 
                         Label_Result1.Text = "N G";
                         Label_Result1.BackColor = Color.Crimson;
+                        
                     }));
                     try
                     {
@@ -2629,6 +2635,7 @@ namespace VisionProgram
                         Log_K.WriteLog(log_lst, Mainpath, "[Cam1 결과 : NG]" + Environment.NewLine);
 
                         Decision1 = "NG";
+                        plc1.MasterK_Write_W("32303135", "0200");
                         Delay(100);
 
                     }
@@ -2719,7 +2726,7 @@ namespace VisionProgram
                 }));
 
 
-                string imgsavepath = @"D:\Vision\Image";
+                string imgsavepath = @"C:\Vision\Image";
                 string year = imgsavepath + "\\" + DateTime.Now.ToString("yyyy");
                 string month = year + DateTime.Now.ToString("MM");
                 string day = month + DateTime.Now.ToString("dd");
@@ -2743,16 +2750,18 @@ namespace VisionProgram
                         dgvD2.Rows[0].Cells[1].Style.BackColor = Color.LightGreen;
                         Label_Result2.Text = "O K";
                         Label_Result2.BackColor = Color.LightGreen;
+                        
 
                     }));
                     try
                     {
                         if (check_OKImage2.Checked)
-                            pictureBox_Cam2.Image.Save(okpath2 + "\\" + ModelNamelbl1.Text + "_" + time + ".bmp", System.Drawing.Imaging.ImageFormat.Bmp);
-
+                            pictureBox_Cam2.Image.Save(okpath2 + "\\" + ModelNamelbl1.Text + "_" + textBox1.Text + "_" + time + ".bmp", System.Drawing.Imaging.ImageFormat.Bmp);
+                       
                         Log_K.WriteLog(log_lst, Mainpath, "[Cam1 결과 : OK]" + Environment.NewLine);
 
                         Decision2 = "OK";
+                        plc1.MasterK_Write_W("32303136", "0100");
                         Delay(100);
 
                     }
@@ -2773,6 +2782,7 @@ namespace VisionProgram
 
                         Label_Result2.Text = "N G";
                         Label_Result2.BackColor = Color.Crimson;
+                        
                     }));
                     try
                     {
@@ -2782,6 +2792,7 @@ namespace VisionProgram
                         Log_K.WriteLog(log_lst, Mainpath, "[Cam1 결과 : NG]" + Environment.NewLine);
 
                         Decision2 = "NG";
+                        plc1.MasterK_Write_W("32303136", "0200");
                         Delay(100);
 
                     }
@@ -2909,7 +2920,7 @@ namespace VisionProgram
             try
             {
                 int deleteDay = Int32.Parse(Txt_DeleteDay.Text);  //  보관할 날짜
-                DirectoryInfo di = new DirectoryInfo(@"D:\Vision\Image");
+                DirectoryInfo di = new DirectoryInfo(@"C:\Vision\Image");
                 if (di.Exists)
                 {
                     DirectoryInfo[] dirInfo = di.GetDirectories();
@@ -2981,7 +2992,7 @@ namespace VisionProgram
             System.Windows.Forms.OpenFileDialog choofdlog = new System.Windows.Forms.OpenFileDialog();
             if (textBox4.Text == "" || textBox4.Text == null)
             {
-                choofdlog.InitialDirectory = @"D:\" + Mainpath + @"\Image\";
+                choofdlog.InitialDirectory = @"C:\" + Mainpath + @"\Image\";
             }
             else
             {
@@ -3294,7 +3305,8 @@ namespace VisionProgram
             {
                 try
                 {
-                    new Tools.Line(Cogtg.Tools[OpenTool], 0).Show();
+                    new Tools.Line(Cogtg.Tools["Tools"], 0).Show();
+                    
                 }
                 catch (Exception)
                 {
@@ -3315,16 +3327,18 @@ namespace VisionProgram
             }
         }
 
-        private void kenButton4_Click(object sender, EventArgs e)   //  패턴 설정1
+        private void kenButton4_Click(object sender, EventArgs e)   // FindLineTool1
         {
+
             new Tools.Line(Cogtg.Tools["CogFindLineTool1"], 0).ShowDialog();
+
         }
 
         private void kenButton10_Click(object sender, EventArgs e)  //  LoadImage1
         {
             System.Windows.Forms.OpenFileDialog choofdlog = new System.Windows.Forms.OpenFileDialog();
 
-            choofdlog.InitialDirectory = @"D:\" + Mainpath + @"\Image\";
+            choofdlog.InitialDirectory = @"C:\" + Mainpath + @"\Image\";
 
             if (choofdlog.ShowDialog() == DialogResult.OK)
             {
@@ -3381,7 +3395,7 @@ namespace VisionProgram
         {
             System.Windows.Forms.OpenFileDialog choofdlog = new System.Windows.Forms.OpenFileDialog();
 
-            choofdlog.InitialDirectory = @"D:\" + Mainpath + @"\Image\";
+            choofdlog.InitialDirectory = @"C:\" + Mainpath + @"\Image\";
 
             if (choofdlog.ShowDialog() == DialogResult.OK)
             {
@@ -3430,7 +3444,7 @@ namespace VisionProgram
         {
             plc1.MasterK_Write_W("32303130", "0100");
             plc1.MasterK_Write_W("32303131", "0100");
-         
+
         }
 
         private void button5_Click(object sender, EventArgs e)
