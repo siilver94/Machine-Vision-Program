@@ -1,3 +1,4 @@
+
 using Cognex.VisionPro;
 using Cognex.VisionPro.ImageProcessing;
 using Cognex.VisionPro.ToolBlock;
@@ -42,11 +43,11 @@ namespace VisionProgram
 
         int[] min = new int[20];    //  최소값 배열
         int[] max = new int[20];    //  최대값 배열
-        int checksetting = 1;    //  검사 데이터 및 min max 배열 수량
+        int checksetting = 2;    //  검사 데이터 및 min max 배열 수량
 
         int[] min2 = new int[20];    //  최소값 배열
         int[] max2 = new int[20];    //  최대값 배열
-        int checksetting2 = 1;    //  검사 데이터 및 min max 배열 수량
+        int checksetting2 = 2;    //  검사 데이터 및 min max 배열 수량
 
         int totalcnt = 0;
         int okcnt = 0;
@@ -153,7 +154,7 @@ namespace VisionProgram
             //제목 투명효과
             int port = Int32.Parse(Txt_Port.Text);
 
-            plc1 = new MasterK200_1("192.168.50.230", 2004, 1000, "192.168.50.101", 0, this);
+            plc1 = new MasterK200_1("192.168.1.5", 2004, 1000, "192.168.1.25", 0, this);
 
             plc1.TalkingComm += Plc1_TalkingComm;
 
@@ -183,6 +184,11 @@ namespace VisionProgram
             dgvInit("dgvS2");       //  세팅(설정값)
             dgvInit("dgvC1");       //  PLC통신
             dgvInit("dgvH0");       //  DB 이력
+
+            dgvInit("dgvB1");       // 좌표설정
+            dgvInit("dgvB2");       //좌표설정
+            dgvInit("dgvD11");
+            dgvInit("dgvD22");
 
             dgvInit("dgvH1");       //  판정 그리드뷰
             dgvInit("dgvH2");       //  판정 그리드뷰
@@ -332,8 +338,8 @@ namespace VisionProgram
             {
 
                 string[] AllData = (string[])data;
-                string[] indata = new string[100];
-                string[] address = new string[50];
+                string[] indata = new string[50];
+                string[] address = new string[25];
 
                 try
                 {
@@ -366,7 +372,7 @@ namespace VisionProgram
                     this.Invoke(new dele(() =>
                     {
 
-                        for (int i = 0; i < 50; i++)
+                        for (int i = 0; i < 25; i++)
                         {
                             dgvC1.Rows[i].Cells[1].Value = address[i]; //  C0 16진수
 
@@ -642,16 +648,20 @@ namespace VisionProgram
                             "A", "A"
                         };
                         //int rows = 2;//초기 생성 Row수
-                        int rows = 1;//초기 생성 Row수
+                        int rows = 2;//초기 생성 Row수
 
                         GridMaster.Init3(dgv, true, height, rows, ColumnsName);
 
 
                         dgv.Rows[0].Cells[0].Value = "돌출 값";
+                        dgv.Rows[1].Cells[0].Value = "폭 값";
                         //dgv.Rows[0].Cells[1].Value = "";
 
                         dgv.Rows[0].Cells[0].Style.Font = new Font("Tahoma", 19, FontStyle.Bold);
                         dgv.Rows[0].Cells[1].Style.Font = new Font("Tahoma", 19, FontStyle.Bold);
+
+                        dgv.Rows[1].Cells[0].Style.Font = new Font("Tahoma", 19, FontStyle.Bold);
+                        dgv.Rows[1].Cells[1].Style.Font = new Font("Tahoma", 19, FontStyle.Bold);
 
 
                         GridMaster.CenterAlign(dgv);
@@ -681,16 +691,20 @@ namespace VisionProgram
                         string[] ColumnsName = new string[] {
                             "A", "A"
                         };
-                        int rows = 1;//초기 생성 Row수
+                        int rows = 2;//초기 생성 Row수
 
 
                         GridMaster.Init3(dgv, true, height, rows, ColumnsName);
 
                         dgv.Rows[0].Cells[0].Value = "돌출 값";
+                        dgv.Rows[1].Cells[0].Value = "폭 값";
                         //dgv.Rows[0].Cells[1].Value = "값";
 
                         dgv.Rows[0].Cells[0].Style.Font = new Font("Tahoma", 19, FontStyle.Bold);
                         dgv.Rows[0].Cells[1].Style.Font = new Font("Tahoma", 19, FontStyle.Bold);
+
+                        dgv.Rows[1].Cells[0].Style.Font = new Font("Tahoma", 19, FontStyle.Bold);
+                        dgv.Rows[1].Cells[1].Style.Font = new Font("Tahoma", 19, FontStyle.Bold);
 
                         GridMaster.CenterAlign(dgv);
 
@@ -702,6 +716,182 @@ namespace VisionProgram
                     catch (Exception)
                     {
                         Console.WriteLine("dgvd2");
+                    }
+
+                    break;
+
+
+                case "dgvB1":
+
+                    try
+                    {
+                        //---------------↓ 기본 ↓---------------┐
+                        DataGridView dgv = (DataGridView)Reflection_K.Get(this, name);//이름가져옴
+                        string DGV_name = dgv.Name;//적용
+                        int height = int.Parse(DataRW.Load_Simple(DGV_name + "H", "30"));//데이터가져옴
+                        int fontheader = int.Parse(DataRW.Load_Simple(DGV_name + "FH", "12"));//데이터가져옴
+                        int fontcell = int.Parse(DataRW.Load_Simple(DGV_name + "FC", "12"));//데이터가져옴
+                        GridMaster.FontSize2(dgv, fontheader, fontcell);//적용
+                        //GridMaster.FontSize2( dgv , "New Gulim" , fontheader , fontcell );//한자나 글자 깨질 때 이걸로 사용하세요.
+                        //---------------↑ 기본 ↑---------------┘
+
+                        //---------------↓ 생성 ↓---------------┐
+                        string[] ColumnsName = new string[] {
+                            "구분" , "X" ,"Y","해상도","FOV","결과"
+                        };
+                        int rows = 3;//초기 생성 Row수
+
+                        GridMaster.Init3(dgv, true, height, rows, ColumnsName);                   
+                        GridMaster.CenterAlign(dgv);
+                        GridMaster.DisableSortColumn(dgv);//오름차순 내림차순 정렬 막기
+              
+                    }
+                    catch (Exception)
+                    {
+
+                    }
+                    break;
+
+                case "dgvB2":
+
+                    try
+                    {
+                        //---------------↓ 기본 ↓---------------┐
+                        DataGridView dgv = (DataGridView)Reflection_K.Get(this, name);//이름가져옴
+                        string DGV_name = dgv.Name;//적용
+                        int height = int.Parse(DataRW.Load_Simple(DGV_name + "H", "30"));//데이터가져옴
+                        int fontheader = int.Parse(DataRW.Load_Simple(DGV_name + "FH", "12"));//데이터가져옴
+                        int fontcell = int.Parse(DataRW.Load_Simple(DGV_name + "FC", "12"));//데이터가져옴
+                        GridMaster.FontSize2(dgv, fontheader, fontcell);//적용
+
+                        string[] ColumnsName = new string[] {
+                            "구분" , "X" ,"Y","해상도","FOV","결과"
+                        };
+                        int rows = 3;//초기 생성 Row수
+
+                        GridMaster.Init3(dgv, true, height, rows, ColumnsName);
+                        GridMaster.CenterAlign(dgv);
+                        GridMaster.DisableSortColumn(dgv);//오름차순 내림차순 정렬 막기
+
+                    }
+                    catch (Exception)
+                    {
+
+                    }
+                    break;
+
+                case "dgvD11":
+
+                    try
+                    {
+                        //---------------↓ 기본 ↓---------------┐
+                        DataGridView dgv = (DataGridView)Reflection_K.Get(this, name);//이름가져옴
+                        string DGV_name = dgv.Name;//적용
+                        int height = int.Parse(DataRW.Load_Simple(DGV_name + "H", "30"));//데이터가져옴
+                        int fontheader = int.Parse(DataRW.Load_Simple(DGV_name + "FH", "12"));//데이터가져옴
+                        int fontcell = int.Parse(DataRW.Load_Simple(DGV_name + "FC", "12"));//데이터가져옴
+                        GridMaster.FontSize2(dgv, fontheader, fontcell);//적용
+                        //GridMaster.FontSize2( dgv , "New Gulim" , fontheader , fontcell );//한자나 글자 깨질 때 이걸로 사용하세요.
+                        //---------------↑ 기본 ↑---------------┘
+
+                        //---------------↓ 생성 ↓---------------┐
+                        string[] ColumnsName = new string[] {
+                            //"Inspection", "Value", "Check"
+                            "A", "A", "A", "A","A", "A"
+                        };
+                        int rows = 200;//초기 생성 Row수
+
+                        GridMaster.Init3(dgv, true, height, rows, ColumnsName);
+                        //---------------↑ 생성 ↑---------------┘
+
+                        //---------------↓ 사용자 데이터 추가 부분 ↓---------------┐
+                        //GridMaster.LoadCSV_OnlyData( dgv , System.Windows.Forms.Application.StartupPath + "\\AAAA.csv" );//셀데이터로드
+                        //GridMaster.LoadCSV( dgvD0 , @"C:\Users\kclip3\Desktop\CR0.csv" );//셀데이터로드
+
+                        dgv.Rows[0].Cells[0].Value = "구분";
+                        //dgv.Rows[1].Cells[0].Value = "값";
+
+                        dgv.Rows[0].Cells[1].Value = "패턴";
+                        dgv.Rows[0].Cells[2].Value = "X 좌표";
+                        dgv.Rows[0].Cells[3].Value = "Y 좌표";
+                        dgv.Rows[0].Cells[4].Value = "각도";
+                        dgv.Rows[0].Cells[5].Value = "결과";
+
+                        for (int i = 1; i < 200; i++)
+                        {
+                            dgv.Rows[i].Cells[0].Value = "좌표 " + i;
+                        }
+
+                        GridMaster.CenterAlign(dgv);
+                        dgv.ReadOnly = true;//읽기전용
+                        //dgv.Columns[0].ReadOnly = true;//읽기전용
+
+                        GridMaster.DisableSortColumn(dgv);//오름차순 내림차순 정렬 막기
+
+                        dgv.ColumnHeadersVisible = false;//컬럼헤더 가리기                        
+        
+                    }
+                    catch (Exception)
+                    {
+                        Console.WriteLine("dgvd11");
+                    }
+
+                    break;
+
+                case "dgvD22":
+
+                    try
+                    {
+                        //---------------↓ 기본 ↓---------------┐
+                        DataGridView dgv = (DataGridView)Reflection_K.Get(this, name);//이름가져옴
+                        string DGV_name = dgv.Name;//적용
+                        int height = int.Parse(DataRW.Load_Simple(DGV_name + "H", "30"));//데이터가져옴
+                        int fontheader = int.Parse(DataRW.Load_Simple(DGV_name + "FH", "12"));//데이터가져옴
+                        int fontcell = int.Parse(DataRW.Load_Simple(DGV_name + "FC", "12"));//데이터가져옴
+                        GridMaster.FontSize2(dgv, fontheader, fontcell);//적용
+                        //GridMaster.FontSize2( dgv , "New Gulim" , fontheader , fontcell );//한자나 글자 깨질 때 이걸로 사용하세요.
+                        //---------------↑ 기본 ↑---------------┘
+
+                        //---------------↓ 생성 ↓---------------┐
+                        string[] ColumnsName = new string[] {
+                            //"Inspection", "Value", "Check"
+                            "A", "A", "A", "A","A", "A"
+                        };
+                        int rows = 200;//초기 생성 Row수
+
+                        GridMaster.Init3(dgv, true, height, rows, ColumnsName);
+                        //---------------↑ 생성 ↑---------------┘
+
+                        //---------------↓ 사용자 데이터 추가 부분 ↓---------------┐
+                        //GridMaster.LoadCSV_OnlyData( dgv , System.Windows.Forms.Application.StartupPath + "\\AAAA.csv" );//셀데이터로드
+                        //GridMaster.LoadCSV( dgvD0 , @"C:\Users\kclip3\Desktop\CR0.csv" );//셀데이터로드
+
+                        dgv.Rows[0].Cells[0].Value = "구분";
+                        //dgv.Rows[1].Cells[0].Value = "값";
+
+                        dgv.Rows[0].Cells[1].Value = "패턴";
+                        dgv.Rows[0].Cells[2].Value = "X 좌표";
+                        dgv.Rows[0].Cells[3].Value = "Y 좌표";
+                        dgv.Rows[0].Cells[4].Value = "각도";
+                        dgv.Rows[0].Cells[5].Value = "결과";
+
+                        for (int i = 1; i < 200; i++)
+                        {
+                            dgv.Rows[i].Cells[0].Value = "좌표 " + i;
+                        }
+
+                        GridMaster.CenterAlign(dgv);
+                        dgv.ReadOnly = true;//읽기전용
+                        //dgv.Columns[0].ReadOnly = true;//읽기전용
+
+                        GridMaster.DisableSortColumn(dgv);//오름차순 내림차순 정렬 막기
+
+                        dgv.ColumnHeadersVisible = false;//컬럼헤더 가리기                        
+
+                    }
+                    catch (Exception)
+                    {
+                        Console.WriteLine("dgvd11");
                     }
 
                     break;
@@ -726,7 +916,7 @@ namespace VisionProgram
                         GridMaster.Init3(dgv, true, height, rows, ColumnsName);
 
                         dgv.Rows[0].Cells[0].Value = "Auto Run";
-                        dgv.Rows[1].Cells[0].Value = "PLC (192.168.0.1)";
+                        dgv.Rows[1].Cells[0].Value = "PLC (192.168.1.5)";
                         dgv.Rows[2].Cells[0].Value = "CAM (192.168.100.2)";
 
                         dgv.Rows[0].Cells[0].Style.BackColor = Color.Crimson;
@@ -780,7 +970,7 @@ namespace VisionProgram
                         //GridMaster.LoadCSV( dgvD0 , @"C:\Users\kclip3\Desktop\CR0.csv" );//셀데이터로드
 
                         dgv.Rows[0].Cells[0].Value = "Auto Run";
-                        dgv.Rows[1].Cells[0].Value = "PLC (192.168.0.1)";
+                        dgv.Rows[1].Cells[0].Value = "PLC (192.168.1.5)";
                         dgv.Rows[2].Cells[0].Value = "CAM (192.168.101.2)";
 
                         dgv.Rows[0].Cells[0].Style.BackColor = Color.Crimson;
@@ -1032,7 +1222,7 @@ namespace VisionProgram
                         string[] ColumnsName = new string[] {
                             "번지" , "내용" , "Data"
                         };
-                        int rows = 50;//초기 생성 Row수
+                        int rows = 100;//초기 생성 Row수
 
                         GridMaster.Init3(dgv, true, height, rows, ColumnsName);
 
@@ -1370,7 +1560,7 @@ namespace VisionProgram
         #region DGV 자동맞춤
         private void dgvD1_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            if (e.Button.ToString().Equals("Middle"))
+            if (e.Button.ToString().Equals("Right"))
             {
                 DataGridView thisdgv = (DataGridView)sender;
                 dgvmanager = new Ken2.UIControl.dgvManager(thisdgv);
@@ -1381,7 +1571,7 @@ namespace VisionProgram
 
         private void dgvStatus1_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            if (e.Button.ToString().Equals("Middle"))
+            if (e.Button.ToString().Equals("Right"))
             {
                 DataGridView thisdgv = (DataGridView)sender;
                 dgvmanager = new Ken2.UIControl.dgvManager(thisdgv);
@@ -1392,7 +1582,7 @@ namespace VisionProgram
 
         private void dgvM1_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            if (e.Button.ToString().Equals("Middle"))
+            if (e.Button.ToString().Equals("Right"))
             {
                 DataGridView thisdgv = (DataGridView)sender;
                 dgvmanager = new Ken2.UIControl.dgvManager(thisdgv);
@@ -1403,7 +1593,7 @@ namespace VisionProgram
 
         private void dgvCam1_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            if (e.Button.ToString().Equals("Middle"))
+            if (e.Button.ToString().Equals("Right"))
             {
                 DataGridView thisdgv = (DataGridView)sender;
                 dgvmanager = new Ken2.UIControl.dgvManager(thisdgv);
@@ -1414,7 +1604,7 @@ namespace VisionProgram
 
         private void dgvS1_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            if (e.Button.ToString().Equals("Middle"))
+            if (e.Button.ToString().Equals("Right"))
             {
                 DataGridView thisdgv = (DataGridView)sender;
                 dgvmanager = new Ken2.UIControl.dgvManager(thisdgv);
@@ -1425,7 +1615,7 @@ namespace VisionProgram
 
         private void dgvC1_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            if (e.Button.ToString().Equals("Middle"))
+            if (e.Button.ToString().Equals("Right"))
             {
                 DataGridView thisdgv = (DataGridView)sender;
                 dgvmanager = new Ken2.UIControl.dgvManager(thisdgv);
@@ -1436,7 +1626,7 @@ namespace VisionProgram
 
         private void dgvH0_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            if (e.Button.ToString().Equals("Middle"))
+            if (e.Button.ToString().Equals("Right"))
             {
                 DataGridView thisdgv = (DataGridView)sender;
                 dgvmanager = new Ken2.UIControl.dgvManager(thisdgv);
@@ -1447,7 +1637,7 @@ namespace VisionProgram
 
         private void dgvD2_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            if (e.Button.ToString().Equals("Middle"))
+            if (e.Button.ToString().Equals("Right"))
             {
                 DataGridView thisdgv = (DataGridView)sender;
                 dgvmanager = new Ken2.UIControl.dgvManager(thisdgv);
@@ -1458,7 +1648,7 @@ namespace VisionProgram
 
         private void dgvStatus2_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            if (e.Button.ToString().Equals("Middle"))
+            if (e.Button.ToString().Equals("Right"))
             {
                 DataGridView thisdgv = (DataGridView)sender;
                 dgvmanager = new Ken2.UIControl.dgvManager(thisdgv);
@@ -1469,7 +1659,7 @@ namespace VisionProgram
 
         private void dgvM2_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            if (e.Button.ToString().Equals("Middle"))
+            if (e.Button.ToString().Equals("Right"))
             {
                 DataGridView thisdgv = (DataGridView)sender;
                 dgvmanager = new Ken2.UIControl.dgvManager(thisdgv);
@@ -1480,7 +1670,7 @@ namespace VisionProgram
 
         private void dgvCam2_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            if (e.Button.ToString().Equals("Middle"))
+            if (e.Button.ToString().Equals("Right"))
             {
                 DataGridView thisdgv = (DataGridView)sender;
                 dgvmanager = new Ken2.UIControl.dgvManager(thisdgv);
@@ -1491,7 +1681,7 @@ namespace VisionProgram
 
         private void dgvS2_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            if (e.Button.ToString().Equals("Middle"))
+            if (e.Button.ToString().Equals("Right"))
             {
                 DataGridView thisdgv = (DataGridView)sender;
                 dgvmanager = new Ken2.UIControl.dgvManager(thisdgv);
@@ -1502,7 +1692,7 @@ namespace VisionProgram
 
         private void dgvH1_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            if (e.Button.ToString().Equals("Middle"))
+            if (e.Button.ToString().Equals("Right"))
             {
                 DataGridView thisdgv = (DataGridView)sender;
                 dgvmanager = new Ken2.UIControl.dgvManager(thisdgv);
@@ -1513,7 +1703,7 @@ namespace VisionProgram
 
         private void dgvH2_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            if (e.Button.ToString().Equals("Middle"))
+            if (e.Button.ToString().Equals("Right"))
             {
                 DataGridView thisdgv = (DataGridView)sender;
                 dgvmanager = new Ken2.UIControl.dgvManager(thisdgv);
@@ -1524,7 +1714,7 @@ namespace VisionProgram
 
         private void dgvH3_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            if (e.Button.ToString().Equals("Middle"))
+            if (e.Button.ToString().Equals("Right"))
             {
                 DataGridView thisdgv = (DataGridView)sender;
                 dgvmanager = new Ken2.UIControl.dgvManager(thisdgv);
@@ -1535,7 +1725,7 @@ namespace VisionProgram
 
         private void dgvH4_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            if (e.Button.ToString().Equals("Middle"))
+            if (e.Button.ToString().Equals("Right"))
             {
                 DataGridView thisdgv = (DataGridView)sender;
                 dgvmanager = new Ken2.UIControl.dgvManager(thisdgv);
@@ -1546,7 +1736,7 @@ namespace VisionProgram
 
         private void dgvH5_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            if (e.Button.ToString().Equals("Middle"))
+            if (e.Button.ToString().Equals("Right"))
             {
                 DataGridView thisdgv = (DataGridView)sender;
                 dgvmanager = new Ken2.UIControl.dgvManager(thisdgv);
@@ -1557,7 +1747,7 @@ namespace VisionProgram
 
         private void dgvH6_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            if (e.Button.ToString().Equals("Middle"))
+            if (e.Button.ToString().Equals("Right"))
             {
                 DataGridView thisdgv = (DataGridView)sender;
                 dgvmanager = new Ken2.UIControl.dgvManager(thisdgv);
@@ -1568,7 +1758,7 @@ namespace VisionProgram
 
         private void dgvH7_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            if (e.Button.ToString().Equals("Middle"))
+            if (e.Button.ToString().Equals("Right"))
             {
                 DataGridView thisdgv = (DataGridView)sender;
                 dgvmanager = new Ken2.UIControl.dgvManager(thisdgv);
@@ -1580,7 +1770,7 @@ namespace VisionProgram
 
         private void dgvH8_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            if (e.Button.ToString().Equals("Middle"))
+            if (e.Button.ToString().Equals("Right"))
             {
                 DataGridView thisdgv = (DataGridView)sender;
                 dgvmanager = new Ken2.UIControl.dgvManager(thisdgv);
@@ -1849,6 +2039,8 @@ namespace VisionProgram
 
                 GridMaster.LoadCSV_OnlyData(dgvS1, System.Windows.Forms.Application.StartupPath + "\\" + CurrentModelNum1 + "_S1.csv");//셀데이터로드
                 GridMaster.LoadCSV_OnlyData(dgvCam1, System.Windows.Forms.Application.StartupPath + "\\" + CurrentModelNum1 + "_C1.csv");//셀데이터로드
+                GridMaster.LoadCSV_OnlyData(dgvB1, System.Windows.Forms.Application.StartupPath + "\\" + CurrentModelNum1+ "_SPOT1.csv");//셀데이터로드   캘리브레이션 및 offset
+
 
                 Cogtg2 = (CogToolGroup)CogSerializer.LoadObjectFromFile(System.Windows.Forms.Application.StartupPath + "\\" + CurrentModelNum1 + "_2.vpp");
                 CogToolBlock result2 = (CogToolBlock)Cogtg2.Tools["result"];
@@ -1859,6 +2051,8 @@ namespace VisionProgram
 
                 GridMaster.LoadCSV_OnlyData(dgvS2, System.Windows.Forms.Application.StartupPath + "\\" + CurrentModelNum1 + "_S2.csv");//셀데이터로드
                 GridMaster.LoadCSV_OnlyData(dgvCam2, System.Windows.Forms.Application.StartupPath + "\\" + CurrentModelNum1 + "_C2.csv");//셀데이터로드
+                GridMaster.LoadCSV_OnlyData(dgvB2, System.Windows.Forms.Application.StartupPath + "\\" + CurrentModelNum1 + "_SPOT2.csv");//셀데이터로드   캘리브레이션 및 offset
+
 
             }
             catch (Exception)
@@ -1905,14 +2099,14 @@ namespace VisionProgram
 
                         GridMaster.SaveCSV_OnlyData(dgvS1, System.Windows.Forms.Application.StartupPath + "\\" + dgvM1.CurrentCell.RowIndex + "_S1.csv");//셀데이터 세이브
                         GridMaster.SaveCSV_OnlyData(dgvCam1, System.Windows.Forms.Application.StartupPath + "\\" + dgvM1.CurrentCell.RowIndex + "_C1.csv");//셀데이터 세이브
-
+                        GridMaster.SaveCSV_OnlyData(dgvB1, System.Windows.Forms.Application.StartupPath + "\\" + dgvM1.CurrentCell.RowIndex + "_SPOT1.csv");//셀데이터로드   캘리브레이션 및 offset
                         SettingMinMax();
 
                         CogSerializer.SaveObjectToFile(Cogtg2, System.Windows.Forms.Application.StartupPath + "\\" + dgvM1.CurrentCell.RowIndex + "_2.vpp", typeof(System.Runtime.Serialization.Formatters.Binary.BinaryFormatter), CogSerializationOptionsConstants.Minimum);
 
                         GridMaster.SaveCSV_OnlyData(dgvS2, System.Windows.Forms.Application.StartupPath + "\\" + dgvM1.CurrentCell.RowIndex + "_S2.csv");//셀데이터 세이브
                         GridMaster.SaveCSV_OnlyData(dgvCam2, System.Windows.Forms.Application.StartupPath + "\\" + dgvM1.CurrentCell.RowIndex + "_C2.csv");//셀데이터 세이브
-
+                        GridMaster.SaveCSV_OnlyData(dgvB2, System.Windows.Forms.Application.StartupPath + "\\" + dgvM1.CurrentCell.RowIndex + "_SPOT2.csv");//셀데이터로드   캘리브레이션 및 offset
                         SettingMinMax2();
 
                         MessageBox.Show("저장이 완료되었습니다.");
@@ -1924,6 +2118,7 @@ namespace VisionProgram
 
                         GridMaster.SaveCSV_OnlyData(dgvS1, System.Windows.Forms.Application.StartupPath + "\\" + dgvM1.CurrentCell.RowIndex + "_S1.csv");//셀데이터 세이브
                         GridMaster.SaveCSV_OnlyData(dgvCam1, System.Windows.Forms.Application.StartupPath + "\\" + dgvM1.CurrentCell.RowIndex + "_C1.csv");//셀데이터 세이브
+                        GridMaster.SaveCSV_OnlyData(dgvB1, System.Windows.Forms.Application.StartupPath + "\\" + dgvM1.CurrentCell.RowIndex + "_SPOT1.csv");//셀데이터로드   캘리브레이션 및 offset
 
                         SettingMinMax();
 
@@ -1931,6 +2126,7 @@ namespace VisionProgram
 
                         GridMaster.SaveCSV_OnlyData(dgvS2, System.Windows.Forms.Application.StartupPath + "\\" + dgvM1.CurrentCell.RowIndex + "_S2.csv");//셀데이터 세이브
                         GridMaster.SaveCSV_OnlyData(dgvCam2, System.Windows.Forms.Application.StartupPath + "\\" + dgvM1.CurrentCell.RowIndex + "_C2.csv");//셀데이터 세이브
+                        GridMaster.SaveCSV_OnlyData(dgvB2, System.Windows.Forms.Application.StartupPath + "\\" + dgvM1.CurrentCell.RowIndex + "_SPOT2.csv");//셀데이터로드   캘리브레이션 및 offset
 
                         SettingMinMax2();
 
@@ -2020,6 +2216,8 @@ namespace VisionProgram
                     File.Delete(System.Windows.Forms.Application.StartupPath + "\\" + modelnum + "_2.vpp");
                     File.Delete(System.Windows.Forms.Application.StartupPath + "\\" + modelnum + "_S2.csv");
                     File.Delete(System.Windows.Forms.Application.StartupPath + "\\" + modelnum + "_C2.csv");
+                    File.Delete(System.Windows.Forms.Application.StartupPath + "\\" + modelnum + "SPOT1.csv");
+                    File.Delete(System.Windows.Forms.Application.StartupPath + "\\" + modelnum + "SPOT2.csv");
                     GridMaster.SaveCSV_OnlyData(dgvM1, System.Windows.Forms.Application.StartupPath + "\\Model1.csv");//셀데이터 세이브
 
                     MessageBox.Show("모델을 성공적으로 삭제하였습니다.", "Message");
@@ -2053,6 +2251,9 @@ namespace VisionProgram
 
                 GridMaster.LoadCSV_OnlyData(dgvS1, System.Windows.Forms.Application.StartupPath + "\\" + CurrentModelNum1 + "_S1.csv");//셀데이터로드
                 GridMaster.LoadCSV_OnlyData(dgvCam1, System.Windows.Forms.Application.StartupPath + "\\" + CurrentModelNum1 + "_C1.csv");//셀데이터로드
+                GridMaster.LoadCSV_OnlyData(dgvB1, System.Windows.Forms.Application.StartupPath + "\\" + CurrentModelNum1 + "_SPOT1.csv");//셀데이터로드   캘리브레이션 및 offset
+
+
 
 
                 Cogtg2 = (CogToolGroup)CogSerializer.LoadObjectFromFile(System.Windows.Forms.Application.StartupPath + "\\" + CurrentModelNum1 + "_2.vpp");
@@ -2064,6 +2265,7 @@ namespace VisionProgram
 
                 GridMaster.LoadCSV_OnlyData(dgvS2, System.Windows.Forms.Application.StartupPath + "\\" + CurrentModelNum1 + "_S2.csv");//셀데이터로드
                 GridMaster.LoadCSV_OnlyData(dgvCam2, System.Windows.Forms.Application.StartupPath + "\\" + CurrentModelNum1 + "_C2.csv");//셀데이터로드
+                GridMaster.LoadCSV_OnlyData(dgvB2, System.Windows.Forms.Application.StartupPath + "\\" + CurrentModelNum1 + "_SPOT2.csv");//셀데이터로드   캘리브레이션 및 offset
 
             }
             catch (Exception)
@@ -2519,6 +2721,8 @@ namespace VisionProgram
 
         #region 트리거 triger
 
+
+
         //t1t1t1t1t1
         private void triger1()  //  vision2
         {
@@ -2526,8 +2730,14 @@ namespace VisionProgram
 
             string time = DateTime.Now.ToString("HH.mm.ss");
             totalcnt += 1;
-            
-            CamPoint1 = Convert.ToInt32(textBox1.Text);   //  검사포인트 변수에 넣음
+
+            //textBox1.Text = Convert.ToString(dgvC1.Rows[1].Cells[2].Value); // 2001번지 검사포인트 값 가져오기.
+
+            if (textBox1 != null)
+                CamPoint1 = Convert.ToInt32(textBox1.Text);   //  검사포인트 변수에 넣음
+            else
+                CamPoint1 = 1;
+
 
             try
             {
@@ -2535,7 +2745,6 @@ namespace VisionProgram
                 Bitmap cbmp = new Bitmap(pictureBox_Cam1.Image);    //  카메라 찍어서 받은 이미지 cbm 변수에 저장
                 CogImage8Grey cimage = new CogImage8Grey(cbmp);     //  비전프로에 넣을이미지로 변환
                                                                     //CogImage24PlanarColor ccimage = new CogImage24PlanarColor(cbmp); //  비전프로에 넣을이미지로 변환  //  컬러일 경우
-
                 CogIPOneImageTool ipt = (CogIPOneImageTool)Cogtg.Tools[0];  //  IPONEImage 변수
 
                 ipt.InputImage = cimage;    //  IPONEImage에 이미지 넣기
@@ -2551,18 +2760,20 @@ namespace VisionProgram
                 CogToolBlock input = (CogToolBlock)Cogtg.Tools["Tools"];    //  툴 블락 Tools 에 어느포인트 툴 사용할지 선택하기위해 툴블락 Tools 가져옴
                 input.Inputs[1].Value = CamPoint1;                          //  툴 블락 Tools에 Input 밸류를 넣어서 어느툴 사용할지 선택함
 
-
                 Cogtg.Run();    //  Cogtg 실행
 
                 double[] resultall = new double[30];    //결과 data값 넣는 배열
 
                 resultall[CamPoint1] = Convert.ToDouble(result.Inputs[CamPoint1 - 1].Value);    // PLC에서 받은 검사 포인트 번호를 resultall 에 넣음
 
+
                 double lenVal = resultall[1];
+                double WidthVal = resultall[2];
 
                 this.Invoke(new dele(() =>
                 {
                     dgvD1.Rows[0].Cells[1].Value = resultall[CamPoint1].ToString("F2");     // 메인 모니터 상에 수치 출력
+                    dgvD1.Rows[1].Cells[1].Value = resultall[CamPoint1 + 1].ToString("F2");
 
                 }));
 
@@ -2586,14 +2797,16 @@ namespace VisionProgram
 
 
 
-                if (min[0] <= lenVal && lenVal <= max[0])   //OK 판정
+                if (min[0] <= lenVal && lenVal <= max[0] && min[1] <= WidthVal && WidthVal <= max[1])   //OK 판정
                 {
                     this.Invoke(new dele(() =>
                     {
                         dgvD1.Rows[0].Cells[1].Style.BackColor = Color.LightGreen;
                         Label_Result1.Text = "O K";
                         Label_Result1.BackColor = Color.LightGreen;
-                        
+
+                        dgvD1.Rows[1].Cells[1].Style.BackColor = Color.LightGreen;
+
 
                     }));
                     try
@@ -2604,7 +2817,8 @@ namespace VisionProgram
                         Log_K.WriteLog(log_lst, Mainpath, "[Cam1 결과 : OK]" + Environment.NewLine);
 
                         Decision1 = "OK";
-                        plc1.MasterK_Write_W("32303135", "0100");
+                        plc1.MasterK_Write_W("32303135", "0100");  //OK 판정 PLC에게 보내기
+
                         Delay(100);
 
                     }
@@ -2625,7 +2839,9 @@ namespace VisionProgram
 
                         Label_Result1.Text = "N G";
                         Label_Result1.BackColor = Color.Crimson;
-                        
+
+                        dgvD1.Rows[1].Cells[1].Style.BackColor = Color.Crimson;
+
                     }));
                     try
                     {
@@ -2635,7 +2851,9 @@ namespace VisionProgram
                         Log_K.WriteLog(log_lst, Mainpath, "[Cam1 결과 : NG]" + Environment.NewLine);
 
                         Decision1 = "NG";
-                        plc1.MasterK_Write_W("32303135", "0200");
+                        plc1.MasterK_Write_W("32303135", "0200"); //NG 판정 PLC에게 보내기
+                        Delay(10);
+                        plc1.MasterK_Write_W("32303032", "0000"); // 트리거 리셋
                         Delay(100);
 
                     }
@@ -2652,7 +2870,8 @@ namespace VisionProgram
                         "CamNum", "CAM1",
                         "ModelNum", ModelNamelbl1.Text,
                         "PointNum", Convert.ToString(CamPoint1),
-                        "Data", Convert.ToString(dgvD1.Rows[0].Cells[1].Value)
+                        "Length", Convert.ToString(dgvD1.Rows[0].Cells[1].Value),
+                        "width", Convert.ToString(dgvD1.Rows[1].Cells[1].Value)
                          );
 
                 sql.ExecuteNonQuery(cmd);
@@ -2688,7 +2907,14 @@ namespace VisionProgram
             string time = DateTime.Now.ToString("HH.mm.ss");
             totalcnt2 += 1;
 
-            CamPoint2 = Convert.ToInt32(textBox2.Text);   //  검사포인트 변수에 넣음
+
+            //textBox1.Text = Convert.ToString(dgvC1.Rows[4].Cells[2].Value); // 2004번지 검사포인트 값 가져오기.
+
+            if (textBox2 != null)
+                CamPoint2 = Convert.ToInt32(textBox2.Text);   //  검사포인트 변수에 넣음
+            else
+                CamPoint2 = 1;
+
 
             try
             {
@@ -2717,11 +2943,12 @@ namespace VisionProgram
 
                 resultall2[CamPoint2] = Convert.ToDouble(result.Inputs[CamPoint2 - 1].Value);    // PLC에서 받은 검사 포인트 번호를 resultall 에 넣음
 
-                double lenVal2 = resultall2[0];
+                double lenVal2 = resultall2[1];
 
                 this.Invoke(new dele(() =>
                 {
                     dgvD2.Rows[0].Cells[1].Value = resultall2[CamPoint2].ToString("F2");     // 메인 모니터 상에 수치 출력
+                    dgvD2.Rows[1].Cells[1].Value = resultall2[CamPoint1 + 1].ToString("F2");
 
                 }));
 
@@ -2750,20 +2977,22 @@ namespace VisionProgram
                         dgvD2.Rows[0].Cells[1].Style.BackColor = Color.LightGreen;
                         Label_Result2.Text = "O K";
                         Label_Result2.BackColor = Color.LightGreen;
-                        
+
+                        dgvD2.Rows[1].Cells[1].Style.BackColor = Color.LightGreen;
 
                     }));
                     try
                     {
                         if (check_OKImage2.Checked)
                             pictureBox_Cam2.Image.Save(okpath2 + "\\" + ModelNamelbl1.Text + "_" + textBox1.Text + "_" + time + ".bmp", System.Drawing.Imaging.ImageFormat.Bmp);
-                       
+
                         Log_K.WriteLog(log_lst, Mainpath, "[Cam1 결과 : OK]" + Environment.NewLine);
 
                         Decision2 = "OK";
-                        plc1.MasterK_Write_W("32303136", "0100");
+                        plc1.MasterK_Write_W("32303136", "0100"); //OK 판정 PLC에게 보내기
+                        Delay(10);
+                        plc1.MasterK_Write_W("32303035", "0000"); // 트리거 리셋
                         Delay(100);
-
                     }
                     catch (Exception)
                     {
@@ -2782,7 +3011,9 @@ namespace VisionProgram
 
                         Label_Result2.Text = "N G";
                         Label_Result2.BackColor = Color.Crimson;
-                        
+
+                        dgvD2.Rows[1].Cells[1].Style.BackColor = Color.Crimson;
+
                     }));
                     try
                     {
@@ -2792,7 +3023,7 @@ namespace VisionProgram
                         Log_K.WriteLog(log_lst, Mainpath, "[Cam1 결과 : NG]" + Environment.NewLine);
 
                         Decision2 = "NG";
-                        plc1.MasterK_Write_W("32303136", "0200");
+                        plc1.MasterK_Write_W("32303136", "0200"); //NG 판정 PLC에게 보내기
                         Delay(100);
 
                     }
@@ -2808,7 +3039,9 @@ namespace VisionProgram
                        "CamNum", "CAM2",
                        "ModelNum", ModelNamelbl1.Text,
                        "PointNum", Convert.ToString(CamPoint2),
-                       "Data", Convert.ToString(dgvD2.Rows[0].Cells[1].Value)
+                        "Length", Convert.ToString(dgvD2.Rows[0].Cells[1].Value),
+                        "width", Convert.ToString(dgvD2.Rows[1].Cells[1].Value)
+                       
                         );
 
                 sql.ExecuteNonQuery(cmd);
@@ -2845,11 +3078,12 @@ namespace VisionProgram
                 {
                     min[i] = Convert.ToInt32(dgvS1.Rows[i].Cells[1].Value);
                 }
-
+                dgvS1.Rows[0].Cells[0].Value = "Length";
                 for (int j = 0; j < checksetting; j++)
                 {
                     max[j] = Convert.ToInt32(dgvS1.Rows[j].Cells[2].Value);
                 }
+                dgvS1.Rows[1].Cells[0].Value = "Width";
 
             }
             catch (Exception)
@@ -2867,12 +3101,12 @@ namespace VisionProgram
                 {
                     min2[i] = Convert.ToInt32(dgvS2.Rows[i].Cells[1].Value);
                 }
-
+                dgvS2.Rows[0].Cells[0].Value = "Length";
                 for (int j = 0; j < checksetting2; j++)
                 {
                     max2[j] = Convert.ToInt32(dgvS2.Rows[j].Cells[2].Value);
                 }
-
+                dgvS2.Rows[1].Cells[0].Value = "Width";
             }
             catch (Exception)
             {
@@ -2964,7 +3198,8 @@ namespace VisionProgram
                         "CamNum",
                         "ModelNum",
                         "PointNum",
-                        "Data"
+                        "Length",
+                        "Width"
                         );
 
                 sql.Select(dgvH0, cmd, false);
@@ -2977,7 +3212,8 @@ namespace VisionProgram
                         "CamNum",
                         "ModelNum",
                         "PointNum",
-                        "Data"
+                        "Length",
+                        "Width"
                         );
 
                 sql.Select(dgvH0, cmd, false);
@@ -3295,45 +3531,6 @@ namespace VisionProgram
         string setToolNum = "";
         string OpenTool = "";
 
-        private void kenButton3_Click(object sender, EventArgs e)   //  세팅버튼1
-        {
-            setTool = comboBoxEdit1.Text;
-            setToolNum = numericUpDown1.Value.ToString();
-            OpenTool = setTool + setToolNum;
-
-            if (setTool == "CogBlobTool")
-            {
-                try
-                {
-                    new Tools.Line(Cogtg.Tools["Tools"], 0).Show();
-                    
-                }
-                catch (Exception)
-                {
-
-                }
-            }
-
-            else if (setTool == "CogFindCircleTool")
-            {
-                try
-                {
-                    new Tools.Circle(Cogtg.Tools[OpenTool], 0).Show();
-                }
-                catch (Exception)
-                {
-
-                }
-            }
-        }
-
-        private void kenButton4_Click(object sender, EventArgs e)   // FindLineTool1
-        {
-
-            new Tools.Line(Cogtg.Tools["CogFindLineTool1"], 0).ShowDialog();
-
-        }
-
         private void kenButton10_Click(object sender, EventArgs e)  //  LoadImage1
         {
             System.Windows.Forms.OpenFileDialog choofdlog = new System.Windows.Forms.OpenFileDialog();
@@ -3353,37 +3550,7 @@ namespace VisionProgram
         string setToolNum2 = "";
         string OpenTool2 = "";
 
-        private void kenButton2_Click(object sender, EventArgs e)   //  세팅버튼2
-        {
-            setTool2 = comboBoxEdit2.Text;
-            setToolNum2 = numericUpDown2.Value.ToString();
-            OpenTool2 = setTool2 + setToolNum2;
-
-            if (setTool2 == "CogBlobTool")
-            {
-                try
-                {
-                    new Tools.Blob(Cogtg2.Tools[OpenTool2], 0).Show();
-                }
-                catch (Exception)
-                {
-
-                }
-            }
-
-            else if (setTool2 == "CogFindCircleTool")
-            {
-                try
-                {
-                    new Tools.Circle(Cogtg2.Tools[OpenTool2], 0).Show();
-                }
-                catch (Exception)
-                {
-
-                }
-            }
-
-        }
+       
 
         private void kenButton1_Click(object sender, EventArgs e)   //  패턴 설정2
         {
@@ -3472,6 +3639,184 @@ namespace VisionProgram
         {
 
         }
+
+        private void Btn_Pattern_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Btn_recheckImage_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Btn_Toolsetting_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Btn_Calsave_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Btn_CalY_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Btn_CalX_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Btn_Zeroset_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void dgvD11_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+
+        }
+
+        private void dgvB1_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            if (e.Button.ToString().Equals("Right"))
+            {
+                DataGridView thisdgv = (DataGridView)sender;
+                dgvmanager = new Ken2.UIControl.dgvManager(thisdgv);
+                dgvmanager.Init += OnInit;
+                dgvmanager.Show();
+            }
+        }
+
+        private void cogRecordDisplay2_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void dgvb2_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            if (e.Button.ToString().Equals("Right"))
+            {
+                DataGridView thisdgv = (DataGridView)sender;
+                dgvmanager = new Ken2.UIControl.dgvManager(thisdgv);
+                dgvmanager.Init += OnInit;
+                dgvmanager.Show();
+            }
+        }
+
+        private void Btn_Zeroset_Click_1(object sender, EventArgs e)    //Cam1원점
+        {
+            dgvB1.Rows[0].Cells[1].Value = dgvD11.Rows[1].Cells[2].Value.ToString();//x 원점
+            dgvB1.Rows[0].Cells[2].Value = dgvD11.Rows[1].Cells[3].Value.ToString();//y 원점
+            //dgvB1.Rows[0].Cells[3].Value = dgvD11.Rows[1].Cells[4].Value.ToString();//각도 원점
+        }
+
+        private void Btn_CalX_Click_1(object sender, EventArgs e)   //Cam1 X 켈리브레이션
+        {
+            
+            double ResolutionWidth = double.Parse(dgvB1.Rows[1].Cells[3].Value.ToString()); //  해상도
+            double xfov = double.Parse(dgvB1.Rows[1].Cells[4].Value.ToString());    //  FOV
+
+            double ppm = Math.Abs(xfov / ResolutionWidth);//한 픽셀의 실치수
+
+            dgvB1.Rows[1].Cells[5].Value = ppm.ToString();  //  결과(픽셀당)
+        }
+
+        private void Btn_CalY_Click_1(object sender, EventArgs e)   // Cam1 Y 켈리브레이션
+        {
+
+
+            double ResolutionHigh = double.Parse(dgvB1.Rows[2].Cells[3].Value.ToString()); //  해상도
+            double yfov = double.Parse(dgvB1.Rows[2].Cells[4].Value.ToString());    //  FOV
+
+            double ppm = Math.Abs(yfov / ResolutionHigh);//한 픽셀의 실치수
+
+            dgvB1.Rows[2].Cells[5].Value = ppm.ToString();  //  결과(픽셀당)
+        }
+
+        private void Btn_Calsave_Click_1(object sender, EventArgs e)  //Cam1 켈리브레이션 저장
+        {
+            if (POPUP.YesOrNo("INFO", "저장 하시겠습니까 ?"))
+            {
+                GridMaster.SaveCSV_OnlyData(dgvB1, System.Windows.Forms.Application.StartupPath + "\\" + CurrentModelNum1 + "_SPOT1.csv");//셀데이터 세이브
+                MessageBox.Show("좌표 설정값이 저장되었습니다");
+            }
+        }
+
+        private void kenButton6_Click_1(object sender, EventArgs e)  //Cam2 원점
+        {
+            dgvB2.Rows[0].Cells[1].Value = dgvD22.Rows[1].Cells[2].Value.ToString();//x 원점
+            dgvB2.Rows[0].Cells[2].Value = dgvD22.Rows[1].Cells[3].Value.ToString();//y 원점
+            //dgvB1.Rows[0].Cells[3].Value = dgvD11.Rows[1].Cells[4].Value.ToString();//각도 원점
+        }
+
+        private void kenButton4_Click(object sender, EventArgs e)   //Cam2 X켈리브레이션
+        {
+
+
+            double ResolutionHigh = double.Parse(dgvB2.Rows[2].Cells[3].Value.ToString()); //  해상도
+            double yfov = double.Parse(dgvB2.Rows[2].Cells[4].Value.ToString());    //  FOV
+
+            double ppm = Math.Abs(yfov / ResolutionHigh);//한 픽셀의 실치수
+
+            dgvB2.Rows[2].Cells[5].Value = ppm.ToString();  //  결과(픽셀당)
+        }
+
+        private void kenButton3_Click(object sender, EventArgs e)   //Cam2 Y켈리브레이션
+        {
+            double ResolutionHigh = double.Parse(dgvB2.Rows[2].Cells[3].Value.ToString()); //  해상도
+            double yfov = double.Parse(dgvB2.Rows[2].Cells[4].Value.ToString());    //  FOV
+
+            double ppm = Math.Abs(yfov / ResolutionHigh);//한 픽셀의 실치수
+
+            dgvB2.Rows[2].Cells[5].Value = ppm.ToString();  //  결과(픽셀당)
+        }
+
+        private void kenButton1_Click_1(object sender, EventArgs e) //Cam2 켈리브레이션 저장
+        {
+            if (POPUP.YesOrNo("INFO", "저장 하시겠습니까 ?"))
+            {
+                GridMaster.SaveCSV_OnlyData(dgvB2, System.Windows.Forms.Application.StartupPath + "\\" + CurrentModelNum1 + "_SPOT2.csv");//셀데이터 세이브
+                MessageBox.Show("좌표 설정값이 저장되었습니다");
+            }
+        }
+
+        private void dgvD11_MouseDoubleClick_1(object sender, MouseEventArgs e)
+        {
+            if (e.Button.ToString().Equals("Right"))
+            {
+                DataGridView thisdgv = (DataGridView)sender;
+                dgvmanager = new Ken2.UIControl.dgvManager(thisdgv);
+                dgvmanager.Init += OnInit;
+                dgvmanager.Show();
+            }
+        }
+
+        private void dgvD22_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            if (e.Button.ToString().Equals("Right"))
+            {
+                DataGridView thisdgv = (DataGridView)sender;
+                dgvmanager = new Ken2.UIControl.dgvManager(thisdgv);
+                dgvmanager.Init += OnInit;
+                dgvmanager.Show();
+            }
+        }
+
+        private void dgvB1_MouseDoubleClick_1(object sender, MouseEventArgs e)
+        {
+            if (e.Button.ToString().Equals("Right"))
+            {
+                DataGridView thisdgv = (DataGridView)sender;
+                dgvmanager = new Ken2.UIControl.dgvManager(thisdgv);
+                dgvmanager.Init += OnInit;
+                dgvmanager.Show();
+            }
+        }
+
         //ccccccccccccccccc
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
