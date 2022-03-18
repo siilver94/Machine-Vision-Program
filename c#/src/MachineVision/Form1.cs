@@ -1,4 +1,3 @@
-
 using Cognex.VisionPro;
 using Cognex.VisionPro.ImageProcessing;
 using Cognex.VisionPro.ToolBlock;
@@ -41,13 +40,13 @@ namespace VisionProgram
 
         int[] resultdata = new int[100]; //  비전 결과 데이터 가져오기
 
-        int[] min = new int[20];    //  최소값 배열
-        int[] max = new int[20];    //  최대값 배열
-        int checksetting = 2;    //  검사 데이터 및 min max 배열 수량
+        double[] min = new double[30];    //  최소값 배열
+        double[] max = new double[30];    //  최대값 배열
+        int checksetting = 24;    //  검사 데이터 및 min max 배열 수량
 
-        int[] min2 = new int[20];    //  최소값 배열
-        int[] max2 = new int[20];    //  최대값 배열
-        int checksetting2 = 2;    //  검사 데이터 및 min max 배열 수량
+        double[] min2 = new double[30];    //  최소값 배열
+        double[] max2 = new double[30];    //  최대값 배열
+        int checksetting2 = 24;    //  검사 데이터 및 min max 배열 수량
 
         int totalcnt = 0;
         int okcnt = 0;
@@ -138,8 +137,7 @@ namespace VisionProgram
         }
 
 
-
-        //ffffffffffffffffff
+        
         //ffffffffffffffffff
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -286,10 +284,13 @@ namespace VisionProgram
 
             if (name.Equals("Trigger1"))
             {
+                plc1.MasterK_Write_W("32303032", "0000"); // 트리거 리셋
+                Delay(100);
                 CamPoint1 = Convert.ToInt32(data);
-
+                
                 this.Invoke(new dele(() =>
                 {
+                    textBox1.Text = CamPoint1.ToString();
                     Log_K.WriteLog(log_lst, Mainpath, "자동 검사1 -> " + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff"));
 
                 }));
@@ -307,9 +308,12 @@ namespace VisionProgram
 
             if (name.Equals("Trigger2"))
             {
+                plc1.MasterK_Write_W("32303035", "0000"); // 트리거 리셋
+                Delay(100);
                 CamPoint2 = Convert.ToInt32(data);
                 this.Invoke(new dele(() =>
                 {
+                    textBox2.Text = CamPoint2.ToString();
                     Log_K.WriteLog(log_lst, Mainpath, "자동 검사2 -> " + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff"));
                 }));
                 try
@@ -326,8 +330,8 @@ namespace VisionProgram
             {
                 if (!checkBox_ModelChangeManual1.Checked)
                 {
-                    int[] AllData = (int[])data;
-                    int modelnum = AllData[0];
+                    //int[] AllData = (int[])data;
+                    int modelnum = Convert.ToInt32(data);
 
                     modelOpen1(modelnum);
                     CurrentModelNum1 = modelnum;
@@ -549,16 +553,14 @@ namespace VisionProgram
                     if ((keyData & Keys.Control) != 0)
                     {
                         xtraTabControl_Model.ShowTabHeader = DevExpress.Utils.DefaultBoolean.True;
-                        simpleButton4.Visible = true;
-                        simpleButton5.Visible = true;
+                       
                     }
                     break;
                 case Keys.W://
                     if ((keyData & Keys.Control) != 0)
                     {
                         xtraTabControl_Model.ShowTabHeader = DevExpress.Utils.DefaultBoolean.False;
-                        simpleButton4.Visible = false;
-                        simpleButton5.Visible = false;
+                      
                     }
                     break;
             }
@@ -653,8 +655,8 @@ namespace VisionProgram
                         GridMaster.Init3(dgv, true, height, rows, ColumnsName);
 
 
-                        dgv.Rows[0].Cells[0].Value = "돌출 값";
-                        dgv.Rows[1].Cells[0].Value = "폭 값";
+                        dgv.Rows[0].Cells[0].Value = "가로";
+                        dgv.Rows[1].Cells[0].Value = "세로";
                         //dgv.Rows[0].Cells[1].Value = "";
 
                         dgv.Rows[0].Cells[0].Style.Font = new Font("Tahoma", 19, FontStyle.Bold);
@@ -696,8 +698,8 @@ namespace VisionProgram
 
                         GridMaster.Init3(dgv, true, height, rows, ColumnsName);
 
-                        dgv.Rows[0].Cells[0].Value = "돌출 값";
-                        dgv.Rows[1].Cells[0].Value = "폭 값";
+                        dgv.Rows[0].Cells[0].Value = "가로";
+                        dgv.Rows[1].Cells[0].Value = "세로";
                         //dgv.Rows[0].Cells[1].Value = "값";
 
                         dgv.Rows[0].Cells[0].Style.Font = new Font("Tahoma", 19, FontStyle.Bold);
@@ -737,11 +739,59 @@ namespace VisionProgram
 
                         //---------------↓ 생성 ↓---------------┐
                         string[] ColumnsName = new string[] {
-                            "구분" , "X" ,"Y","해상도","FOV","결과"
+                            "구분" , "X" ,"Y","실거리","결과"
                         };
-                        int rows = 3;//초기 생성 Row수
+                        int rows = 24;//초기 생성 Row수
 
-                        GridMaster.Init3(dgv, true, height, rows, ColumnsName);                   
+                       
+
+                        //for (int i = 0; i <= dgv.Rows.Count; i++)
+                        //{
+                        //    dgv.Rows[i].Cells[0].Value = "1.X";
+                        //    dgv.Rows[1].Cells[0].Value = "1.Y";
+                        //}
+
+                        // dgv.Rows[0].Cells[1].Value = "패턴";
+                        GridMaster.Init3(dgv, true, height, rows, ColumnsName);
+
+                       
+                        dgv.Rows[0].Cells[0].Value =  "1.X";
+                        dgv.Rows[1].Cells[0].Value =  "1.Y";
+
+                        dgv.Rows[2].Cells[0].Value = "2.X";
+                        dgv.Rows[3].Cells[0].Value = "2.Y";
+
+                        dgv.Rows[4].Cells[0].Value = "3.X";
+                        dgv.Rows[5].Cells[0].Value = "3.Y";
+
+                        dgv.Rows[6].Cells[0].Value = "4.X";
+                        dgv.Rows[7].Cells[0].Value = "4.Y";
+
+                        dgv.Rows[8].Cells[0].Value = "5.X";
+                        dgv.Rows[9].Cells[0].Value = "5.Y";
+
+                        dgv.Rows[10].Cells[0].Value = "6.X";
+                        dgv.Rows[11].Cells[0].Value = "6.Y";
+
+                        dgv.Rows[12].Cells[0].Value = "7.X";
+                        dgv.Rows[13].Cells[0].Value = "7.Y";
+
+                        dgv.Rows[14].Cells[0].Value = "8.X";
+                        dgv.Rows[15].Cells[0].Value = "8.Y";
+
+                        dgv.Rows[16].Cells[0].Value = "9.X";
+                        dgv.Rows[17].Cells[0].Value = "9.Y";
+
+                        dgv.Rows[18].Cells[0].Value = "10.X";
+                        dgv.Rows[19].Cells[0].Value = "10.Y";
+
+                        dgv.Rows[20].Cells[0].Value = "11.X";
+                        dgv.Rows[21].Cells[0].Value = "11.Y";
+
+                        dgv.Rows[22].Cells[0].Value = "12.X";
+                        dgv.Rows[23].Cells[0].Value = "12.Y";
+
+
                         GridMaster.CenterAlign(dgv);
                         GridMaster.DisableSortColumn(dgv);//오름차순 내림차순 정렬 막기
               
@@ -797,9 +847,9 @@ namespace VisionProgram
                         //---------------↓ 생성 ↓---------------┐
                         string[] ColumnsName = new string[] {
                             //"Inspection", "Value", "Check"
-                            "A", "A", "A", "A","A", "A"
+                            "A", "A", "A"
                         };
-                        int rows = 200;//초기 생성 Row수
+                        int rows = 13;//초기 생성 Row수
 
                         GridMaster.Init3(dgv, true, height, rows, ColumnsName);
                         //---------------↑ 생성 ↑---------------┘
@@ -811,19 +861,19 @@ namespace VisionProgram
                         dgv.Rows[0].Cells[0].Value = "구분";
                         //dgv.Rows[1].Cells[0].Value = "값";
 
-                        dgv.Rows[0].Cells[1].Value = "패턴";
-                        dgv.Rows[0].Cells[2].Value = "X 좌표";
-                        dgv.Rows[0].Cells[3].Value = "Y 좌표";
-                        dgv.Rows[0].Cells[4].Value = "각도";
-                        dgv.Rows[0].Cells[5].Value = "결과";
+                        //dgv.Rows[0].Cells[1].Value = "패턴";
+                        dgv.Rows[0].Cells[1].Value = "X 좌표";
+                        dgv.Rows[0].Cells[2].Value = "Y 좌표";
+                        //dgv.Rows[0].Cells[4].Value = "각도";
+                        //dgv.Rows[0].Cells[5].Value = "결과";
 
-                        for (int i = 1; i < 200; i++)
+                        for (int i = 1; i < 13; i++)
                         {
                             dgv.Rows[i].Cells[0].Value = "좌표 " + i;
                         }
 
                         GridMaster.CenterAlign(dgv);
-                        dgv.ReadOnly = true;//읽기전용
+                       // dgv.ReadOnly = true;//읽기전용
                         //dgv.Columns[0].ReadOnly = true;//읽기전용
 
                         GridMaster.DisableSortColumn(dgv);//오름차순 내림차순 정렬 막기
@@ -1167,6 +1217,18 @@ namespace VisionProgram
                         };
                         int rows = checksetting;//초기 생성 Row수
 
+                        //  for(int i = 0; i < checksetting; i++)
+                        //  {
+                        //      dgv.Rows[i].Cells[0].Value = i+"번.가로";
+                        //      dgv.Rows[i+1].Cells[0].Value = (i + 1).ToString() + "번.세로";
+                        //  }
+                        //dgv.Rows[1].Cells[1].Value = "번 가로";
+                        //for (int i = 0; i < rows; i++)
+                        //{
+                        //    dgv.Rows[i].Cells[0].Value = "D" + (i + 2000);
+                        //}
+
+
                         GridMaster.Init3(dgv, true, height, rows, ColumnsName);
                         GridMaster.CenterAlign(dgv);
                         GridMaster.DisableSortColumn(dgv);//오름차순 내림차순 정렬 막기
@@ -1236,7 +1298,6 @@ namespace VisionProgram
 
                         GridMaster.CenterAlign(dgv);
 
-
                         GridMaster.DisableSortColumn(dgv);//오름차순 내림차순 정렬 막기
 
 
@@ -1266,7 +1327,7 @@ namespace VisionProgram
                             //"A","A","A","A","A","A","A","A"
                             };
                         int rows = 0;//초기 생성 Row수
-
+                        
                         GridMaster.Init3(dgv, false, height, rows, ColumnsName);
                         GridMaster.CenterAlign(dgv);
                         dgv.ReadOnly = true;//읽기전용
@@ -2026,7 +2087,11 @@ namespace VisionProgram
 
             try
             {
-                ModelNamelbl1.Text = dgvM1.Rows[modelnum].Cells[1].Value.ToString();
+                this.Invoke(new dele(() =>
+                {
+                    ModelNamelbl1.Text = dgvM1.Rows[modelnum].Cells[1].Value.ToString();
+                }));
+               
 
                 //Cogtg = (CogToolGroup)CogSerializer.LoadObjectFromFile(System.Windows.Forms.Application.StartupPath + "\\" + CurrentModelNum1 + "_1.vpp");
                 Cogtg = (CogToolGroup)CogSerializer.LoadObjectFromFile(System.Windows.Forms.Application.StartupPath + "\\" + CurrentModelNum1 + "_1.vpp");
@@ -2216,8 +2281,8 @@ namespace VisionProgram
                     File.Delete(System.Windows.Forms.Application.StartupPath + "\\" + modelnum + "_2.vpp");
                     File.Delete(System.Windows.Forms.Application.StartupPath + "\\" + modelnum + "_S2.csv");
                     File.Delete(System.Windows.Forms.Application.StartupPath + "\\" + modelnum + "_C2.csv");
-                    File.Delete(System.Windows.Forms.Application.StartupPath + "\\" + modelnum + "SPOT1.csv");
-                    File.Delete(System.Windows.Forms.Application.StartupPath + "\\" + modelnum + "SPOT2.csv");
+                    File.Delete(System.Windows.Forms.Application.StartupPath + "\\" + modelnum + "_SPOT1.csv");
+                    File.Delete(System.Windows.Forms.Application.StartupPath + "\\" + modelnum + "_SPOT2.csv");
                     GridMaster.SaveCSV_OnlyData(dgvM1, System.Windows.Forms.Application.StartupPath + "\\Model1.csv");//셀데이터 세이브
 
                     MessageBox.Show("모델을 성공적으로 삭제하였습니다.", "Message");
@@ -2722,8 +2787,12 @@ namespace VisionProgram
         #region 트리거 triger
 
 
+        double lenVal1;
+        double WidthVal1;
+        int settingVal1 = 0;
 
         //t1t1t1t1t1
+
         private void triger1()  //  vision2
         {
             autoDelete();
@@ -2731,14 +2800,9 @@ namespace VisionProgram
             string time = DateTime.Now.ToString("HH.mm.ss");
             totalcnt += 1;
 
-            //textBox1.Text = Convert.ToString(dgvC1.Rows[1].Cells[2].Value); // 2001번지 검사포인트 값 가져오기.
-
-            if (textBox1 != null)
-                CamPoint1 = Convert.ToInt32(textBox1.Text);   //  검사포인트 변수에 넣음
-            else
-                CamPoint1 = 1;
-
-
+            if (CamPoint1 == 0)
+                CamPoint1 = 1;  //  검사포인트 변수에 넣음
+           
             try
             {
 
@@ -2764,19 +2828,13 @@ namespace VisionProgram
 
                 double[] resultall = new double[30];    //결과 data값 넣는 배열
 
-                resultall[CamPoint1] = Convert.ToDouble(result.Inputs[CamPoint1 - 1].Value);    // PLC에서 받은 검사 포인트 번호를 resultall 에 넣음
+               // resultall[CamPoint1] = Convert.ToDouble(result.Inputs[CamPoint1 - 1].Value);    // PLC에서 받은 검사 포인트 번호를 resultall 에 넣음
 
 
-                double lenVal = resultall[1];
-                double WidthVal = resultall[2];
-
-                this.Invoke(new dele(() =>
+                for (int i = 0; i < result.Inputs.Count; i++)
                 {
-                    dgvD1.Rows[0].Cells[1].Value = resultall[CamPoint1].ToString("F2");     // 메인 모니터 상에 수치 출력
-                    dgvD1.Rows[1].Cells[1].Value = resultall[CamPoint1 + 1].ToString("F2");
-
-                }));
-
+                    resultall[i] = Convert.ToDouble(result.Inputs[i].Value);
+                }
 
                 string imgsavepath = @"C:\Vision\Image";
                 string year = imgsavepath + "\\" + DateTime.Now.ToString("yyyy");
@@ -2787,17 +2845,117 @@ namespace VisionProgram
                 string okpath = cam1path + "\\OK";
                 string ngpath = cam1path + "\\NG";
 
-
                 if (!System.IO.Directory.Exists(day))
                     System.IO.Directory.CreateDirectory(day);
                 if (!System.IO.Directory.Exists(okpath))
                     System.IO.Directory.CreateDirectory(okpath);
                 if (!System.IO.Directory.Exists(ngpath))
                     System.IO.Directory.CreateDirectory(ngpath);
+                switch (CamPoint1)
+                {
+                    case 1:
+                        lenVal1 = resultall[0];
+                        WidthVal1 = resultall[1];
+                        settingVal1 = 0;
+
+                        //this.Invoke(new dele(() =>
+                        //{
+                        //    dgvD11.Rows[1].Cells[1].Value = Math.Round(lenVal1);     // 메인 모니터 상에 수치 출력
+                        //    dgvD11.Rows[1].Cells[2].Value = Math.Round(WidthVal1);
+
+                        //}));
+
+                        break;
+                    case 2:
+                        lenVal1 = 0;
+                        WidthVal1 = 0;
+                        settingVal1 = 2;
+                        //this.Invoke(new dele(() =>
+                        //{
+                        //    dgvD11.Rows[2].Cells[1].Value = lenVal1.ToString("F2");     // 메인 모니터 상에 수치 출력
+                        //    dgvD11.Rows[2].Cells[2].Value = WidthVal1.ToString("F2");
+
+                        //}));
+
+                        break;
+                    case 3:
+                        lenVal1 = 0;
+                        WidthVal1 = 0;
+                        settingVal1 = 4;
+                        //this.Invoke(new dele(() =>
+                        //{
+                        //    dgvD11.Rows[3].Cells[1].Value = lenVal1.ToString("F2");     // 메인 모니터 상에 수치 출력
+                        //    dgvD11.Rows[3].Cells[2].Value = WidthVal1.ToString("F2");
+
+                        //}));
+
+                        break;
+                    case 4:
+                        lenVal1 = resultall[2];
+                        WidthVal1 = resultall[3];
+                        settingVal1 = 6;
+
+                        //this.Invoke(new dele(() =>
+                        //{
+                        //    dgvD11.Rows[4].Cells[1].Value = lenVal1.ToString("F2");     // 메인 모니터 상에 수치 출력
+                        //    dgvD11.Rows[4].Cells[2].Value = WidthVal1.ToString("F2");
+
+                        //}));
+
+                        break;
+                    case 5:
+                        lenVal1 = resultall[4];
+                        WidthVal1 = resultall[5];
+                        settingVal1 = 8;
+                        break;
+                    case 6:
+                        lenVal1 = 0;
+                        WidthVal1 = 0;
+                        settingVal1 = 10;
+                        break;
+                    case 7:
+                        lenVal1 = 0;
+                        WidthVal1 = 0;
+                        settingVal1 = 12;
+                        break;
+                    case 8:
+                        lenVal1 = resultall[6];
+                        WidthVal1 = resultall[7];
+                        settingVal1 = 14;
+                        break;
+                    case 9:
+                        lenVal1 = resultall[8];
+                        WidthVal1 = resultall[9];
+                        settingVal1 = 16;
+                        break;
+
+                    case 10:
+                        lenVal1 = 0;
+                        WidthVal1 = 0;
+                        settingVal1 = 18;
+                        break;
+                    case 11:
+                        lenVal1 = 0;
+                        WidthVal1 = 0;
+                        settingVal1 = 20;
+                        break;
+                    case 12:
+                        lenVal1 = resultall[10];
+                        WidthVal1 = resultall[11];
+                        settingVal1 = 22;
+                        break;
 
 
+                }
 
-                if (min[0] <= lenVal && lenVal <= max[0] && min[1] <= WidthVal && WidthVal <= max[1])   //OK 판정
+                this.Invoke(new dele(() =>
+                {
+                    dgvD1.Rows[0].Cells[1].Value = lenVal1.ToString("F2");     // 메인 모니터 상에 수치 출력
+                    dgvD1.Rows[1].Cells[1].Value = WidthVal1.ToString("F2");
+
+                }));
+
+                if (min[settingVal1] <= lenVal1 && lenVal1 <= max[settingVal1] && min[settingVal1+1] <= WidthVal1 && WidthVal1 <= max[settingVal1+1])   //OK 판정
                 {
                     this.Invoke(new dele(() =>
                     {
@@ -2812,12 +2970,12 @@ namespace VisionProgram
                     try
                     {
                         if (check_OKImage1.Checked)
-                            pictureBox_Cam1.Image.Save(okpath + "\\" + ModelNamelbl1.Text + "_" + textBox1.Text + "_" + time + ".bmp", System.Drawing.Imaging.ImageFormat.Bmp);
+                            pictureBox_Cam1.Image.Save(okpath + "\\" + ModelNamelbl1.Text + "_P" + textBox1.Text + "_" + time + ".bmp", System.Drawing.Imaging.ImageFormat.Bmp);
 
                         Log_K.WriteLog(log_lst, Mainpath, "[Cam1 결과 : OK]" + Environment.NewLine);
 
                         Decision1 = "OK";
-                        plc1.MasterK_Write_W("32303135", "0100");  //OK 판정 PLC에게 보내기
+                        //plc1.MasterK_Write_W("32303135", "0100");  //OK 판정 PLC에게 보내기
 
                         Delay(100);
 
@@ -2846,14 +3004,14 @@ namespace VisionProgram
                     try
                     {
                         if (check_NGImage1.Checked)
-                            pictureBox_Cam1.Image.Save(ngpath + "\\" + ModelNamelbl1.Text + "__" + time + ".bmp", System.Drawing.Imaging.ImageFormat.Bmp);
+                            pictureBox_Cam1.Image.Save(ngpath + "\\" + ModelNamelbl1.Text + "_P" + textBox1.Text + "_" + time + ".bmp", System.Drawing.Imaging.ImageFormat.Bmp);
 
                         Log_K.WriteLog(log_lst, Mainpath, "[Cam1 결과 : NG]" + Environment.NewLine);
 
                         Decision1 = "NG";
-                        plc1.MasterK_Write_W("32303135", "0200"); //NG 판정 PLC에게 보내기
-                        Delay(10);
-                        plc1.MasterK_Write_W("32303032", "0000"); // 트리거 리셋
+                        plc1.MasterK_Write_W("32303135", "0100"); //NG 판정 PLC에게 보내기
+                                                                  // Delay(10);
+                                                                  // plc1.MasterK_Write_W("32303032", "0000"); // 트리거 리셋
                         Delay(100);
 
                     }
@@ -2864,6 +3022,10 @@ namespace VisionProgram
                     Delay(100);
                 }
 
+                //  double lenVal = resultall[1];
+                //  double WidthVal = resultall[2];
+
+        
 
                 string cmd = Ken2.Database.SQLiteCMD_K.MakeInsertCmdSentence(sql.table,   // CAM1 DB 업데이트
                         "Datetime", Dtime.Now(Dtime.StringType.ForDatum),
@@ -2871,10 +3033,15 @@ namespace VisionProgram
                         "ModelNum", ModelNamelbl1.Text,
                         "PointNum", Convert.ToString(CamPoint1),
                         "Length", Convert.ToString(dgvD1.Rows[0].Cells[1].Value),
-                        "width", Convert.ToString(dgvD1.Rows[1].Cells[1].Value)
+                        "width", Convert.ToString(dgvD1.Rows[1].Cells[1].Value),
+                        "Result", Decision1
                          );
 
                 sql.ExecuteNonQuery(cmd);
+
+                plc1.MasterK_Write_W("32303130", "0100"); //검사완료신호
+                Delay(1000);
+                plc1.MasterK_Write_W("32303130", "0000"); //검사완료신호 리셋
 
 
                 //for (int k = 0; k < result.Inputs.Count; k++)    //  데이터 0으로 초기화
@@ -2884,6 +3051,7 @@ namespace VisionProgram
 
                 this.Invoke(new dele(() =>
                 {
+
                     cogRecordDisplay1.Record = Cogtg.CreateLastRunRecord().SubRecords[0];  //  메인화면 이미지 띄우기
                     cogRecordDisplay1.AutoFit = true;
                 }));
@@ -2900,6 +3068,10 @@ namespace VisionProgram
 
 
         //t2t2t2t2
+
+        double lenVal2;
+        double WidthVal2;
+        int settingVal2 = 0;
         private void triger2()
         {
             autoDelete();
@@ -2907,14 +3079,8 @@ namespace VisionProgram
             string time = DateTime.Now.ToString("HH.mm.ss");
             totalcnt2 += 1;
 
-
-            //textBox1.Text = Convert.ToString(dgvC1.Rows[4].Cells[2].Value); // 2004번지 검사포인트 값 가져오기.
-
-            if (textBox2 != null)
-                CamPoint2 = Convert.ToInt32(textBox2.Text);   //  검사포인트 변수에 넣음
-            else
-                CamPoint2 = 1;
-
+            if (CamPoint2 == 0)
+                CamPoint2 = 1;  //  검사포인트 변수에 넣음
 
             try
             {
@@ -2941,16 +3107,16 @@ namespace VisionProgram
                 double[] resultall2 = new double[30]; //  전체결과 앞부터 3개씩 데이터 합치기
 
 
-                resultall2[CamPoint2] = Convert.ToDouble(result.Inputs[CamPoint2 - 1].Value);    // PLC에서 받은 검사 포인트 번호를 resultall 에 넣음
+                //resultall2[CamPoint2] = Convert.ToDouble(result.Inputs[CamPoint2 - 1].Value);    // PLC에서 받은 검사 포인트 번호를 resultall 에 넣음
 
-                double lenVal2 = resultall2[1];
+                // double lenVal2 = resultall2[1];
 
-                this.Invoke(new dele(() =>
+                for (int i = 0; i < result.Inputs.Count; i++)
                 {
-                    dgvD2.Rows[0].Cells[1].Value = resultall2[CamPoint2].ToString("F2");     // 메인 모니터 상에 수치 출력
-                    dgvD2.Rows[1].Cells[1].Value = resultall2[CamPoint1 + 1].ToString("F2");
+                    resultall2[i] = Convert.ToDouble(result.Inputs[i].Value);
+                }
 
-                }));
+           
 
 
                 string imgsavepath = @"C:\Vision\Image";
@@ -2969,8 +3135,114 @@ namespace VisionProgram
                 if (!System.IO.Directory.Exists(ngpath2))
                     System.IO.Directory.CreateDirectory(ngpath2);
 
+                switch (CamPoint2)
+                {
+                    case 1:
+                        lenVal2 = resultall2[0];
+                        WidthVal2 = resultall2[1];
+                        settingVal2 = 0;
 
-                if (min[0] <= lenVal2 && lenVal2 <= max[0])   //OK 판정
+                        //this.Invoke(new dele(() =>
+                        //{
+                        //    dgvD11.Rows[1].Cells[1].Value = Math.Round(lenVal1);     // 메인 모니터 상에 수치 출력
+                        //    dgvD11.Rows[1].Cells[2].Value = Math.Round(WidthVal1);
+
+                        //}));
+
+                        break;
+                    case 2:
+                        lenVal2 = 0;
+                        WidthVal2 = 0;
+                        settingVal2 = 2;
+                        //this.Invoke(new dele(() =>
+                        //{
+                        //    dgvD11.Rows[2].Cells[1].Value = lenVal1.ToString("F2");     // 메인 모니터 상에 수치 출력
+                        //    dgvD11.Rows[2].Cells[2].Value = WidthVal1.ToString("F2");
+
+                        //}));
+
+                        break;
+                    case 3:
+                        lenVal2 = 0;
+                        WidthVal2 = 0;
+                        settingVal2 = 4;
+                        //this.Invoke(new dele(() =>
+                        //{
+                        //    dgvD11.Rows[3].Cells[1].Value = lenVal1.ToString("F2");     // 메인 모니터 상에 수치 출력
+                        //    dgvD11.Rows[3].Cells[2].Value = WidthVal1.ToString("F2");
+
+                        //}));
+
+                        break;
+                    case 4:
+                        lenVal2 = resultall2[2];
+                        WidthVal2 = resultall2[3];
+                        settingVal2 = 6;
+
+                        //this.Invoke(new dele(() =>
+                        //{
+                        //    dgvD11.Rows[4].Cells[1].Value = lenVal1.ToString("F2");     // 메인 모니터 상에 수치 출력
+                        //    dgvD11.Rows[4].Cells[2].Value = WidthVal1.ToString("F2");
+
+                        //}));
+
+                        break;
+                    case 5:
+                        lenVal2 = resultall2[4];
+                        WidthVal2 = resultall2[5];
+                        settingVal2 = 8;
+                        break;
+                    case 6:
+                        lenVal2 = 0;
+                        WidthVal2 = 0;
+                        settingVal2 = 10;
+                        break;
+                    case 7:
+                        lenVal2 = 0;
+                        WidthVal2 = 0;
+                        settingVal2 = 12;
+                        break;
+                    case 8:
+                        lenVal2 = resultall2[6];
+                        WidthVal2 = resultall2[7];
+                        settingVal2 = 14;
+                        break;
+                    case 9:
+                        lenVal2 = resultall2[8];
+                        WidthVal2 = resultall2[9];
+                        settingVal2 = 16;
+                        break;
+
+                    case 10:
+                        lenVal2 = 0;
+                        WidthVal2 = 0;
+                        settingVal2 = 18;
+                        break;
+                    case 11:
+                        lenVal2 = 0;
+                        WidthVal2 = 0;
+                        settingVal2 = 20;
+                        break;
+                    case 12:
+                        lenVal2 = resultall2[10];
+                        WidthVal2 = resultall2[11];
+                        settingVal2 = 22;
+                        break;
+
+
+                }
+
+                this.Invoke(new dele(() =>
+                {
+                    dgvD2.Rows[0].Cells[1].Value = lenVal2.ToString("F2");     // 메인 모니터 상에 수치 출력
+                    dgvD2.Rows[1].Cells[1].Value = WidthVal2.ToString("F2");
+
+                }));
+
+
+                //if (min[0] <= lenVal2 && lenVal2 <= max[0])   //OK 판정
+                if (min2[settingVal2] <= lenVal2 && lenVal2 <= max2[settingVal2] && min2[settingVal2 + 1] <= WidthVal2 && WidthVal2 <= max2[settingVal2 + 1])   //OK 판정
+
                 {
                     this.Invoke(new dele(() =>
                     {
@@ -2984,14 +3256,14 @@ namespace VisionProgram
                     try
                     {
                         if (check_OKImage2.Checked)
-                            pictureBox_Cam2.Image.Save(okpath2 + "\\" + ModelNamelbl1.Text + "_" + textBox1.Text + "_" + time + ".bmp", System.Drawing.Imaging.ImageFormat.Bmp);
+                            pictureBox_Cam2.Image.Save(okpath2 + "\\" + ModelNamelbl1.Text + "_P" + textBox2.Text + "_" + time + ".bmp", System.Drawing.Imaging.ImageFormat.Bmp);
 
                         Log_K.WriteLog(log_lst, Mainpath, "[Cam1 결과 : OK]" + Environment.NewLine);
 
                         Decision2 = "OK";
-                        plc1.MasterK_Write_W("32303136", "0100"); //OK 판정 PLC에게 보내기
-                        Delay(10);
-                        plc1.MasterK_Write_W("32303035", "0000"); // 트리거 리셋
+                       // plc1.MasterK_Write_W("32303136", "0100"); //OK 판정 PLC에게 보내기
+                       // Delay(10);
+                       // plc1.MasterK_Write_W("32303035", "0000"); // 트리거 리셋
                         Delay(100);
                     }
                     catch (Exception)
@@ -3018,12 +3290,12 @@ namespace VisionProgram
                     try
                     {
                         if (check_NGImage2.Checked)
-                            pictureBox_Cam2.Image.Save(ngpath2 + "\\" + ModelNamelbl1.Text + "__" + time + ".bmp", System.Drawing.Imaging.ImageFormat.Bmp);
+                            pictureBox_Cam2.Image.Save(ngpath2 + "\\" + ModelNamelbl1.Text + "_P" + textBox2.Text + "_" + time + ".bmp", System.Drawing.Imaging.ImageFormat.Bmp);
 
                         Log_K.WriteLog(log_lst, Mainpath, "[Cam1 결과 : NG]" + Environment.NewLine);
 
                         Decision2 = "NG";
-                        plc1.MasterK_Write_W("32303136", "0200"); //NG 판정 PLC에게 보내기
+                        plc1.MasterK_Write_W("32303136", "0100"); //NG 판정 PLC에게 보내기
                         Delay(100);
 
                     }
@@ -3040,16 +3312,21 @@ namespace VisionProgram
                        "ModelNum", ModelNamelbl1.Text,
                        "PointNum", Convert.ToString(CamPoint2),
                         "Length", Convert.ToString(dgvD2.Rows[0].Cells[1].Value),
-                        "width", Convert.ToString(dgvD2.Rows[1].Cells[1].Value)
-                       
+                        "width", Convert.ToString(dgvD2.Rows[1].Cells[1].Value),
+                        "Result", Decision2
+
                         );
 
                 sql.ExecuteNonQuery(cmd);
 
-                for (int k = 0; k < result.Inputs.Count; k++)    //  데이터 0으로 초기화
-                {
-                    result.Inputs[k].Value = 0;
-                }
+                plc1.MasterK_Write_W("32303131", "0100"); //검사완료
+                Delay(1000);
+                plc1.MasterK_Write_W("32303131", "0000"); //검사완료신호 리셋
+
+               // for (int k = 0; k < result.Inputs.Count; k++)    //  데이터 0으로 초기화
+               // {
+               //     result.Inputs[k].Value = 0;
+               // }
 
                 this.Invoke(new dele(() =>
                 {
@@ -3076,14 +3353,14 @@ namespace VisionProgram
             {
                 for (int i = 0; i < checksetting; i++)
                 {
-                    min[i] = Convert.ToInt32(dgvS1.Rows[i].Cells[1].Value);
+                    min[i] = Convert.ToDouble(dgvS1.Rows[i].Cells[1].Value);
                 }
-                dgvS1.Rows[0].Cells[0].Value = "Length";
+                
                 for (int j = 0; j < checksetting; j++)
                 {
-                    max[j] = Convert.ToInt32(dgvS1.Rows[j].Cells[2].Value);
+                    max[j] = Convert.ToDouble(dgvS1.Rows[j].Cells[2].Value);
                 }
-                dgvS1.Rows[1].Cells[0].Value = "Width";
+                
 
             }
             catch (Exception)
@@ -3099,14 +3376,14 @@ namespace VisionProgram
             {
                 for (int i = 0; i < checksetting2; i++)
                 {
-                    min2[i] = Convert.ToInt32(dgvS2.Rows[i].Cells[1].Value);
+                    min2[i] = Convert.ToDouble(dgvS2.Rows[i].Cells[1].Value);
                 }
-                dgvS2.Rows[0].Cells[0].Value = "Length";
+                
                 for (int j = 0; j < checksetting2; j++)
                 {
-                    max2[j] = Convert.ToInt32(dgvS2.Rows[j].Cells[2].Value);
+                    max2[j] = Convert.ToDouble(dgvS2.Rows[j].Cells[2].Value);
                 }
-                dgvS2.Rows[1].Cells[0].Value = "Width";
+                
             }
             catch (Exception)
             {
@@ -3199,7 +3476,8 @@ namespace VisionProgram
                         "ModelNum",
                         "PointNum",
                         "Length",
-                        "Width"
+                        "Width",
+                        "Result"
                         );
 
                 sql.Select(dgvH0, cmd, false);
@@ -3213,7 +3491,8 @@ namespace VisionProgram
                         "ModelNum",
                         "PointNum",
                         "Length",
-                        "Width"
+                        "Width",
+                        "Result"
                         );
 
                 sql.Select(dgvH0, cmd, false);
@@ -3247,135 +3526,252 @@ namespace VisionProgram
 
         private void retriger1()
         {
-            this.Invoke(new dele(() =>
-            {
-                Log_K.WriteLog(log_lst, Mainpath, "[Cam1] ReTriger1" + Environment.NewLine);
-            }));
-
             autoDelete();
 
             string time = DateTime.Now.ToString("HH.mm.ss");
+            totalcnt += 1;
+            CamPoint1 = Convert.ToInt32(textBox3.Text);  //  검사포인트 변수에 넣음
 
             try
             {
 
-                Bitmap cbmp = new Bitmap(pictureBox_Cam1.Image);
-                CogImage8Grey cimage = new CogImage8Grey(cbmp);
-                CogIPOneImageTool ipt = (CogIPOneImageTool)Cogtg.Tools[0];
+                Bitmap cbmp = new Bitmap(pictureBox_Cam1.Image);    //  카메라 찍어서 받은 이미지 cbm 변수에 저장
+                CogImage8Grey cimage = new CogImage8Grey(cbmp);     //  비전프로에 넣을이미지로 변환
+                                                                    //CogImage24PlanarColor ccimage = new CogImage24PlanarColor(cbmp); //  비전프로에 넣을이미지로 변환  //  컬러일 경우
+                CogIPOneImageTool ipt = (CogIPOneImageTool)Cogtg.Tools[0];  //  IPONEImage 변수
 
-                ipt.InputImage = cimage;
-                ipt.Run();
+                ipt.InputImage = cimage;    //  IPONEImage에 이미지 넣기
+                ipt.Run();                  //  IPONEImage에 이미지 돌리기
 
-                CogToolBlock result = (CogToolBlock)Cogtg.Tools["result"];
+                CogToolBlock result = (CogToolBlock)Cogtg.Tools["result"];  //  Cogtg 중 데이터 가져올 툴 블락 result 변수로 미리 만들어둠
 
-                for (int k = 0; k < result.Inputs.Count; k++)    //  데이터 0으로 초기화
+                //for (int k = 0; k < result.Inputs.Count; k++)    //  데이터 0으로 초기화
+                //{
+                //    result.Inputs[k].Value = 0;
+                //}
+
+                CogToolBlock input = (CogToolBlock)Cogtg.Tools["Tools"];    //  툴 블락 Tools 에 어느포인트 툴 사용할지 선택하기위해 툴블락 Tools 가져옴
+                input.Inputs[1].Value = CamPoint1;                          //  툴 블락 Tools에 Input 밸류를 넣어서 어느툴 사용할지 선택함
+
+                Cogtg.Run();    //  Cogtg 실행
+
+                double[] resultall = new double[30];    //결과 data값 넣는 배열
+
+                for (int i = 0; i < result.Inputs.Count; i++)
                 {
-                    result.Inputs[k].Value = 0;
+                    resultall[i] = Convert.ToDouble(result.Inputs[i].Value);
                 }
 
-                Cogtg.Run();
+                //resultall[CamPoint1] = Convert.ToDouble(result.Inputs[CamPoint1 -1].Value);    // PLC에서 받은 검사 포인트 번호를 resultall 에 넣음
 
-                double[] resultall = new double[100]; //  전체결과 앞부터 3개씩 데이터 합치기
+               //   resultall[0] = Convert.ToDouble(result.Inputs[0].Value);
+               //   resultall[1] = Convert.ToDouble(result.Inputs[1].Value);
+               //   
+               //   double lenVal = resultall[CamPoint1 -1];
+               //   double WidthVal = resultall[CamPoint1];
+               //   
+               //   this.Invoke(new dele(() =>
+               //   {
+               //       dgvD1.Rows[0].Cells[1].Value = resultall[CamPoint1].ToString("F2");     // 메인 모니터 상에 수치 출력
+               //       dgvD1.Rows[1].Cells[1].Value = resultall[CamPoint1 + 1].ToString("F2");
+               //   
+               //   }));
 
-                for (int i = 0; i < result.Inputs.Count / 3; i++)
+
+                string imgsavepath = @"C:\Vision\Image";
+                string year = imgsavepath + "\\" + DateTime.Now.ToString("yyyy");
+                string month = year + DateTime.Now.ToString("MM");
+                string day = month + DateTime.Now.ToString("dd");
+                string cam1path = day + "\\Cam1";
+                string cam2path = day + "\\Cam2";
+                string okpath = cam1path + "\\OK";
+                string ngpath = cam1path + "\\NG";
+
+                if (!System.IO.Directory.Exists(day))
+                    System.IO.Directory.CreateDirectory(day);
+                if (!System.IO.Directory.Exists(okpath))
+                    System.IO.Directory.CreateDirectory(okpath);
+                if (!System.IO.Directory.Exists(ngpath))
+                    System.IO.Directory.CreateDirectory(ngpath);
+
+                switch (CamPoint1)
                 {
-                    resultall[i] = Convert.ToDouble(result.Inputs[i * 3].Value) + Convert.ToDouble(result.Inputs[i * 3 + 1].Value) + Convert.ToDouble(result.Inputs[i * 3 + 2].Value);
+                    case 1:
+                        lenVal1 = resultall[0];
+                        WidthVal1 = resultall[1];
+                        settingVal1 = 0;
+
+                        //this.Invoke(new dele(() =>
+                        //{
+                        //    dgvD11.Rows[1].Cells[1].Value = Math.Round(lenVal1);     // 메인 모니터 상에 수치 출력
+                        //    dgvD11.Rows[1].Cells[2].Value = Math.Round(WidthVal1);
+
+                        //}));
+
+                        break;
+                    case 2:
+                        lenVal1 = 0;
+                        WidthVal1 = 0;
+                        settingVal1 = 2;
+                        //this.Invoke(new dele(() =>
+                        //{
+                        //    dgvD11.Rows[2].Cells[1].Value = lenVal1.ToString("F2");     // 메인 모니터 상에 수치 출력
+                        //    dgvD11.Rows[2].Cells[2].Value = WidthVal1.ToString("F2");
+
+                        //}));
+
+                        break;
+                    case 3:
+                        lenVal1 = 0;
+                        WidthVal1 = 0;
+                        settingVal1 = 4;
+                        //this.Invoke(new dele(() =>
+                        //{
+                        //    dgvD11.Rows[3].Cells[1].Value = lenVal1.ToString("F2");     // 메인 모니터 상에 수치 출력
+                        //    dgvD11.Rows[3].Cells[2].Value = WidthVal1.ToString("F2");
+
+                        //}));
+
+                        break;
+                    case 4:
+                        lenVal1 = resultall[2];
+                        WidthVal1 = resultall[3];
+                        settingVal1 = 6;
+
+                        //this.Invoke(new dele(() =>
+                        //{
+                        //    dgvD11.Rows[4].Cells[1].Value = lenVal1.ToString("F2");     // 메인 모니터 상에 수치 출력
+                        //    dgvD11.Rows[4].Cells[2].Value = WidthVal1.ToString("F2");
+
+                        //}));
+
+                        break;
+                    case 5:
+                        lenVal1 = resultall[4];
+                        WidthVal1 = resultall[5];
+                        settingVal1 = 8;
+                        break;
+                    case 6:
+                        lenVal1 = 0;
+                        WidthVal1 = 0;
+                        settingVal1 = 10;
+                        break;
+                    case 7:
+                        lenVal1 = 0;
+                        WidthVal1 = 0;
+                        settingVal1 = 12;
+                        break;
+                    case 8:
+                        lenVal1 = resultall[6];
+                        WidthVal1 = resultall[7];
+                        settingVal1 = 14;
+                        break;
+                    case 9:
+                        lenVal1 = resultall[8];
+                        WidthVal1 = resultall[9];
+                        settingVal1 = 16;
+                        break;
+
+                    case 10:
+                        lenVal1 = 0;
+                        WidthVal1 = 0;
+                        settingVal1 = 18;
+                        break;
+                    case 11:
+                        lenVal1 = 0;
+                        WidthVal1 = 0;
+                        settingVal1 = 20;
+                        break;
+                    case 12:
+                        lenVal1 = resultall[10];
+                        WidthVal1 = resultall[11];
+                        settingVal1 = 22;
+                        break;
+
+
                 }
 
-                for (int j = 0; j < checksetting; j++) // 1,2부터 시작 - 데이터 넣기
+                this.Invoke(new dele(() =>
+                {
+                    dgvD1.Rows[0].Cells[1].Value = lenVal1.ToString("F2");     // 메인 모니터 상에 수치 출력
+                    dgvD1.Rows[1].Cells[1].Value = WidthVal1.ToString("F2");
+
+                }));
+
+                if (min[settingVal1] <= lenVal1 && lenVal1 <= max[settingVal1] && min[settingVal1+1] <= WidthVal1 && WidthVal1 <= max[settingVal1+1])   //OK 판정
                 {
                     this.Invoke(new dele(() =>
                     {
-                        if (j == 16)
-                            dgvD1.Rows[j + 1].Cells[1].Value = Convert.ToInt32(resultall[j] * 100);
-                        else
-                            dgvD1.Rows[j + 1].Cells[1].Value = Convert.ToInt32(resultall[j]);
-                    }));
-                }
-
-                int pattern = Convert.ToInt32(resultall[16] * 100);
-
-                this.Invoke(new dele(() =>
-                {
-                    int cnt = 0;
-                    for (int i = 0; i < checksetting; i++)
-                    {
-                        if (i == 16)
-                        {
-                            if (min[i] <= pattern && pattern <= max[i])
-                            {
-                                dgvD1.Rows[i + 1].Cells[1].Style.BackColor = Color.LightGreen;
-                                cnt += 1;
-                            }
-                            else
-                            {
-                                dgvD1.Rows[i + 1].Cells[1].Style.BackColor = Color.Crimson;
-                            }
-                        }
-                        else
-                        {
-                            if (min[i] <= resultall[i] && resultall[i] <= max[i])
-                            {
-                                dgvD1.Rows[i + 1].Cells[1].Style.BackColor = Color.LightGreen;
-                                cnt += 1;
-                            }
-                            else
-                            {
-                                dgvD1.Rows[i + 1].Cells[1].Style.BackColor = Color.Crimson;
-                            }
-                        }
-                    }
-
-
-                    if (cnt == checksetting)    //  ok판정
-                    {
+                        dgvD1.Rows[0].Cells[1].Style.BackColor = Color.LightGreen;
                         Label_Result1.Text = "O K";
                         Label_Result1.BackColor = Color.LightGreen;
 
-                        try
-                        {
+                        dgvD1.Rows[1].Cells[1].Style.BackColor = Color.LightGreen;
 
-                            Log_K.WriteLog(log_lst, Mainpath, "[Cam1 Re 결과 : OK]" + Environment.NewLine);
 
-                            Decision1 = "OK";
-
-                        }
-                        catch (Exception)
-                        {
-                            Log_K.WriteLog(log_lst, Mainpath, "rt1 검사 후 전송 OK 에러");
-                        }
-                    }
-                    else                // ng 판정
+                    }));
+                    try
                     {
+                        if (check_OKImage1.Checked)
+                            pictureBox_Cam1.Image.Save(okpath + "\\" + ModelNamelbl1.Text + "_" + textBox1.Text + "_" + time + ".bmp", System.Drawing.Imaging.ImageFormat.Bmp);
+
+                        Log_K.WriteLog(log_lst, Mainpath, "[Cam1 결과 : OK]" + Environment.NewLine);
+
+                        Decision1 = "OK";
+                        //plc1.MasterK_Write_W("32303135", "0100");  //OK 판정 PLC에게 보내기
+
+                        Delay(100);
+
+                    }
+                    catch (Exception)
+                    {
+                        Log_K.WriteLog(log_lst, Mainpath, "검사 후 전송 OK 에러");
+                        Console.WriteLine("검사 후 전송 OK");
+                    }
+                    Delay(100);
+                }
+
+
+                else   //NG 판정
+                {
+                    this.Invoke(new dele(() =>
+                    {
+                        dgvD1.Rows[0].Cells[1].Style.BackColor = Color.Crimson;
+
                         Label_Result1.Text = "N G";
                         Label_Result1.BackColor = Color.Crimson;
-                        try
-                        {
 
-                            Log_K.WriteLog(log_lst, Mainpath, "[Cam1 Re 결과 : NG]" + Environment.NewLine);
+                        dgvD1.Rows[1].Cells[1].Style.BackColor = Color.Crimson;
 
-                            Decision1 = "NG";
+                    }));
+                    try
+                    {
+                        if (check_NGImage1.Checked)
+                            pictureBox_Cam1.Image.Save(ngpath + "\\" + ModelNamelbl1.Text + "_" + textBox1.Text + "_" + time + ".bmp", System.Drawing.Imaging.ImageFormat.Bmp);
 
-                        }
-                        catch (Exception)
-                        {
-                            Log_K.WriteLog(log_lst, Mainpath, "rt1 검사 후 전송 NG 에러");
-                        }
+                        Log_K.WriteLog(log_lst, Mainpath, "[Cam1 결과 : NG]" + Environment.NewLine);
+
+                        Decision1 = "NG";
+                        //plc1.MasterK_Write_W("32303135", "0100"); //NG 판정 PLC에게 보내기
+                                                                  // Delay(10);
+                                                                  // plc1.MasterK_Write_W("32303032", "0000"); // 트리거 리셋
+                        Delay(100);
+
                     }
-                }));
-
-
-                for (int k = 0; k < result.Inputs.Count; k++)    //  데이터 0으로 초기화
-                {
-                    result.Inputs[k].Value = 0;
+                    catch (Exception)
+                    {
+                        Log_K.WriteLog(log_lst, Mainpath, "검사 후 전송 NG 에러");
+                    }
+                    Delay(100);
                 }
 
                 this.Invoke(new dele(() =>
                 {
+
+
                     cogRecordDisplay1.Record = Cogtg.CreateLastRunRecord().SubRecords[0];  //  메인화면 이미지 띄우기
                     cogRecordDisplay1.AutoFit = true;
                 }));
-
 
             }
             catch (Exception ex)
@@ -3386,16 +3782,22 @@ namespace VisionProgram
 
         }
 
+
         private void retriger2()
         {
-            this.Invoke(new dele(() =>
-            {
-                Log_K.WriteLog(log_lst, Mainpath, "[Cam2] ReTriger2" + Environment.NewLine);
-            }));
-
+           
             autoDelete();
 
             string time = DateTime.Now.ToString("HH.mm.ss");
+            totalcnt += 1;
+
+            if (CamPoint2 == 0)
+                CamPoint2 = 1;  //  검사포인트 변수에 넣음
+
+            CamPoint2 = Convert.ToInt32(textBox5.Text);  //  검사포인트 변수에 넣음
+
+            autoDelete();
+
 
             try
             {
@@ -3414,103 +3816,205 @@ namespace VisionProgram
                     result.Inputs[k].Value = 0;
                 }
 
+                CogToolBlock input = (CogToolBlock)Cogtg2.Tools["Tools"];    //  툴 블락 Tools 에 어느포인트 툴 사용할지 선택하기위해 툴블락 Tools 가져옴
+                input.Inputs[1].Value = CamPoint2;                          //  툴 블락 Tools에 Input 밸류를 넣어서 어느툴 사용할지 선택함
+
                 Cogtg2.Run();
 
-                double[] resultall = new double[100]; //  전체결과 앞부터 3개씩 데이터 합치기
+                double[] resultall2 = new double[30]; //  전체결과 앞부터 3개씩 데이터 합치기
+              
 
-                for (int i = 0; i < result.Inputs.Count / 3; i++)
+                for (int i = 0; i < result.Inputs.Count; i++)
                 {
-                    resultall[i] = Convert.ToDouble(result.Inputs[i * 3].Value) + Convert.ToDouble(result.Inputs[i * 3 + 1].Value) + Convert.ToDouble(result.Inputs[i * 3 + 2].Value);
+                    resultall2[i] = Convert.ToDouble(result.Inputs[i].Value);
                 }
 
-                for (int j = 0; j < checksetting2; j++) // 1,2부터 시작 - 데이터 넣기
-                {
-                    this.Invoke(new dele(() =>
-                    {
-                        if (j == 16)
-                            dgvD2.Rows[j + 1].Cells[1].Value = Convert.ToInt32(resultall[j] * 100);
-                        else
-                            dgvD2.Rows[j + 1].Cells[1].Value = Convert.ToInt32(resultall[j]);
-                    }));
-                }
+                string imgsavepath = @"C:\Vision\Image";
+                string year = imgsavepath + "\\" + DateTime.Now.ToString("yyyy");
+                string month = year + DateTime.Now.ToString("MM");
+                string day = month + DateTime.Now.ToString("dd");
+                string cam1path = day + "\\Cam1";
+                string cam2path = day + "\\Cam2";
+                string okpath2 = cam2path + "\\OK";
+                string ngpath2 = cam2path + "\\NG";
 
-                int pattern = Convert.ToInt32(resultall[16] * 100);
+                if (!System.IO.Directory.Exists(day))
+                    System.IO.Directory.CreateDirectory(day);
+                if (!System.IO.Directory.Exists(okpath2))
+                    System.IO.Directory.CreateDirectory(okpath2);
+                if (!System.IO.Directory.Exists(ngpath2))
+                    System.IO.Directory.CreateDirectory(ngpath2);
+
+                switch (CamPoint2)
+                {
+                    case 1:
+                        lenVal2 = resultall2[0];
+                        WidthVal2 = resultall2[1];
+                        settingVal2 = 0;
+
+                        //this.Invoke(new dele(() =>
+                        //{
+                        //    dgvD11.Rows[1].Cells[1].Value = Math.Round(lenVal1);     // 메인 모니터 상에 수치 출력
+                        //    dgvD11.Rows[1].Cells[2].Value = Math.Round(WidthVal1);
+
+                        //}));
+
+                        break;
+                    case 2:
+                        lenVal2 = 0;
+                        WidthVal2 = 0;
+                        settingVal2 = 2;
+                        //this.Invoke(new dele(() =>
+                        //{
+                        //    dgvD11.Rows[2].Cells[1].Value = lenVal1.ToString("F2");     // 메인 모니터 상에 수치 출력
+                        //    dgvD11.Rows[2].Cells[2].Value = WidthVal1.ToString("F2");
+
+                        //}));
+
+                        break;
+                    case 3:
+                        lenVal2 = 0;
+                        WidthVal2 = 0;
+                        settingVal2 = 4;
+                        //this.Invoke(new dele(() =>
+                        //{
+                        //    dgvD11.Rows[3].Cells[1].Value = lenVal1.ToString("F2");     // 메인 모니터 상에 수치 출력
+                        //    dgvD11.Rows[3].Cells[2].Value = WidthVal1.ToString("F2");
+
+                        //}));
+
+                        break;
+                    case 4:
+                        lenVal2 = resultall2[2];
+                        WidthVal2 = resultall2[3];
+                        settingVal2 = 6;
+
+                        //this.Invoke(new dele(() =>
+                        //{
+                        //    dgvD11.Rows[4].Cells[1].Value = lenVal1.ToString("F2");     // 메인 모니터 상에 수치 출력
+                        //    dgvD11.Rows[4].Cells[2].Value = WidthVal1.ToString("F2");
+
+                        //}));
+
+                        break;
+                    case 5:
+                        lenVal2 = resultall2[4];
+                        WidthVal2 = resultall2[5];
+                        settingVal2 = 8;
+                        break;
+                    case 6:
+                        lenVal2 = 0;
+                        WidthVal2 = 0;
+                        settingVal2 = 10;
+                        break;
+                    case 7:
+                        lenVal2 = 0;
+                        WidthVal2 = 0;
+                        settingVal2 = 12;
+                        break;
+                    case 8:
+                        lenVal2 = resultall2[6];
+                        WidthVal2 = resultall2[7];
+                        settingVal2 = 14;
+                        break;
+                    case 9:
+                        lenVal2 = resultall2[8];
+                        WidthVal2 = resultall2[9];
+                        settingVal2 = 16;
+                        break;
+
+                    case 10:
+                        lenVal2 = 0;
+                        WidthVal2 = 0;
+                        settingVal2 = 18;
+                        break;
+                    case 11:
+                        lenVal2 = 0;
+                        WidthVal2 = 0;
+                        settingVal2 = 20;
+                        break;
+                    case 12:
+                        lenVal2 = resultall2[10];
+                        WidthVal2 = resultall2[11];
+                        settingVal2 = 22;
+                        break;
+
+
+                }
 
                 this.Invoke(new dele(() =>
                 {
-                    int cnt = 0;
-                    for (int i = 0; i < checksetting2; i++)
-                    {
-                        if (i == 16)
-                        {
-                            if (min2[i] <= pattern && pattern <= max2[i])
-                            {
-                                dgvD2.Rows[i + 1].Cells[1].Style.BackColor = Color.LightGreen;
-                                cnt += 1;
-                            }
-                            else
-                            {
-                                dgvD2.Rows[i + 1].Cells[1].Style.BackColor = Color.Crimson;
-                            }
-                        }
-                        else
-                        {
-                            if (min2[i] <= resultall[i] && resultall[i] <= max2[i])
-                            {
-                                dgvD2.Rows[i + 1].Cells[1].Style.BackColor = Color.LightGreen;
-                                cnt += 1;
-                            }
-                            else
-                            {
-                                dgvD2.Rows[i + 1].Cells[1].Style.BackColor = Color.Crimson;
-                            }
-                        }
-                    }
-
-                    if (cnt == checksetting2)    //  ok판정
-                    {
-                        Label_Result2.Text = "O K";
-                        Label_Result2.BackColor = Color.LightGreen;
-
-                        try
-                        {
-
-                            Log_K.WriteLog(log_lst, Mainpath, "[Cam2 Re 결과 : OK]" + Environment.NewLine);
-
-                            Decision2 = "OK";
-
-                        }
-                        catch (Exception)
-                        {
-                            Log_K.WriteLog(log_lst, Mainpath, "rt2 검사 후 전송 OK 에러");
-                        }
-                    }
-                    else                // ng 판정
-                    {
-                        Label_Result2.Text = "N G";
-                        Label_Result2.BackColor = Color.Crimson;
-
-                        try
-                        {
-
-                            Log_K.WriteLog(log_lst, Mainpath, "[Cam2 Re 결과 : NG]" + Environment.NewLine);
-
-                            Decision2 = "NG";
-
-                        }
-                        catch (Exception)
-                        {
-                            Log_K.WriteLog(log_lst, Mainpath, "rt2 검사 후 전송 NG 에러");
-                        }
-
-                    }
+                    dgvD2.Rows[0].Cells[1].Value = lenVal2.ToString("F2");     // 메인 모니터 상에 수치 출력
+                    dgvD2.Rows[1].Cells[1].Value = WidthVal2.ToString("F2");
 
                 }));
 
-                for (int k = 0; k < result.Inputs.Count; k++)    //  데이터 0으로 초기화
+
+                if (min2[settingVal2] <= lenVal2 && lenVal2 <= max2[settingVal2] && min2[settingVal2 + 1] <= WidthVal2 && WidthVal2 <= max2[settingVal2 + 1])   //OK 판정
+
                 {
-                    result.Inputs[k].Value = 0;
+                    this.Invoke(new dele(() =>
+                    {
+                        dgvD2.Rows[0].Cells[1].Style.BackColor = Color.LightGreen;
+                        Label_Result2.Text = "O K";
+                        Label_Result2.BackColor = Color.LightGreen;
+
+                        dgvD2.Rows[1].Cells[1].Style.BackColor = Color.LightGreen;
+
+                    }));
+                    try
+                    {
+                        if (check_OKImage2.Checked)
+                            pictureBox_Cam2.Image.Save(okpath2 + "\\" + ModelNamelbl1.Text + "_P" + textBox2.Text + "_" + time + ".bmp", System.Drawing.Imaging.ImageFormat.Bmp);
+
+                        Log_K.WriteLog(log_lst, Mainpath, "[Cam1 결과 : OK]" + Environment.NewLine);
+
+                        Decision2 = "OK";
+                        // plc1.MasterK_Write_W("32303136", "0100"); //OK 판정 PLC에게 보내기
+                        // Delay(10);
+                        // plc1.MasterK_Write_W("32303035", "0000"); // 트리거 리셋
+                        Delay(100);
+                    }
+                    catch (Exception)
+                    {
+                        Log_K.WriteLog(log_lst, Mainpath, "검사 후 전송 OK 에러");
+                        Console.WriteLine("검사 후 전송 OK");
+                    }
+                    Delay(100);
                 }
+
+
+                else   //NG 판정
+                {
+                    this.Invoke(new dele(() =>
+                    {
+                        dgvD2.Rows[0].Cells[1].Style.BackColor = Color.Crimson;
+
+                        Label_Result2.Text = "N G";
+                        Label_Result2.BackColor = Color.Crimson;
+
+                        dgvD2.Rows[1].Cells[1].Style.BackColor = Color.Crimson;
+
+                    }));
+                    try
+                    {
+                        if (check_NGImage2.Checked)
+                            pictureBox_Cam2.Image.Save(ngpath2 + "\\" + ModelNamelbl1.Text + "_P" + textBox2.Text + "_" + time + ".bmp", System.Drawing.Imaging.ImageFormat.Bmp);
+
+                        Log_K.WriteLog(log_lst, Mainpath, "[Cam1 결과 : NG]" + Environment.NewLine);
+
+                        Decision2 = "NG";
+                        plc1.MasterK_Write_W("32303136", "0100"); //NG 판정 PLC에게 보내기
+                        Delay(100);
+
+                    }
+                    catch (Exception)
+                    {
+                        Log_K.WriteLog(log_lst, Mainpath, "검사 후 전송 NG 에러");
+                    }
+                    Delay(100);
+                }
+
 
                 this.Invoke(new dele(() =>
                 {
@@ -3585,25 +4089,6 @@ namespace VisionProgram
             {
                 NameSearchTB.Enabled = false;
             }
-        }
-
-        private void simpleButton4_Click(object sender, EventArgs e)
-        {
-            DBReset();
-        }
-
-        void DBReset()
-        {
-            string cmd = "DELETE FROM table1";
-            sql.ExecuteNonQuery(cmd);
-        }
-
-        private void simpleButton5_Click(object sender, EventArgs e)
-        {
-            string bcrr = "a";
-            string cmdd = "DELETE FROM table1 WHERE `Data` = '" + bcrr + "';";
-
-            sql.ExecuteNonQuery(cmdd);
         }
 
 
@@ -3709,20 +4194,53 @@ namespace VisionProgram
 
         private void Btn_Zeroset_Click_1(object sender, EventArgs e)    //Cam1원점
         {
-            dgvB1.Rows[0].Cells[1].Value = dgvD11.Rows[1].Cells[2].Value.ToString();//x 원점
-            dgvB1.Rows[0].Cells[2].Value = dgvD11.Rows[1].Cells[3].Value.ToString();//y 원점
+            dgvB1.Rows[0].Cells[1].Value = dgvD11.Rows[1].Cells[1].Value.ToString();//x 원점
+            dgvB1.Rows[0].Cells[2].Value = dgvD11.Rows[1].Cells[2].Value.ToString();//y 원점
+
+            dgvB1.Rows[2].Cells[1].Value = dgvD11.Rows[2].Cells[1].Value.ToString();//x 원점
+            dgvB1.Rows[2].Cells[2].Value = dgvD11.Rows[2].Cells[2].Value.ToString();//y 원점
+
+            dgvB1.Rows[4].Cells[1].Value = dgvD11.Rows[3].Cells[1].Value.ToString();//x 원점
+            dgvB1.Rows[4].Cells[2].Value = dgvD11.Rows[3].Cells[2].Value.ToString();//y 원점
+
+            dgvB1.Rows[6].Cells[1].Value = dgvD11.Rows[4].Cells[1].Value.ToString();//x 원점
+            dgvB1.Rows[6].Cells[2].Value = dgvD11.Rows[4].Cells[2].Value.ToString();//y 원점
+
+            dgvB1.Rows[8].Cells[1].Value = dgvD11.Rows[5].Cells[1].Value.ToString();//x 원점
+            dgvB1.Rows[8].Cells[2].Value = dgvD11.Rows[5].Cells[2].Value.ToString();//y 원점
+
+            dgvB1.Rows[10].Cells[1].Value = dgvD11.Rows[6].Cells[1].Value.ToString();//x 원점
+            dgvB1.Rows[10].Cells[2].Value = dgvD11.Rows[6].Cells[2].Value.ToString();//y 원점
+
+            dgvB1.Rows[12].Cells[1].Value = dgvD11.Rows[7].Cells[1].Value.ToString();//x 원점
+            dgvB1.Rows[12].Cells[2].Value = dgvD11.Rows[7].Cells[2].Value.ToString();//y 원점
+
+            dgvB1.Rows[14].Cells[1].Value = dgvD11.Rows[8].Cells[1].Value.ToString();//x 원점
+            dgvB1.Rows[14].Cells[2].Value = dgvD11.Rows[8].Cells[2].Value.ToString();//y 원점
+
+            dgvB1.Rows[16].Cells[1].Value = dgvD11.Rows[9].Cells[1].Value.ToString();//x 원점
+            dgvB1.Rows[16].Cells[2].Value = dgvD11.Rows[9].Cells[2].Value.ToString();//y 원점
+
+            dgvB1.Rows[18].Cells[1].Value = dgvD11.Rows[10].Cells[1].Value.ToString();//x 원점
+            dgvB1.Rows[18].Cells[2].Value = dgvD11.Rows[10].Cells[2].Value.ToString();//y 원점
+
+            dgvB1.Rows[20].Cells[1].Value = dgvD11.Rows[11].Cells[1].Value.ToString();//x 원점
+            dgvB1.Rows[20].Cells[2].Value = dgvD11.Rows[11].Cells[2].Value.ToString();//y 원점
+
+            dgvB1.Rows[22].Cells[1].Value = dgvD11.Rows[12].Cells[1].Value.ToString();//x 원점
+            dgvB1.Rows[22].Cells[2].Value = dgvD11.Rows[12].Cells[2].Value.ToString();//y 원점
             //dgvB1.Rows[0].Cells[3].Value = dgvD11.Rows[1].Cells[4].Value.ToString();//각도 원점
         }
 
         private void Btn_CalX_Click_1(object sender, EventArgs e)   //Cam1 X 켈리브레이션
         {
             
-            double ResolutionWidth = double.Parse(dgvB1.Rows[1].Cells[3].Value.ToString()); //  해상도
-            double xfov = double.Parse(dgvB1.Rows[1].Cells[4].Value.ToString());    //  FOV
+            double x_pixel = double.Parse(dgvB1.Rows[0].Cells[1].Value.ToString()); //  해상도
+            double real = double.Parse(dgvB1.Rows[0].Cells[3].Value.ToString());    //  FOV
 
-            double ppm = Math.Abs(xfov / ResolutionWidth);//한 픽셀의 실치수
+            double ppm = Math.Abs(real / x_pixel);//한 픽셀의 실치수
 
-            dgvB1.Rows[1].Cells[5].Value = ppm.ToString();  //  결과(픽셀당)
+            dgvB1.Rows[0].Cells[4].Value = ppm.ToString();  //  결과(픽셀당)
         }
 
         private void Btn_CalY_Click_1(object sender, EventArgs e)   // Cam1 Y 켈리브레이션
