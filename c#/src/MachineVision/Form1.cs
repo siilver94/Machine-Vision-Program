@@ -3099,7 +3099,7 @@ namespace VisionProgram
                     result.Inputs[k].Value = 0;
                 }
 
-                CogToolBlock input = (CogToolBlock)Cogtg.Tools["Tools"];    //  툴 블락 Tools 에 어느포인트 툴 사용할지 선택하기위해 툴블락 Tools 가져옴
+                CogToolBlock input = (CogToolBlock)Cogtg2.Tools["Tools"];    //  툴 블락 Tools 에 어느포인트 툴 사용할지 선택하기위해 툴블락 Tools 가져옴
                 input.Inputs[1].Value = CamPoint2;                          //  툴 블락 Tools에 Input 밸류를 넣어서 어느툴 사용할지 선택함
 
                 Cogtg2.Run();
