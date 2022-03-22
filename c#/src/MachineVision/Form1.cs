@@ -2154,6 +2154,8 @@ namespace VisionProgram
 
                 if (cogToolGroupEditV21.Subject != null)
                     Cogtg = cogToolGroupEditV21.Subject;
+                if (cogToolGroupEditV22.Subject != null)
+                    Cogtg2 = cogToolGroupEditV22.Subject;
 
                 try
                 {
@@ -3400,12 +3402,12 @@ namespace VisionProgram
                 //Cogtg = (CogToolGroup)CogSerializer.LoadObjectFromFile(System.Windows.Forms.Application.StartupPath + "\\" + modelnum + "_1.vpp");
                 cogToolGroupEditV21.Subject = Cogtg;
                 //MessageBox.Show(ModelNamelbl1.Text + " 툴을 불러왔습니다.");
-                Console.WriteLine(" 툴을 불러왔습니다.");
+                MessageBox.Show(ModelNamelbl1.Text + " 툴을 불러왔습니다.");
             }
             if (xtraTabControlVision.SelectedTabPage == Tab_VisionTool2)
             {
                 int modelnum = Convert.ToInt32(Txt_LastModel1.Text);
-                Cogtg = (CogToolGroup)CogSerializer.LoadObjectFromFile(System.Windows.Forms.Application.StartupPath + "\\" + modelnum + "_2.vpp");
+                
                 cogToolGroupEditV22.Subject = Cogtg2;
                 MessageBox.Show(ModelNamelbl1.Text + " 툴을 불러왔습니다.");
             }
