@@ -3118,9 +3118,6 @@ namespace VisionProgram
                     resultall2[i] = Convert.ToDouble(result.Inputs[i].Value);
                 }
 
-           
-
-
                 string imgsavepath = @"C:\Vision\Image";
                 string year = imgsavepath + "\\" + DateTime.Now.ToString("yyyy");
                 string month = year + DateTime.Now.ToString("MM");
