@@ -137,7 +137,7 @@ namespace VisionProgram
         }
 
 
-        
+
         //ffffffffffffffffff
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -223,6 +223,8 @@ namespace VisionProgram
             modelOpen1(CurrentModelNum1);
             //modelOpen2(CurrentModelNum2);
 
+
+
             autoRun();
         }
 
@@ -287,7 +289,7 @@ namespace VisionProgram
                 plc1.MasterK_Write_W("32303032", "0000"); // 트리거 리셋
                 Delay(100);
                 CamPoint1 = Convert.ToInt32(data);
-                
+
                 this.Invoke(new dele(() =>
                 {
                     textBox1.Text = CamPoint1.ToString();
@@ -553,14 +555,14 @@ namespace VisionProgram
                     if ((keyData & Keys.Control) != 0)
                     {
                         xtraTabControl_Model.ShowTabHeader = DevExpress.Utils.DefaultBoolean.True;
-                       
+
                     }
                     break;
                 case Keys.W://
                     if ((keyData & Keys.Control) != 0)
                     {
                         xtraTabControl_Model.ShowTabHeader = DevExpress.Utils.DefaultBoolean.False;
-                      
+
                     }
                     break;
             }
@@ -743,7 +745,7 @@ namespace VisionProgram
                         };
                         int rows = 24;//초기 생성 Row수
 
-                       
+
 
                         //for (int i = 0; i <= dgv.Rows.Count; i++)
                         //{
@@ -754,9 +756,9 @@ namespace VisionProgram
                         // dgv.Rows[0].Cells[1].Value = "패턴";
                         GridMaster.Init3(dgv, true, height, rows, ColumnsName);
 
-                       
-                        dgv.Rows[0].Cells[0].Value =  "1.X";
-                        dgv.Rows[1].Cells[0].Value =  "1.Y";
+
+                        dgv.Rows[0].Cells[0].Value = "1.X";
+                        dgv.Rows[1].Cells[0].Value = "1.Y";
 
                         dgv.Rows[2].Cells[0].Value = "2.X";
                         dgv.Rows[3].Cells[0].Value = "2.Y";
@@ -794,7 +796,7 @@ namespace VisionProgram
 
                         GridMaster.CenterAlign(dgv);
                         GridMaster.DisableSortColumn(dgv);//오름차순 내림차순 정렬 막기
-              
+
                     }
                     catch (Exception)
                     {
@@ -873,13 +875,13 @@ namespace VisionProgram
                         }
 
                         GridMaster.CenterAlign(dgv);
-                       // dgv.ReadOnly = true;//읽기전용
+                        // dgv.ReadOnly = true;//읽기전용
                         //dgv.Columns[0].ReadOnly = true;//읽기전용
 
                         GridMaster.DisableSortColumn(dgv);//오름차순 내림차순 정렬 막기
 
                         dgv.ColumnHeadersVisible = false;//컬럼헤더 가리기                        
-        
+
                     }
                     catch (Exception)
                     {
@@ -1327,7 +1329,7 @@ namespace VisionProgram
                             //"A","A","A","A","A","A","A","A"
                             };
                         int rows = 0;//초기 생성 Row수
-                        
+
                         GridMaster.Init3(dgv, false, height, rows, ColumnsName);
                         GridMaster.CenterAlign(dgv);
                         dgv.ReadOnly = true;//읽기전용
@@ -2091,7 +2093,7 @@ namespace VisionProgram
                 {
                     ModelNamelbl1.Text = dgvM1.Rows[modelnum].Cells[1].Value.ToString();
                 }));
-               
+
 
                 //Cogtg = (CogToolGroup)CogSerializer.LoadObjectFromFile(System.Windows.Forms.Application.StartupPath + "\\" + CurrentModelNum1 + "_1.vpp");
                 Cogtg = (CogToolGroup)CogSerializer.LoadObjectFromFile(System.Windows.Forms.Application.StartupPath + "\\" + CurrentModelNum1 + "_1.vpp");
@@ -2104,7 +2106,7 @@ namespace VisionProgram
 
                 GridMaster.LoadCSV_OnlyData(dgvS1, System.Windows.Forms.Application.StartupPath + "\\" + CurrentModelNum1 + "_S1.csv");//셀데이터로드
                 GridMaster.LoadCSV_OnlyData(dgvCam1, System.Windows.Forms.Application.StartupPath + "\\" + CurrentModelNum1 + "_C1.csv");//셀데이터로드
-                GridMaster.LoadCSV_OnlyData(dgvB1, System.Windows.Forms.Application.StartupPath + "\\" + CurrentModelNum1+ "_SPOT1.csv");//셀데이터로드   캘리브레이션 및 offset
+                GridMaster.LoadCSV_OnlyData(dgvB1, System.Windows.Forms.Application.StartupPath + "\\" + CurrentModelNum1 + "_SPOT1.csv");//셀데이터로드   캘리브레이션 및 offset
 
 
                 Cogtg2 = (CogToolGroup)CogSerializer.LoadObjectFromFile(System.Windows.Forms.Application.StartupPath + "\\" + CurrentModelNum1 + "_2.vpp");
@@ -2804,7 +2806,7 @@ namespace VisionProgram
 
             if (CamPoint1 == 0)
                 CamPoint1 = 1;  //  검사포인트 변수에 넣음
-           
+
             try
             {
 
@@ -2830,7 +2832,7 @@ namespace VisionProgram
 
                 double[] resultall = new double[30];    //결과 data값 넣는 배열
 
-               // resultall[CamPoint1] = Convert.ToDouble(result.Inputs[CamPoint1 - 1].Value);    // PLC에서 받은 검사 포인트 번호를 resultall 에 넣음
+                // resultall[CamPoint1] = Convert.ToDouble(result.Inputs[CamPoint1 - 1].Value);    // PLC에서 받은 검사 포인트 번호를 resultall 에 넣음
 
 
                 for (int i = 0; i < result.Inputs.Count; i++)
@@ -2853,6 +2855,13 @@ namespace VisionProgram
                     System.IO.Directory.CreateDirectory(okpath);
                 if (!System.IO.Directory.Exists(ngpath))
                     System.IO.Directory.CreateDirectory(ngpath);
+
+                this.Invoke(new dele(() =>      // 메인화면에 1차 검사포인트 출력
+                {
+                    PointNumlbl1.Text = textBox1.Text;
+                }));
+
+
                 switch (CamPoint1)
                 {
                     case 1:
@@ -2957,7 +2966,7 @@ namespace VisionProgram
 
                 }));
 
-                if (min[settingVal1] <= lenVal1 && lenVal1 <= max[settingVal1] && min[settingVal1+1] <= WidthVal1 && WidthVal1 <= max[settingVal1+1])   //OK 판정
+                if (min[settingVal1] <= lenVal1 && lenVal1 <= max[settingVal1] && min[settingVal1 + 1] <= WidthVal1 && WidthVal1 <= max[settingVal1 + 1])   //OK 판정
                 {
                     this.Invoke(new dele(() =>
                     {
@@ -3027,7 +3036,7 @@ namespace VisionProgram
                 //  double lenVal = resultall[1];
                 //  double WidthVal = resultall[2];
 
-        
+
 
                 string cmd = Ken2.Database.SQLiteCMD_K.MakeInsertCmdSentence(sql.table,   // CAM1 DB 업데이트
                         "Datetime", Dtime.Now(Dtime.StringType.ForDatum),
@@ -3118,6 +3127,9 @@ namespace VisionProgram
                     resultall2[i] = Convert.ToDouble(result.Inputs[i].Value);
                 }
 
+
+
+
                 string imgsavepath = @"C:\Vision\Image";
                 string year = imgsavepath + "\\" + DateTime.Now.ToString("yyyy");
                 string month = year + DateTime.Now.ToString("MM");
@@ -3133,6 +3145,11 @@ namespace VisionProgram
                     System.IO.Directory.CreateDirectory(okpath2);
                 if (!System.IO.Directory.Exists(ngpath2))
                     System.IO.Directory.CreateDirectory(ngpath2);
+
+                this.Invoke(new dele(() =>      // 메인화면에 1차 검사포인트 출력
+                {
+                    PointNumlbl2.Text = textBox2.Text;
+                }));
 
                 switch (CamPoint2)
                 {
@@ -3260,9 +3277,9 @@ namespace VisionProgram
                         Log_K.WriteLog(log_lst, Mainpath, "[Cam1 결과 : OK]" + Environment.NewLine);
 
                         Decision2 = "OK";
-                       // plc1.MasterK_Write_W("32303136", "0100"); //OK 판정 PLC에게 보내기
-                       // Delay(10);
-                       // plc1.MasterK_Write_W("32303035", "0000"); // 트리거 리셋
+                        // plc1.MasterK_Write_W("32303136", "0100"); //OK 판정 PLC에게 보내기
+                        // Delay(10);
+                        // plc1.MasterK_Write_W("32303035", "0000"); // 트리거 리셋
                         Delay(100);
                     }
                     catch (Exception)
@@ -3322,10 +3339,10 @@ namespace VisionProgram
                 Delay(1000);
                 plc1.MasterK_Write_W("32303131", "0000"); //검사완료신호 리셋
 
-               // for (int k = 0; k < result.Inputs.Count; k++)    //  데이터 0으로 초기화
-               // {
-               //     result.Inputs[k].Value = 0;
-               // }
+                // for (int k = 0; k < result.Inputs.Count; k++)    //  데이터 0으로 초기화
+                // {
+                //     result.Inputs[k].Value = 0;
+                // }
 
                 this.Invoke(new dele(() =>
                 {
@@ -3354,12 +3371,12 @@ namespace VisionProgram
                 {
                     min[i] = Convert.ToDouble(dgvS1.Rows[i].Cells[1].Value);
                 }
-                
+
                 for (int j = 0; j < checksetting; j++)
                 {
                     max[j] = Convert.ToDouble(dgvS1.Rows[j].Cells[2].Value);
                 }
-                
+
 
             }
             catch (Exception)
@@ -3377,12 +3394,12 @@ namespace VisionProgram
                 {
                     min2[i] = Convert.ToDouble(dgvS2.Rows[i].Cells[1].Value);
                 }
-                
+
                 for (int j = 0; j < checksetting2; j++)
                 {
                     max2[j] = Convert.ToDouble(dgvS2.Rows[j].Cells[2].Value);
                 }
-                
+
             }
             catch (Exception)
             {
@@ -3404,7 +3421,7 @@ namespace VisionProgram
             if (xtraTabControlVision.SelectedTabPage == Tab_VisionTool2)
             {
                 int modelnum = Convert.ToInt32(Txt_LastModel1.Text);
-                
+
                 cogToolGroupEditV22.Subject = Cogtg2;
                 MessageBox.Show(ModelNamelbl1.Text + " 툴을 불러왔습니다.");
             }
@@ -3563,18 +3580,18 @@ namespace VisionProgram
 
                 //resultall[CamPoint1] = Convert.ToDouble(result.Inputs[CamPoint1 -1].Value);    // PLC에서 받은 검사 포인트 번호를 resultall 에 넣음
 
-               //   resultall[0] = Convert.ToDouble(result.Inputs[0].Value);
-               //   resultall[1] = Convert.ToDouble(result.Inputs[1].Value);
-               //   
-               //   double lenVal = resultall[CamPoint1 -1];
-               //   double WidthVal = resultall[CamPoint1];
-               //   
-               //   this.Invoke(new dele(() =>
-               //   {
-               //       dgvD1.Rows[0].Cells[1].Value = resultall[CamPoint1].ToString("F2");     // 메인 모니터 상에 수치 출력
-               //       dgvD1.Rows[1].Cells[1].Value = resultall[CamPoint1 + 1].ToString("F2");
-               //   
-               //   }));
+                //   resultall[0] = Convert.ToDouble(result.Inputs[0].Value);
+                //   resultall[1] = Convert.ToDouble(result.Inputs[1].Value);
+                //   
+                //   double lenVal = resultall[CamPoint1 -1];
+                //   double WidthVal = resultall[CamPoint1];
+                //   
+                //   this.Invoke(new dele(() =>
+                //   {
+                //       dgvD1.Rows[0].Cells[1].Value = resultall[CamPoint1].ToString("F2");     // 메인 모니터 상에 수치 출력
+                //       dgvD1.Rows[1].Cells[1].Value = resultall[CamPoint1 + 1].ToString("F2");
+                //   
+                //   }));
 
 
                 string imgsavepath = @"C:\Vision\Image";
@@ -3592,6 +3609,11 @@ namespace VisionProgram
                     System.IO.Directory.CreateDirectory(okpath);
                 if (!System.IO.Directory.Exists(ngpath))
                     System.IO.Directory.CreateDirectory(ngpath);
+
+                this.Invoke(new dele(() =>      // 메인화면에 1차 검사포인트 출력
+                {
+                    PointNumlbl1.Text = textBox1.Text;
+                }));
 
                 switch (CamPoint1)
                 {
@@ -3697,7 +3719,7 @@ namespace VisionProgram
 
                 }));
 
-                if (min[settingVal1] <= lenVal1 && lenVal1 <= max[settingVal1] && min[settingVal1+1] <= WidthVal1 && WidthVal1 <= max[settingVal1+1])   //OK 판정
+                if (min[settingVal1] <= lenVal1 && lenVal1 <= max[settingVal1] && min[settingVal1 + 1] <= WidthVal1 && WidthVal1 <= max[settingVal1 + 1])   //OK 판정
                 {
                     this.Invoke(new dele(() =>
                     {
@@ -3752,8 +3774,8 @@ namespace VisionProgram
 
                         Decision1 = "NG";
                         //plc1.MasterK_Write_W("32303135", "0100"); //NG 판정 PLC에게 보내기
-                                                                  // Delay(10);
-                                                                  // plc1.MasterK_Write_W("32303032", "0000"); // 트리거 리셋
+                        // Delay(10);
+                        // plc1.MasterK_Write_W("32303032", "0000"); // 트리거 리셋
                         Delay(100);
 
                     }
@@ -3784,7 +3806,7 @@ namespace VisionProgram
 
         private void retriger2()
         {
-           
+
             autoDelete();
 
             string time = DateTime.Now.ToString("HH.mm.ss");
@@ -3821,7 +3843,7 @@ namespace VisionProgram
                 Cogtg2.Run();
 
                 double[] resultall2 = new double[30]; //  전체결과 앞부터 3개씩 데이터 합치기
-              
+
 
                 for (int i = 0; i < result.Inputs.Count; i++)
                 {
@@ -3843,6 +3865,11 @@ namespace VisionProgram
                     System.IO.Directory.CreateDirectory(okpath2);
                 if (!System.IO.Directory.Exists(ngpath2))
                     System.IO.Directory.CreateDirectory(ngpath2);
+
+                this.Invoke(new dele(() =>      // 메인화면에 1차 검사포인트 출력
+                {
+                    PointNumlbl2.Text = textBox2.Text;
+                }));
 
                 switch (CamPoint2)
                 {
@@ -4053,7 +4080,7 @@ namespace VisionProgram
         string setToolNum2 = "";
         string OpenTool2 = "";
 
-       
+
 
         private void kenButton1_Click(object sender, EventArgs e)   //  패턴 설정2
         {
@@ -4233,7 +4260,7 @@ namespace VisionProgram
 
         private void Btn_CalX_Click_1(object sender, EventArgs e)   //Cam1 X 켈리브레이션
         {
-            
+
             double x_pixel = double.Parse(dgvB1.Rows[0].Cells[1].Value.ToString()); //  해상도
             double real = double.Parse(dgvB1.Rows[0].Cells[3].Value.ToString());    //  FOV
 
