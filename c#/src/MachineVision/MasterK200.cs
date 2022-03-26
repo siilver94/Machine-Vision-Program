@@ -123,6 +123,7 @@ namespace VisionProgram
         string ClientIP = "";
         int ClientPort = 0;
 
+
         public delegate void EveHandler(string name, object data, int length);
         public event EveHandler TalkingComm;
 
@@ -186,7 +187,7 @@ namespace VisionProgram
         {
             //Send("4C5349532D47544F4641 0000 0033 0000 1300 0000 5400 1400 0000 0100 0700 25 44 42" + address + "2C01");   본               
             Send("4C5349532D5847540000 0000 B033 0000 1300 0152 5400 1400 0000 0100 0700 25 44 42" + address + "3C00");//DB4000 부터 30개워드 연속읽기
-                //44C5349532D5847540000 0000 B033 0000 1300 0152 5400 1400 0000 0100 0700 25 44 42   34303030   3C00
+                                                                                                                       //44C5349532D5847540000 0000 B033 0000 1300 0152 5400 1400 0000 0100 0700 25 44 42    34303030   3C00
 
         }
 
@@ -197,9 +198,9 @@ namespace VisionProgram
             {
                 Delay(10);
 
-               //Send("4C5349532D47544F4641 0000 0033 0000 1600 0000 5800 0200 0000 0100 0800 25 44 57" + address + "0200" + value);   //본래
+                //Send("4C5349532D47544F4641 0000 0033 0000 1600 0000 5800 0200 0000 0100 0800 25 44 57" + address + "0200" + value);   //본래
                 Send("4C5349532D5847540000 0000 B033 0000 1500 0154 5800 0200 0000 0100 0700 25 44 57" + address + "0200" + value);   //수정 후
-                    //4C5349532D5847540000 0000 B033 0000 1500 0154 5800 0200 0000 0100 0700 25 44 57    32303030   0200     0100
+                                                                                                                                      //4C5349532D5847540000 0000 B033 0000 1500 0154 5800 0200 0000 0100 0700 25 44 57    32303030   0200     0100
 
             }
         }
@@ -216,7 +217,7 @@ namespace VisionProgram
 
             while (true)
             {
-                Thread.Sleep(1000);
+                Thread.Sleep(100);
                 if (ConnectFlag == false)
                     break;
 
@@ -253,7 +254,7 @@ namespace VisionProgram
                 }
                 catch (Exception)
                 {
-                    Console.WriteLine("PLC연결 실패");
+                    //Console.WriteLine("PLC연결 실패");
                 }
             }
 
@@ -285,9 +286,11 @@ namespace VisionProgram
 
 
         #region -----# Comm #-----
-        int flag1, flag2, flag3, flag4, flag5, flag6, flag7, flag8;
-        int flag11, flag12, flag13, flag14, flag15, flag16, flag17, flag18;
-        int flag19, flag20, flag21;
+
+
+        //int flag1, flag2, flag3, flag4, flag5, flag6, flag7, flag8;
+        //int flag11, flag12, flag13, flag14, flag15, flag16, flag17, flag18;
+        //int flag19, flag20, flag21;
 
         private Thread Comm;//스레드
         bool CommFlag = false;//Bool Flag
@@ -304,13 +307,15 @@ namespace VisionProgram
             PulseDetector Trigger1 = new PulseDetector();
             PulseDetector Trigger2 = new PulseDetector();
 
+
+
             byte[] buff = new byte[4096];
 
             int length = 0;
 
             while (CommFlag)
             {
-                Delay(100);
+                Delay(400);
                 //if ( CommFlag == false )
                 //    break;
                 try
@@ -320,7 +325,7 @@ namespace VisionProgram
                     // %  D  B  8  0  0  0  400개
                     //Send("4C4749532D474C4F4641 0000 0033 0000 1300 0000 5400 1400 0000 0100 0700 25 44 42 36 30 30 30 9001");
 
-                    Send("4C 53 49 53 2D 58 47 54 00 00 00 00 B0 33 00 00 13 00 01 52 54 00 14 00 00 00 01 00 07 00 25 44 42 34 30 30 30 3C 00");
+                    Send("4C 53 49 53 2D 58 47 54 00 00 00 00 B0 33 00 00 13 00 01 52 54 00 14 00 00 00 01 00 07 00 25 44 42 34 30 30 30 32 00");
 
                     //Send("4C5349532D47544F4641 0000 0033 0000 1400 0000 5400 1400 0000 0100 0800 25 44 42 34 30 30 30 30 6400");  본
 
@@ -346,24 +351,26 @@ namespace VisionProgram
                         if (TalkingComm != null) TalkingComm("Data", result, length);
                     }
 
-                    int ready = Int32.Parse(result[72]);   //  72 20020번지
-
-                    if (ready == 1)
-                    {
-                        // MasterK_Write_W("3230303230", "0000");
-
-                        //System.Windows.Forms.MessageBox.Show(ready.ToString());
-                    }
-                    else if (ready == 0)
-                    {
-                        // MasterK_Write_W("3230303230", "0100");
-
-                        //System.Windows.Forms.MessageBox.Show(ready.ToString());
-                    }
+                    //  int ready = Int32.Parse(result[72]);   //  72 20020번지
+                    //  
+                    //  if (ready == 1)
+                    //  {
+                    //      // MasterK_Write_W("3230303230", "0000");
+                    //  
+                    //      //System.Windows.Forms.MessageBox.Show(ready.ToString());
+                    //  }
+                    //  else if (ready == 0)
+                    //  {
+                    //      // MasterK_Write_W("3230303230", "0100");
+                    //  
+                    //      //System.Windows.Forms.MessageBox.Show(ready.ToString());
+                    //  }
 
                     int resultTriger1 = Int32.Parse(result[36]); //  36 20002번지
                     //int modelNum1 = Int32.Parse(result[32]); // 32 20000번지
-                    int camPoint1 = Int32.Parse(result[34]); // 34 20001번지   
+
+                    int camPoint1 = Convert.ToInt32(result[34], 16);
+                    // int camPoint1 = Int32.Parse(result[34]); // 34 20001번지   
 
                     if (Trigger1.Detect(resultTriger1, 1, 0))  //Cam1 트리거 신호
                     {
@@ -372,12 +379,18 @@ namespace VisionProgram
                     }
 
                     int resultTriger2 = Int32.Parse(result[42]); //  36 20005번지
-                    //int modelNum2 = Int32.Parse(result[42]); // 32 20005번지
-                    int camPoint2 = Int32.Parse(result[40]); // 34 20004번지
 
-                    if (Trigger1.Detect(resultTriger2, 1, 0))   //Cam2 트리거 신호
+                    // dgvC1.Rows[i].Cells[1].Value = address[i]; //  C0 16진수
+                    //
+                    // int val10 = Convert.ToInt32(address[i], 16);   //  C0 10진수              
+                    // dgvC1.Rows[i].Cells[2].Value = val10;
+                    int camPoint2 = Convert.ToInt32(result[40], 16);
+                    //int modelNum2 = Int32.Parse(result[42]); // 32 20005번지
+                    //int camPoint2 = Int32.Parse(result[40]); // 34 20004번지
+
+                    if (Trigger2.Detect(resultTriger2, 1, 0))   //Cam2 트리거 신호
                     {
-                        if (TalkingComm != null) TalkingComm("Trigger1", camPoint2, length);
+                        if (TalkingComm != null) TalkingComm("Trigger2", camPoint2, length);
                     }
 
 
