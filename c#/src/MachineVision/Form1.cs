@@ -757,43 +757,44 @@ namespace VisionProgram
                         GridMaster.Init3(dgv, true, height, rows, ColumnsName);
 
 
-                        dgv.Rows[0].Cells[0].Value = "1.X";
-                        dgv.Rows[1].Cells[0].Value = "1.Y";
 
-                        dgv.Rows[2].Cells[0].Value = "2.X";
-                        dgv.Rows[3].Cells[0].Value = "2.Y";
+                        //dgv.Rows[0].Cells[0].Value = "1.X";
+                        //dgv.Rows[1].Cells[0].Value = "1.Y";
 
-                        dgv.Rows[4].Cells[0].Value = "3.X";
-                        dgv.Rows[5].Cells[0].Value = "3.Y";
+                        //dgv.Rows[2].Cells[0].Value = "2.X";
+                        //dgv.Rows[3].Cells[0].Value = "2.Y";
 
-                        dgv.Rows[6].Cells[0].Value = "4.X";
-                        dgv.Rows[7].Cells[0].Value = "4.Y";
+                        //dgv.Rows[4].Cells[0].Value = "3.X";
+                        //dgv.Rows[5].Cells[0].Value = "3.Y";
 
-                        dgv.Rows[8].Cells[0].Value = "5.X";
-                        dgv.Rows[9].Cells[0].Value = "5.Y";
+                        //dgv.Rows[6].Cells[0].Value = "4.X";
+                        //dgv.Rows[7].Cells[0].Value = "4.Y";
 
-                        dgv.Rows[10].Cells[0].Value = "6.X";
-                        dgv.Rows[11].Cells[0].Value = "6.Y";
+                        //dgv.Rows[8].Cells[0].Value = "5.X";
+                        //dgv.Rows[9].Cells[0].Value = "5.Y";
 
-                        dgv.Rows[12].Cells[0].Value = "7.X";
-                        dgv.Rows[13].Cells[0].Value = "7.Y";
+                        //dgv.Rows[10].Cells[0].Value = "6.X";
+                        //dgv.Rows[11].Cells[0].Value = "6.Y";
 
-                        dgv.Rows[14].Cells[0].Value = "8.X";
-                        dgv.Rows[15].Cells[0].Value = "8.Y";
+                        //dgv.Rows[12].Cells[0].Value = "7.X";
+                        //dgv.Rows[13].Cells[0].Value = "7.Y";
 
-                        dgv.Rows[16].Cells[0].Value = "9.X";
-                        dgv.Rows[17].Cells[0].Value = "9.Y";
+                        //dgv.Rows[14].Cells[0].Value = "8.X";
+                        //dgv.Rows[15].Cells[0].Value = "8.Y";
 
-                        dgv.Rows[18].Cells[0].Value = "10.X";
-                        dgv.Rows[19].Cells[0].Value = "10.Y";
+                        //dgv.Rows[16].Cells[0].Value = "9.X";
+                        //dgv.Rows[17].Cells[0].Value = "9.Y";
 
-                        dgv.Rows[20].Cells[0].Value = "11.X";
-                        dgv.Rows[21].Cells[0].Value = "11.Y";
+                        //dgv.Rows[18].Cells[0].Value = "10.X";
+                        //dgv.Rows[19].Cells[0].Value = "10.Y";
 
-                        dgv.Rows[22].Cells[0].Value = "12.X";
-                        dgv.Rows[23].Cells[0].Value = "12.Y";
+                        //dgv.Rows[20].Cells[0].Value = "11.X";
+                        //dgv.Rows[21].Cells[0].Value = "11.Y";
 
+                        //dgv.Rows[22].Cells[0].Value = "12.X";
+                        //dgv.Rows[23].Cells[0].Value = "12.Y";
 
+                        dgv.Columns[0].ReadOnly = true;//읽기전용
                         GridMaster.CenterAlign(dgv);
                         GridMaster.DisableSortColumn(dgv);//오름차순 내림차순 정렬 막기
 
@@ -876,7 +877,7 @@ namespace VisionProgram
 
                         GridMaster.CenterAlign(dgv);
                         // dgv.ReadOnly = true;//읽기전용
-                        //dgv.Columns[0].ReadOnly = true;//읽기전용
+                        dgv.Columns[0].ReadOnly = true;//읽기전용
 
                         GridMaster.DisableSortColumn(dgv);//오름차순 내림차순 정렬 막기
 
@@ -909,7 +910,7 @@ namespace VisionProgram
                             //"Inspection", "Value", "Check"
                             "A", "A", "A", "A","A", "A"
                         };
-                        int rows = 200;//초기 생성 Row수
+                        int rows = 25;//초기 생성 Row수
 
                         GridMaster.Init3(dgv, true, height, rows, ColumnsName);
                         //---------------↑ 생성 ↑---------------┘
@@ -921,20 +922,20 @@ namespace VisionProgram
                         dgv.Rows[0].Cells[0].Value = "구분";
                         //dgv.Rows[1].Cells[0].Value = "값";
 
-                        dgv.Rows[0].Cells[1].Value = "패턴";
+                        //dgv.Rows[0].Cells[1].Value = "패턴";
                         dgv.Rows[0].Cells[2].Value = "X 좌표";
                         dgv.Rows[0].Cells[3].Value = "Y 좌표";
-                        dgv.Rows[0].Cells[4].Value = "각도";
-                        dgv.Rows[0].Cells[5].Value = "결과";
+                        //dgv.Rows[0].Cells[4].Value = "각도";
+                        //dgv.Rows[0].Cells[5].Value = "결과";
 
-                        for (int i = 1; i < 200; i++)
+                        for (int i = 1; i < rows; i++)
                         {
                             dgv.Rows[i].Cells[0].Value = "좌표 " + i;
                         }
 
                         GridMaster.CenterAlign(dgv);
                         dgv.ReadOnly = true;//읽기전용
-                        //dgv.Columns[0].ReadOnly = true;//읽기전용
+                        dgv.Columns[0].ReadOnly = true;//읽기전용
 
                         GridMaster.DisableSortColumn(dgv);//오름차순 내림차순 정렬 막기
 
@@ -1219,21 +1220,21 @@ namespace VisionProgram
                         };
                         int rows = checksetting;//초기 생성 Row수
 
-                        //  for(int i = 0; i < checksetting; i++)
-                        //  {
-                        //      dgv.Rows[i].Cells[0].Value = i+"번.가로";
-                        //      dgv.Rows[i+1].Cells[0].Value = (i + 1).ToString() + "번.세로";
-                        //  }
-                        //dgv.Rows[1].Cells[1].Value = "번 가로";
-                        //for (int i = 0; i < rows; i++)
+                        GridMaster.Init3(dgv, true, height, rows, ColumnsName);
+
+                        
+                            dgv.Rows[0].Cells[1].Value = "하이후헤오";
+                        
+
+                        //for (int i = 1; i < 51; i++)
                         //{
-                        //    dgv.Rows[i].Cells[0].Value = "D" + (i + 2000);
+                        //    dgv.Rows[i - 1].Cells[0].Value = i - 1;
                         //}
 
 
-                        GridMaster.Init3(dgv, true, height, rows, ColumnsName);
                         GridMaster.CenterAlign(dgv);
                         GridMaster.DisableSortColumn(dgv);//오름차순 내림차순 정렬 막기
+                        dgv.Columns[0].ReadOnly = true;   // Columns 수정 불가
 
                     }
                     catch (Exception)
@@ -1263,6 +1264,7 @@ namespace VisionProgram
                         GridMaster.Init3(dgv, true, height, rows, ColumnsName);
                         GridMaster.CenterAlign(dgv);
                         GridMaster.DisableSortColumn(dgv);//오름차순 내림차순 정렬 막기
+                        dgv.Columns[0].ReadOnly = true;   // Columns 수정 불가
 
                     }
                     catch (Exception)
@@ -1301,6 +1303,7 @@ namespace VisionProgram
                         GridMaster.CenterAlign(dgv);
 
                         GridMaster.DisableSortColumn(dgv);//오름차순 내림차순 정렬 막기
+                        dgv.ReadOnly = true;//읽기전용 // 읽기전용
 
 
                     }
@@ -3540,6 +3543,8 @@ namespace VisionProgram
         }
 
 
+        #region 리트리거 retriger
+
         private void retriger1()
         {
             autoDelete();
@@ -4056,6 +4061,10 @@ namespace VisionProgram
             }
 
         }
+
+        #endregion
+
+
 
         string setTool = "";
         string setToolNum = "";
