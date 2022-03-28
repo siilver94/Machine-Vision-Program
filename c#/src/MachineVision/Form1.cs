@@ -3121,16 +3121,10 @@ namespace VisionProgram
                 double[] resultall2 = new double[30]; //  전체결과 앞부터 3개씩 데이터 합치기
 
 
-                //resultall2[CamPoint2] = Convert.ToDouble(result.Inputs[CamPoint2 - 1].Value);    // PLC에서 받은 검사 포인트 번호를 resultall 에 넣음
-
-                // double lenVal2 = resultall2[1];
-
                 for (int i = 0; i < result.Inputs.Count; i++)
                 {
                     resultall2[i] = Convert.ToDouble(result.Inputs[i].Value);
                 }
-
-
 
 
                 string imgsavepath = @"C:\Vision\Image";
