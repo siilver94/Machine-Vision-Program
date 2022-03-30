@@ -35,18 +35,18 @@ namespace VisionProgram
         int CamPoint1 = 0;
         int CamPoint2 = 0;
 
-        CogToolGroup Cogtg;                     //  툴그룹 가져오는 변수
+        CogToolGroup Cogtg;                      //  툴그룹 가져오는 변수
         CogToolGroup Cogtg2;                     //  툴그룹 가져오는 변수
 
-        int[] resultdata = new int[100]; //  비전 결과 데이터 가져오기
+        int[] resultdata = new int[100];        //  비전 결과 데이터 가져오기
 
-        double[] min = new double[30];    //  최소값 배열
-        double[] max = new double[30];    //  최대값 배열
-        int checksetting = 24;    //  검사 데이터 및 min max 배열 수량
+        double[] min = new double[30];         //  최소값 배열
+        double[] max = new double[30];         //  최대값 배열
+        int checksetting = 24;                //  검사 데이터 및 min max 배열 수량
 
-        double[] min2 = new double[30];    //  최소값 배열
-        double[] max2 = new double[30];    //  최대값 배열
-        int checksetting2 = 24;    //  검사 데이터 및 min max 배열 수량
+        double[] min2 = new double[30];      //  최소값 배열
+        double[] max2 = new double[30];        //  최대값 배열
+        int checksetting2 = 24;               //  검사 데이터 및 min max 배열 수량
 
         int totalcnt = 0;
         int okcnt = 0;
@@ -222,8 +222,6 @@ namespace VisionProgram
                 CurrentModelNum1 = 1;
             modelOpen1(CurrentModelNum1);
             //modelOpen2(CurrentModelNum2);
-
-
 
             autoRun();
         }
@@ -1222,9 +1220,9 @@ namespace VisionProgram
 
                         GridMaster.Init3(dgv, true, height, rows, ColumnsName);
 
-                        
-                            dgv.Rows[0].Cells[1].Value = "하이후헤오";
-                        
+
+                        dgv.Rows[0].Cells[1].Value = "하이후헤오";
+
 
                         //for (int i = 1; i < 51; i++)
                         //{
@@ -3121,10 +3119,16 @@ namespace VisionProgram
                 double[] resultall2 = new double[30]; //  전체결과 앞부터 3개씩 데이터 합치기
 
 
+                //resultall2[CamPoint2] = Convert.ToDouble(result.Inputs[CamPoint2 - 1].Value);    // PLC에서 받은 검사 포인트 번호를 resultall 에 넣음
+
+                // double lenVal2 = resultall2[1];
+
                 for (int i = 0; i < result.Inputs.Count; i++)
                 {
                     resultall2[i] = Convert.ToDouble(result.Inputs[i].Value);
                 }
+
+
 
 
                 string imgsavepath = @"C:\Vision\Image";
@@ -4362,6 +4366,11 @@ namespace VisionProgram
                 dgvmanager.Init += OnInit;
                 dgvmanager.Show();
             }
+        }
+
+        private void kenButton2_Click(object sender, EventArgs e)   //패턴설정
+        {
+            new Tools.PMAlign(Cogtg.Tools["CogPMAlignTool1"], 0).ShowDialog();
         }
 
         //ccccccccccccccccc
