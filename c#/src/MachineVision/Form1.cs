@@ -2323,9 +2323,6 @@ namespace VisionProgram
                 GridMaster.LoadCSV_OnlyData(dgvCam1, System.Windows.Forms.Application.StartupPath + "\\" + CurrentModelNum1 + "_C1.csv");//셀데이터로드
                 GridMaster.LoadCSV_OnlyData(dgvB1, System.Windows.Forms.Application.StartupPath + "\\" + CurrentModelNum1 + "_SPOT1.csv");//셀데이터로드   캘리브레이션 및 offset
 
-
-
-
                 Cogtg2 = (CogToolGroup)CogSerializer.LoadObjectFromFile(System.Windows.Forms.Application.StartupPath + "\\" + CurrentModelNum1 + "_2.vpp");
                 CogToolBlock result2 = (CogToolBlock)Cogtg2.Tools["result"];
                 for (int i = 0; i < result2.Inputs.Count; i++)
@@ -2366,133 +2363,6 @@ namespace VisionProgram
         }
 
 
-        private void Btn_M2save_Click(object sender, EventArgs e)   //  모델저장 2
-        {
-            if (MessageBox.Show("모델을 저장하시겠습니까?", "안내", MessageBoxButtons.YesNo) == DialogResult.Yes)
-            {
-
-                if (cogToolGroupEditV22.Subject != null)
-                    Cogtg2 = cogToolGroupEditV22.Subject;
-
-                try
-                {
-                    if (dgvM2.Rows[dgvM2.CurrentCell.RowIndex].Cells[1].Value.ToString() != "")
-                    {
-                        CogSerializer.SaveObjectToFile(Cogtg2, System.Windows.Forms.Application.StartupPath + "\\" + dgvM2.CurrentCell.RowIndex + "_2.vpp", typeof(System.Runtime.Serialization.Formatters.Binary.BinaryFormatter), CogSerializationOptionsConstants.Minimum);
-
-                        GridMaster.SaveCSV_OnlyData(dgvS2, System.Windows.Forms.Application.StartupPath + "\\" + dgvM2.CurrentCell.RowIndex + "_S2.csv");//셀데이터 세이브
-                        GridMaster.SaveCSV_OnlyData(dgvCam2, System.Windows.Forms.Application.StartupPath + "\\" + dgvM2.CurrentCell.RowIndex + "_C2.csv");//셀데이터 세이브
-
-                        SettingMinMax();
-
-                        MessageBox.Show("저장이 완료되었습니다.");
-                    }
-                    else if (dgvM2.Rows[dgvM2.CurrentCell.RowIndex].Cells[1].Value.ToString() == "")
-                    {
-                        dgvM2.Rows[dgvM2.CurrentCell.RowIndex].Cells[1].Value = ModelNamelbl1.Text;
-
-                        CogSerializer.SaveObjectToFile(Cogtg2, System.Windows.Forms.Application.StartupPath + "\\" + dgvM2.CurrentCell.RowIndex + "_2.vpp", typeof(System.Runtime.Serialization.Formatters.Binary.BinaryFormatter), CogSerializationOptionsConstants.Minimum);
-
-                        GridMaster.SaveCSV_OnlyData(dgvS2, System.Windows.Forms.Application.StartupPath + "\\" + dgvM2.CurrentCell.RowIndex + "_S2.csv");//셀데이터 세이브
-                        GridMaster.SaveCSV_OnlyData(dgvCam2, System.Windows.Forms.Application.StartupPath + "\\" + dgvM2.CurrentCell.RowIndex + "_C2.csv");//셀데이터 세이브
-
-                        SettingMinMax();
-
-                        MessageBox.Show("저장이 완료되었습니다.");
-                    }
-
-                    GridMaster.SaveCSV_OnlyData(dgvC1, System.Windows.Forms.Application.StartupPath + "\\P1.csv");//셀데이터 세이브
-                }
-
-                catch (Exception)
-                {
-                    //Log_K.WriteLog(log_err, Mainpath, "모델 저장버튼 에러");
-                    Console.WriteLine("모델 저장버튼");
-                }
-            }
-            else
-            {
-                try
-                {
-                    MessageBox.Show("취소.");
-                }
-                catch (Exception)
-                {
-                    //Log_K.WriteLog(log_err, Mainpath, "모델 저장버튼 에러2");
-                    Console.WriteLine("모델 저장버튼");
-                }
-            }
-        }
-        private void Btn_M2change_Click(object sender, EventArgs e) //  모델명 변경2
-        {
-            try
-            {
-                if (dgvM2.CurrentCell == null)
-                {
-                    return;
-                }
-                if (txt_Modelname2.Text.Equals(""))
-                {
-                    MessageBox.Show("모델명을 기입해주세요", "Error");
-                    return;
-                }
-                if (POPUP.YesOrNo("INFO", "모델 이름을 바꾸시겠습니까?"))
-                {
-                    dgvM2.Rows[dgvM2.CurrentCell.RowIndex].Cells[1].Value = txt_Modelname2.Text;
-                    GridMaster.SaveCSV_OnlyData(dgvM2, System.Windows.Forms.Application.StartupPath + "\\Model2.csv");//셀데이터 세이브
-                    MessageBox.Show("성공적으로 변경되었습니다.", "Messagebox");
-                }
-            }
-            catch (Exception)
-            {
-                //Log_K.WriteLog(log_err, Mainpath, "Model1 이름바꾸기 에러");
-                //Console.WriteLine("모델1 이름바꾸기");
-            }
-        }
-
-        private void Btn_M2open_Click(object sender, EventArgs e)   //  모델열기 2
-        {
-            if (dgvM2.CurrentCell == null)
-            {
-                return;
-            }
-            if (POPUP.YesOrNo("안내", "모델을 불러오시겠습니까 ?"))
-            {
-                int modelnum = dgvM2.CurrentCell.RowIndex;
-
-                modelOpen2(modelnum);
-                MessageBox.Show("모델을 성공적으로 불러왔습니다.", "Message");
-            }
-        }
-
-        private void Btn_M2Delete_Click(object sender, EventArgs e) //모델2 삭제
-        {
-            try
-            {
-                if (POPUP.YesOrNo("WARNING", "모델을 삭제하시겠습니까?"))
-                {
-                    int modelnum = dgvM2.CurrentCell.RowIndex;
-
-                    ModelNamelbl1.Text = "";
-                    dgvM1.Rows[dgvM1.CurrentCell.RowIndex].Cells[1].Value = null;
-
-                    File.Delete(System.Windows.Forms.Application.StartupPath + "\\" + modelnum + "_1.vpp");
-                    File.Delete(System.Windows.Forms.Application.StartupPath + "\\" + modelnum + "_S1.csv");
-                    File.Delete(System.Windows.Forms.Application.StartupPath + "\\" + modelnum + "_C1.csv");
-
-                    File.Delete(System.Windows.Forms.Application.StartupPath + "\\" + modelnum + "_2.vpp");
-                    File.Delete(System.Windows.Forms.Application.StartupPath + "\\" + modelnum + "_S2.csv");
-                    File.Delete(System.Windows.Forms.Application.StartupPath + "\\" + modelnum + "_C2.csv");
-
-                    MessageBox.Show("모델을 성공적으로 삭제하였습니다.", "Message");
-
-                }
-            }
-            catch (Exception)
-            {
-                //Log_K.WriteLog(log_err, Mainpath, "모델 삭제버튼 에러1");
-            }
-        }
 
 
         #endregion
@@ -2539,21 +2409,7 @@ namespace VisionProgram
             //}));
         }
 
-        private void Btn_Reset2_Click(object sender, EventArgs e)
-        {
-            //this.Invoke(new dele(() =>
-            //{
-            //    okcnt2 = 0;
-            //    ngcnt2 = 0;
-            //    totalcnt2 = 0;
-            //    textBox_ok2.Text = "0";
-            //    textBox_ng2.Text = "0";
-            //    textBox_total2.Text = "0";
-            //    label_ok2.Text = "0";
-            //    label_ng2.Text = "0";
-            //    label_total2.Text = "0";
-            //}));
-        }
+       
         #endregion
 
         #region 카메라 버튼
