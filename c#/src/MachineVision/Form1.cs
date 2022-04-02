@@ -2395,18 +2395,7 @@ namespace VisionProgram
         #region 메인화면 버튼
         private void Btn_Reset1_Click(object sender, EventArgs e)
         {
-            //this.Invoke(new dele(() =>
-            //{
-            //    okcnt = 0;
-            //    ngcnt = 0;
-            //    totalcnt = 0;
-            //    textBox_ok.Text = "0";
-            //    textBox_ng.Text = "0";
-            //    textBox_total.Text = "0";
-            //    label_ok1.Text = "0";
-            //    label_ng1.Text = "0";
-            //    label_total1.Text = "0";
-            //}));
+   
         }
 
        
