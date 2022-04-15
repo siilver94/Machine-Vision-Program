@@ -453,8 +453,6 @@ namespace VisionProgram
         private TcpClient mClient;
 
 
-
-
         public TCPClient_K(string ServerIP, int ServerPort, int ReceiveTimeOut)
         {
 
@@ -817,7 +815,7 @@ namespace VisionProgram
         {
             //스레드스타트
             CommFlag = true;
-            Comm = new Thread(CommMethod);
+            //Comm = new Thread(CommMethod);
             Comm.Start();
             //스레드스타트
         }
