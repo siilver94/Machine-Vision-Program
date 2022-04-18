@@ -320,27 +320,11 @@ namespace VisionProgram
                 //    break;
                 try
                 {
-                    //Send( "4C4749532D474C4F4641 0000 0033 0000 1300 0000 5400 1400 0000 0100 0700 25 44 42 38 30 30 30 C800" );
-                    //Send( "4C4749532D474C4F4641 0000 0033 0000 1300 0000 5400 1400 0000 0100 0700 25 44 42 38 30 30 30 9001" );
-                    // %  D  B  8  0  0  0  400개
-                    //Send("4C4749532D474C4F4641 0000 0033 0000 1300 0000 5400 1400 0000 0100 0700 25 44 42 36 30 30 30 9001");
 
                     Send("4C 53 49 53 2D 58 47 54 00 00 00 00 B0 33 00 00 13 00 01 52 54 00 14 00 00 00 01 00 07 00 25 44 42 34 30 30 30 32 00");
 
-                    //Send("4C5349532D47544F4641 0000 0033 0000 1400 0000 5400 1400 0000 0100 0800 25 44 42 34 30 30 30 30 6400");  본
-
-
-                    //                                        변함      읽기                변함 %  D  B   4  0  0 0  0  6000 36 30 30 30
-                    //Send("4C4749532D474C4F4641 0000 0033 0000 1400 0000 5400 1400 0000 0100 0800 25 44 42 31 30 30 30 30 9001");   //  address = 10000 or 10100 // 9001
                     //Send("4C4749532D474C4F4641 0000 0033 0000 1400 0000 5400 1400 0000 0100 0800 25 44 42 32 30 30 30 30 9001"); 1000번지일경우 400개바이트 가져오기
                     length = _stream.Read(buff, 0, buff.Length);
-
-
-                    //if ( length == 0 )
-                    //{
-                    //    Pause( );
-                    //    break;
-                    //}
 
                     string input = BitConverter.ToString(buff, 0, length);
                     string[] result = input.Split(new string[] { "-" }, StringSplitOptions.None);
@@ -350,21 +334,6 @@ namespace VisionProgram
                     {
                         if (TalkingComm != null) TalkingComm("Data", result, length);
                     }
-
-                    //  int ready = Int32.Parse(result[72]);   //  72 20020번지
-                    //  
-                    //  if (ready == 1)
-                    //  {
-                    //      // MasterK_Write_W("3230303230", "0000");
-                    //  
-                    //      //System.Windows.Forms.MessageBox.Show(ready.ToString());
-                    //  }
-                    //  else if (ready == 0)
-                    //  {
-                    //      // MasterK_Write_W("3230303230", "0100");
-                    //  
-                    //      //System.Windows.Forms.MessageBox.Show(ready.ToString());
-                    //  }
 
                     int resultTriger1 = Int32.Parse(result[36]); //  36 20002번지
                     //int modelNum1 = Int32.Parse(result[32]); // 32 20000번지
