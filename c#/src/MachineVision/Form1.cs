@@ -188,15 +188,6 @@ namespace VisionProgram
             dgvInit("dgvD11");
             dgvInit("dgvD22");
 
-            dgvInit("dgvH1");       //  판정 그리드뷰
-            dgvInit("dgvH2");       //  판정 그리드뷰
-            dgvInit("dgvH3");       //  판정 그리드뷰
-            dgvInit("dgvH4");       //  판정 그리드뷰
-            dgvInit("dgvH5");       //  판정 그리드뷰
-            dgvInit("dgvH6");       //  판정 그리드뷰
-            dgvInit("dgvH7");       //  판정 그리드뷰
-            dgvInit("dgvH8");       //  판정 그리드뷰
-
 
             cam1 = new PylonBasler("192.168.100.2");
             cam1.ImageSignal += cam1_ImageSignal;
