@@ -13,7 +13,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 
-namespace Vision_DH
+namespace VisionProgram
 {
 
     public class TCPClient_Monitor
