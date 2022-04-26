@@ -2434,25 +2434,12 @@ namespace VisionProgram
                         lenVal1 = 0;
                         WidthVal1 = 0;
                         settingVal1 = 4;
-                        //this.Invoke(new dele(() =>
-                        //{
-                        //    dgvD11.Rows[3].Cells[1].Value = lenVal1.ToString("F2");     // 메인 모니터 상에 수치 출력
-                        //    dgvD11.Rows[3].Cells[2].Value = WidthVal1.ToString("F2");
-
-                        //}));
 
                         break;
                     case 4:
                         lenVal1 = resultall[2];
                         WidthVal1 = resultall[3];
                         settingVal1 = 6;
-
-                        //this.Invoke(new dele(() =>
-                        //{
-                        //    dgvD11.Rows[4].Cells[1].Value = lenVal1.ToString("F2");     // 메인 모니터 상에 수치 출력
-                        //    dgvD11.Rows[4].Cells[2].Value = WidthVal1.ToString("F2");
-
-                        //}));
 
                         break;
                     case 5:
