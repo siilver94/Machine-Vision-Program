@@ -745,44 +745,6 @@ namespace VisionProgram
                         // dgv.Rows[0].Cells[1].Value = "패턴";
                         GridMaster.Init3(dgv, true, height, rows, ColumnsName);
 
-
-
-                        //dgv.Rows[0].Cells[0].Value = "1.X";
-                        //dgv.Rows[1].Cells[0].Value = "1.Y";
-
-                        //dgv.Rows[2].Cells[0].Value = "2.X";
-                        //dgv.Rows[3].Cells[0].Value = "2.Y";
-
-                        //dgv.Rows[4].Cells[0].Value = "3.X";
-                        //dgv.Rows[5].Cells[0].Value = "3.Y";
-
-                        //dgv.Rows[6].Cells[0].Value = "4.X";
-                        //dgv.Rows[7].Cells[0].Value = "4.Y";
-
-                        //dgv.Rows[8].Cells[0].Value = "5.X";
-                        //dgv.Rows[9].Cells[0].Value = "5.Y";
-
-                        //dgv.Rows[10].Cells[0].Value = "6.X";
-                        //dgv.Rows[11].Cells[0].Value = "6.Y";
-
-                        //dgv.Rows[12].Cells[0].Value = "7.X";
-                        //dgv.Rows[13].Cells[0].Value = "7.Y";
-
-                        //dgv.Rows[14].Cells[0].Value = "8.X";
-                        //dgv.Rows[15].Cells[0].Value = "8.Y";
-
-                        //dgv.Rows[16].Cells[0].Value = "9.X";
-                        //dgv.Rows[17].Cells[0].Value = "9.Y";
-
-                        //dgv.Rows[18].Cells[0].Value = "10.X";
-                        //dgv.Rows[19].Cells[0].Value = "10.Y";
-
-                        //dgv.Rows[20].Cells[0].Value = "11.X";
-                        //dgv.Rows[21].Cells[0].Value = "11.Y";
-
-                        //dgv.Rows[22].Cells[0].Value = "12.X";
-                        //dgv.Rows[23].Cells[0].Value = "12.Y";
-
                         dgv.Columns[0].ReadOnly = true;//읽기전용
                         GridMaster.CenterAlign(dgv);
                         GridMaster.DisableSortColumn(dgv);//오름차순 내림차순 정렬 막기
