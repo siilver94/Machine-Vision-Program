@@ -126,11 +126,9 @@ namespace VisionProgram
         public delegate void EveHandler(string name, object data, int length);
         public event EveHandler TalkingComm;
 
-
         public bool Server_Connected = false;
         public NetworkStream _stream = null;
         private TcpClient mClient;
-
 
         public MasterK200_1(string ServerIP, int ServerPort, int ReceiveTimeOut, string ClientIP, int ClientPort, Form1 mainform)
         {
@@ -197,7 +195,7 @@ namespace VisionProgram
                 Delay(10);
                 //Send("4C5349532D47544F4641 0000 0033 0000 1600 0000 5800 0200 0000 0100 0800 25 44 57" + address + "0200" + value);   //본래
                 Send("4C5349532D5847540000 0000 B033 0000 1500 0154 5800 0200 0000 0100 0700 25 44 57" + address + "0200" + value);   //수정 후
-                                                                                                                                      //4C5349532D5847540000 0000 B033 0000 1500 0154 5800 0200 0000 0100 0700 25 44 57    32303030   0200     0100
+                    //4C5349532D5847540000 0000 B033 0000 1500 0154 5800 0200 0000 0100 0700 25 44 57    32303030   0200     0100
             }
         }
 
@@ -239,7 +237,6 @@ namespace VisionProgram
                         Server_Connected = true;
 
                         CommStart();//연결되었으니 통신스레드 시작함.
-
 
 
                         TalkingComm("Connected", 0, 0);
