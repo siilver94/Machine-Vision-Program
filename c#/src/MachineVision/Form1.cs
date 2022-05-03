@@ -3107,102 +3107,97 @@ namespace VisionProgram
                     PointNumlbl1.Text = textBox1.Text;
                 }));
 
-                switch (CamPoint1)
-                {
-                    case 1:
-                        lenVal1 = resultall[0];
-                        WidthVal1 = resultall[1];
-                        settingVal1 = 0;
+//                 switch (CamPoint1)
+//                 {
+//                     case 1:
+//                         lenVal1 = resultall[0];
+//                         WidthVal1 = resultall[1];
+//                         settingVal1 = 0;
 
-                        //this.Invoke(new dele(() =>
-                        //{
-                        //    dgvD11.Rows[1].Cells[1].Value = Math.Round(lenVal1);     // 메인 모니터 상에 수치 출력
-                        //    dgvD11.Rows[1].Cells[2].Value = Math.Round(WidthVal1);
+//                         //this.Invoke(new dele(() =>
+//                         //{
+//                         //    dgvD11.Rows[1].Cells[1].Value = Math.Round(lenVal1);     // 메인 모니터 상에 수치 출력
+//                         //    dgvD11.Rows[1].Cells[2].Value = Math.Round(WidthVal1);
 
-                        //}));
+//                         //}));
 
-                        break;
-                    case 2:
-                        lenVal1 = 0;
-                        WidthVal1 = 0;
-                        settingVal1 = 2;
-                        //this.Invoke(new dele(() =>
-                        //{
-                        //    dgvD11.Rows[2].Cells[1].Value = lenVal1.ToString("F2");     // 메인 모니터 상에 수치 출력
-                        //    dgvD11.Rows[2].Cells[2].Value = WidthVal1.ToString("F2");
+//                         break;
+//                     case 2:
+//                         lenVal1 = 0;
+//                         WidthVal1 = 0;
+//                         settingVal1 = 2;
+//                         //this.Invoke(new dele(() =>
+//                         //{
+//                         //    dgvD11.Rows[2].Cells[1].Value = lenVal1.ToString("F2");     // 메인 모니터 상에 수치 출력
+//                         //    dgvD11.Rows[2].Cells[2].Value = WidthVal1.ToString("F2");
 
-                        //}));
+//                         //}));
 
-                        break;
-                    case 3:
-                        lenVal1 = 0;
-                        WidthVal1 = 0;
-                        settingVal1 = 4;
-                        //this.Invoke(new dele(() =>
-                        //{
-                        //    dgvD11.Rows[3].Cells[1].Value = lenVal1.ToString("F2");     // 메인 모니터 상에 수치 출력
-                        //    dgvD11.Rows[3].Cells[2].Value = WidthVal1.ToString("F2");
+//                         break;
+//                     case 3:
+//                         lenVal1 = 0;
+//                         WidthVal1 = 0;
+//                         settingVal1 = 4;
+//                         //this.Invoke(new dele(() =>
+//                         //{
+//                         //    dgvD11.Rows[3].Cells[1].Value = lenVal1.ToString("F2");     // 메인 모니터 상에 수치 출력
+//                         //    dgvD11.Rows[3].Cells[2].Value = WidthVal1.ToString("F2");
 
-                        //}));
+//                         //}));
 
-                        break;
-                    case 4:
-                        lenVal1 = resultall[2];
-                        WidthVal1 = resultall[3];
-                        settingVal1 = 6;
+//                         break;
+//                     case 4:
+//                         lenVal1 = resultall[2];
+//                         WidthVal1 = resultall[3];
+//                         settingVal1 = 6;
 
-                        //this.Invoke(new dele(() =>
-                        //{
-                        //    dgvD11.Rows[4].Cells[1].Value = lenVal1.ToString("F2");     // 메인 모니터 상에 수치 출력
-                        //    dgvD11.Rows[4].Cells[2].Value = WidthVal1.ToString("F2");
+//                         //this.Invoke(new dele(() =>
+//                         //{
+//                         //    dgvD11.Rows[4].Cells[1].Value = lenVal1.ToString("F2");     // 메인 모니터 상에 수치 출력
+//                         //    dgvD11.Rows[4].Cells[2].Value = WidthVal1.ToString("F2");
 
-                        //}));
+//                         //}));
 
-                        break;
-                    case 5:
-                        lenVal1 = resultall[4];
-                        WidthVal1 = resultall[5];
-                        settingVal1 = 8;
-                        break;
-                    case 6:
-                        lenVal1 = 0;
-                        WidthVal1 = 0;
-                        settingVal1 = 10;
-                        break;
-                    case 7:
-                        lenVal1 = 0;
-                        WidthVal1 = 0;
-                        settingVal1 = 12;
-                        break;
-                    case 8:
-                        lenVal1 = resultall[6];
-                        WidthVal1 = resultall[7];
-                        settingVal1 = 14;
-                        break;
-                    case 9:
-                        lenVal1 = resultall[8];
-                        WidthVal1 = resultall[9];
-                        settingVal1 = 16;
-                        break;
+//                         break;
+//                     case 5:
+//                         lenVal1 = resultall[4];
+//                         WidthVal1 = resultall[5];
+//                         settingVal1 = 8;
+//                         break;
+//                     case 6:
+//                         lenVal1 = 0;
+//                         WidthVal1 = 0;
+//                         settingVal1 = 10;
+//                         break;
+//                     case 7:
+//                         lenVal1 = 0;
+//                        sultall[7];
+//                         settingVal1 = 14;
+//                         break;
+//                     case 9:
+//                         lenVal1 = resultall[8];
+//                         WidthVal1 = resultall[9];
+//                         settingVal1 = 16;
+//                         break;
 
-                    case 10:
-                        lenVal1 = 0;
-                        WidthVal1 = 0;
-                        settingVal1 = 18;
-                        break;
-                    case 11:
-                        lenVal1 = 0;
-                        WidthVal1 = 0;
-                        settingVal1 = 20;
-                        break;
-                    case 12:
-                        lenVal1 = resultall[10];
-                        WidthVal1 = resultall[11];
-                        settingVal1 = 22;
-                        break;
+//                     case 10:
+//                         lenVal1 = 0;
+//                         WidthVal1 = 0;
+//                         settingVal1 = 18;
+//                         break;
+//                     case 11:
+//                         lenVal1 = 0;
+//                         WidthVal1 = 0;
+//                         settingVal1 = 20;
+//                         break;
+//                     case 12:
+//                         lenVal1 = resultall[10];
+//                         WidthVal1 = resultall[11];
+//                         settingVal1 = 22;
+//                         break;
 
 
-                }
+//                 }
 
                 this.Invoke(new dele(() =>
                 {
