@@ -2476,7 +2476,7 @@ namespace VisionProgram
                         Log_K.WriteLog(log_lst, Mainpath, "[Cam1 결과 : OK]" + Environment.NewLine);
 
                         Decision1 = "OK";
-                        //plc1.MasterK_Write_W("32303135", "0100");  //OK 판정 PLC에게 보내기
+                        
 
                         Delay(100);
 
